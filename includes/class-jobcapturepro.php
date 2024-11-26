@@ -22,6 +22,12 @@ class JobCaptureProPlugin {
 	protected $version;
 
 	/**
+	 * The base URL for our backend API
+	 */
+	protected $jcp_api_base_url;
+
+
+	/**
 	 * Define the core functionality of the plugin.
 	 */
 	public function __construct() {
@@ -31,6 +37,7 @@ class JobCaptureProPlugin {
 			$this->version = '1.0.0';
 		}
 		$this->plugin_name = 'jobcapturepro';
+		$this->jcp_api_base_url = 'https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
@@ -81,7 +88,7 @@ class JobCaptureProPlugin {
 	 */
     private function define_shortcodes(): void {
 		// Create an instance of the shortcodes class
-        $plugin_shortcodes = new JobCaptureProShortcodes( $this->get_plugin_name(), $this->get_version() );
+        $plugin_shortcodes = new JobCaptureProShortcodes( $this->get_plugin_name(), $this->get_version(), $this->get_jobcapturepro_api_base_url() );
 
 		// Register the shortcodes with the corresponding functions in the shortcodes class
 		$this->loader->add_shortcode( shortcode: 'jcp_checkin', component: $plugin_shortcodes, callback: 'get_checkin' );
@@ -116,6 +123,13 @@ class JobCaptureProPlugin {
 	 */
 	public function get_version() {
 		return $this->version;
+	}
+
+	/**
+	 * Retrieve the base URL for the backend API.
+	 */
+	public function get_jobcapturepro_api_base_url() {
+		return $this->jcp_api_base_url;
 	}
 
 }

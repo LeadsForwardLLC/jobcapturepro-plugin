@@ -16,13 +16,19 @@ class JobCaptureProShortcodes {
 	 */
 	private $version;
 
+    /**
+     * The base URL for our backend API.
+     */
+    private $jcp_api_base_url;
+
 	/**
 	 * Initialize the class and set its properties.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $plugin_name, $version, $jcp_api_base_url ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+        $this->jcp_api_base_url = $jcp_api_base_url;
 
 	}
 
@@ -36,8 +42,9 @@ class JobCaptureProShortcodes {
         $options = get_option('jobcapturepro_options');
         $apikey = trim($options[ 'jobcapturepro_field_apikey' ]);
 
-        // TODO: store the API link as a class constant and parameterize the checkin ID
-        $url = "https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/checkin/GZYpwDkw1CUuvFggavAE";
+        // Set the API endpoint URL
+        $checkin_id = "GZYpwDkw1CUuvFggavAE";
+        $url = $this->jcp_api_base_url . "checkin/" . $checkin_id;
         
         // Set the API request headers
         $args = array(
@@ -66,8 +73,7 @@ class JobCaptureProShortcodes {
         $options = get_option('jobcapturepro_options');
         $apikey = trim($options[ 'jobcapturepro_field_apikey' ]);
 
-        // TODO: store the API link as a class constant
-        $url = "https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/checkin";
+        $url = $this->jcp_api_base_url . "checkin";
         
         // Set the API request headers
         $args = array(
