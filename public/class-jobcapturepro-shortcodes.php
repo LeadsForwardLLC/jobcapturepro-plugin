@@ -38,12 +38,18 @@ class JobCaptureProShortcodes {
     public function get_checkin($atts)
     {
 
+        // Check if checkinid attribute was provided
+        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+
+        if (!$checkin_id) {
+            return 'No checkin ID provided';
+        }
+
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
-        $apikey = trim($options[ 'jobcapturepro_field_apikey' ]);
+        $apikey = trim(sanitize_text_field($options['jobcapturepro_field_apikey']));
 
         // Set the API endpoint URL
-        $checkin_id = "GZYpwDkw1CUuvFggavAE";
         $url = $this->jcp_api_base_url . "checkin/" . $checkin_id;
         
         // Set the API request headers

@@ -22,10 +22,10 @@ Create the archive for distribution, being sure to exclude git version control m
 
 In WordPress, navigate to the Plugins menu and click "Add New Plugin" at the top of the screen.
 
-If you've installed the plugin previously, look for it in the list and Deactivate and Delete it.
+In most cases, there should be no issue if you have an active installation of the plugin. If desired, look for the plugin in the list of installed plugins, Deactivate, and Delete it.
 
 Click "Upload Plugin" on the next screen and select the zip file created in the previous step.
 
-Click "Install Now" to install the plugin, and then click "Activate Plugin" on the next screen.
+Click "Install Now" to install the plugin if this is the first time installing it, and then click "Activate Plugin" on the next screen. Otherwise, choose to replace the existing plugin and it will be updated automatically.
 
 Navigate to the Settings/General and make sure the API key is set.
