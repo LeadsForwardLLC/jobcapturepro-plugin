@@ -98,4 +98,35 @@ class JobCaptureProShortcodes {
             return $body;
         }
     }
+
+
+    /**
+     * Shortcode to display a map
+     */
+    public function get_map($atts)
+    {
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options[ 'jobcapturepro_field_apikey' ]);
+
+        $url = $this->jcp_api_base_url . "map";
+        
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request and return the response body
+        $request = wp_remote_get($url, $args);
+        $body = wp_remote_retrieve_body( $request );
+        if( is_wp_error( $request ) ) {
+            return;
+        } else {
+            return $body;
+        }
+    }
+
 }
