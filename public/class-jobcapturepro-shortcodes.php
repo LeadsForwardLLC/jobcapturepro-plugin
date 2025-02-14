@@ -125,7 +125,72 @@ class JobCaptureProShortcodes {
         if( is_wp_error( $request ) ) {
             return;
         } else {
-            return $body;
+
+            // Get the API Key from the plugin options
+            $options = get_option('jobcapturepro_options');
+            $mapsApikey = trim($options[ 'jobcapturepro_field_gmaps_apikey' ]);
+
+            // Ensure necessary scripts are loaded
+            wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?libraries=visualization&key=' . $mapsApikey, array(), null, array('strategy' => 'async'));
+
+            // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
+
+            // For testing, uncomment this to override API response with test data            
+            /*
+            $body = '{
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -74.9334345,
+                                39.918751
+                            ]
+                        },
+                        "properties": {
+                            "description": "Pump unclogging",
+                            "address": "Church Rd E"
+                        }
+                    }
+                ]
+            }';
+            */
+
+            // Convert JSON to PHP array
+            $locations = json_decode($body, true);
+
+            // Extract features array from the GeoJSON FeatureCollection
+            $features = $locations['features'];
+
+
+            // Start building HTML output
+            $output = '<div id="heatmap" style="height: 500px; width: 100%;"></div>';
+
+            $output .= '<script>
+            function initHeatMap() {
+                const map = new google.maps.Map(document.getElementById("heatmap"), {
+                    zoom: 13,
+                    center: {lat: ' . $features[0]['geometry']['coordinates'][1] . ', lng: ' . $features[0]['geometry']['coordinates'][0] . '},
+                    mapTypeId: "roadmap"
+                });
+
+                const heatmapData = [' . 
+                    implode(',', array_map(function($point) {
+                        return 'new google.maps.LatLng(' . $point['geometry']['coordinates'][1] . ',' . $point['geometry']['coordinates'][0] . ')';
+                    }, $features)) . 
+                '];
+
+                new google.maps.visualization.HeatmapLayer({
+                    data: heatmapData,
+                    map: map
+                });
+            }
+            window.addEventListener(\'load\', initHeatMap);
+            </script>';
+
+            return $output;
         }
     }
 

@@ -56,6 +56,20 @@ class JobCaptureProAdmin {
 			)
 		);
 
+		// Register Google Maps API Key field
+		add_settings_field(
+			'jobcapturepro_field_gmaps_apikey',
+			__( 'Google Maps API Key', 'jobcapturepro' ),
+			array($this, 'jobcapturepro_field_gmaps_apikey_cb'),
+			'general',
+			'jobcapturepro_section_developers',
+			array(
+				'label_for'         => 'jobcapturepro_field_gmaps_apikey',
+				'class'             => 'jobcapturepro_row',
+				'jobcapturepro_custom_data' => 'custom',
+			)
+		);
+
 	}
 
 	/**
@@ -86,6 +100,23 @@ class JobCaptureProAdmin {
 			name="jobcapturepro_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 			size="80" type="text"
 			value="<?php echo esc_attr( $options[ $args['label_for'] ] ) ?>" />
+		<?php
+	}
+
+	/**
+	 * Google Maps API Key field callback function.
+	 */
+	function jobcapturepro_field_gmaps_apikey_cb( $args ) {
+		$options = get_option( 'jobcapturepro_options' );
+		?>
+		<input
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			name="jobcapturepro_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			size="80" type="text"
+			value="<?php echo esc_attr( $options[ $args['label_for'] ] ) ?>" />
+		<p class="description">
+			<?php esc_html_e( 'Enter your Google Maps API key to enable map functionality', 'jobcapturepro' ); ?>
+		</p>
 		<?php
 	}
 
