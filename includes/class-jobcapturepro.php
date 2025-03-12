@@ -61,6 +61,11 @@ class JobCaptureProPlugin {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-jobcapturepro-admin.php';
 
 		/**
+		 * The class responsible for generating HTML templates
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jobcapturepro-templates.php';
+		
+		/**
 		 * The class responsible for defining all actions for public-facing shortcodes
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jobcapturepro-shortcodes.php';
