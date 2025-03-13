@@ -159,18 +159,18 @@ class JobCaptureProTemplates
                 column-gap: 20px;
                 width: 100%;
             }
-            
+                        
             .jcp-checkin-card {
                 break-inside: avoid;
                 margin-bottom: 20px;
                 background: #fff;
-                border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-radius: 12px;
+                box-shadow: rgba(0, 0, 0, 0.11) 0px 1px 10px 0px;
                 overflow: hidden;
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
                 display: block;
             }
-            
+
             .jcp-checkin-card:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -308,11 +308,11 @@ class JobCaptureProTemplates
                 font-size: 0.9em;
                 color: #666;
             }
-            
+                        
             .jcp-checkin-address {
                 font-size: 0.85em;
-                background-color: #f8f8f8;
-                border-top: 1px solid #eee;
+                /* background-color: #f8f8f8; */
+                /* border-top: 1px solid #eee; */
             }
             
             /* Responsive design */
@@ -486,5 +486,117 @@ class JobCaptureProTemplates
                 if (dots.length) dots[index].classList.add("active");
             }
         </script>';
+    }
+
+    /**
+     * Generate HTML for a single checkin card
+     * 
+     * @param array $locations The location data as defined by geopoints in RFC 7946
+     * @return string HTML for a Google Maps heatmap
+     */
+    public static function render_heatmap($locations)
+    {
+        // Check for required fields
+        if (empty($locations)) {
+            return '';
+        }
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $mapsApikey = trim($options['jobcapturepro_field_gmaps_apikey']);
+
+        // Ensure necessary scripts are loaded
+        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?libraries=visualization&key=' . $mapsApikey, array(), null, array('strategy' => 'async'));
+
+        // Extract features array from the GeoJSON FeatureCollection
+        $features = $locations['features'];
+
+        // Calculate center point of 80% of checkins
+        $totalPoints = count($features);
+        $pointsToUse = (int) ($totalPoints * 0.8);
+
+        // Sort points by distance from mean center to get the central 80%
+        if ($totalPoints > 0) {
+            // First calculate the mean center
+            $sumLat = 0;
+            $sumLng = 0;
+            foreach ($features as $feature) {
+                $sumLat += $feature['geometry']['coordinates'][1];
+                $sumLng += $feature['geometry']['coordinates'][0];
+            }
+            $meanLat = $sumLat / $totalPoints;
+            $meanLng = $sumLng / $totalPoints;
+
+            // Calculate distance of each point from mean
+            $distanceFromMean = [];
+            foreach ($features as $index => $feature) {
+                $lat = $feature['geometry']['coordinates'][1];
+                $lng = $feature['geometry']['coordinates'][0];
+                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
+                $distanceFromMean[$index] = $distance;
+            }
+
+            // Sort points by distance
+            asort($distanceFromMean);
+
+            // Keep only the closest 80%
+            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
+
+            // Find bounds of these central points
+            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
+            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
+
+            foreach ($centralPoints as $index => $distance) {
+                $lat = $features[$index]['geometry']['coordinates'][1];
+                $lng = $features[$index]['geometry']['coordinates'][0];
+                $minLat = min($minLat, $lat);
+                $maxLat = max($maxLat, $lat);
+                $minLng = min($minLng, $lng);
+                $maxLng = max($maxLng, $lng);
+            }
+
+            // Calculate center of the 80% points
+            $centerLat = ($minLat + $maxLat) / 2;
+            $centerLng = ($minLng + $maxLng) / 2;
+        } else {
+            // Default center if no points
+            $centerLat = 0;
+            $centerLng = 0;
+            $minLat = $maxLat = 0;
+            $minLng = $maxLng = 0;
+        }
+
+        // Start building HTML output
+        $output = '<div id="heatmap" style="height: 500px; width: 100%;"></div>';
+
+        $output .= '<script>
+        function initHeatMap() {
+            const map = new google.maps.Map(document.getElementById("heatmap"), {
+                mapTypeId: "roadmap"
+            });
+            
+            // Define bounds for the map
+            const bounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
+                new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
+            );
+            
+            // Fit the map to these bounds
+            map.fitBounds(bounds);
+
+            const heatmapData = [' .
+            implode(',', array_map(function ($point) {
+                return 'new google.maps.LatLng(' . $point['geometry']['coordinates'][1] . ',' . $point['geometry']['coordinates'][0] . ')';
+            }, $features)) .
+            '];
+
+            new google.maps.visualization.HeatmapLayer({
+                data: heatmapData,
+                map: map
+            });
+        }
+        window.addEventListener(\'load\', initHeatMap);
+        </script>';
+
+        return $output;
     }
 }
