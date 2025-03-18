@@ -108,9 +108,9 @@ class JobCaptureProShortcodes
     }
 
     /**
-     * Shortcode to display a map
+     * Shortcode to display a heatmap
      */
-    public function get_map($atts)
+    public function get_map($atts) // TODO: rename to get_heatmap
     {
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
@@ -140,4 +140,40 @@ class JobCaptureProShortcodes
             return JobCaptureProTemplates::render_heatmap($locations);
         }
     }
+
+
+    /**
+     * Shortcode to display a map with multiple markers
+     */
+    public function get_multimap($atts)
+    {
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options['jobcapturepro_field_apikey']);
+
+        $url = $this->jcp_api_base_url . "map";
+
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request and return the response body
+        $request = wp_remote_get($url, $args);
+        $body = wp_remote_retrieve_body($request);
+        if (is_wp_error($request)) {
+            return;
+        } else {
+            // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
+
+            // Convert JSON to PHP array
+            $locations = json_decode($body, true);
+
+            return JobCaptureProTemplates::render_multimap($locations);
+        }
+    }
+
 }

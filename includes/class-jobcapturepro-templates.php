@@ -489,7 +489,7 @@ class JobCaptureProTemplates
     }
 
     /**
-     * Generate HTML for a single checkin card
+     * Generate HTML for a Google Maps heatmap
      * 
      * @param array $locations The location data as defined by geopoints in RFC 7946
      * @return string HTML for a Google Maps heatmap
@@ -566,7 +566,12 @@ class JobCaptureProTemplates
         }
 
         // Start building HTML output
-        $output = '<div id="heatmap" style="height: 500px; width: 100%;"></div>';
+        $output = '<div id="heatmap" class="jcp-heatmap"></div>';
+
+        // Add CSS for modern responsive grid
+        $output .= self::get_heatmap_styles();
+
+
 
         $output .= '<script>
         function initHeatMap() {
@@ -589,6 +594,8 @@ class JobCaptureProTemplates
             }, $features)) .
             '];
 
+           
+
             new google.maps.visualization.HeatmapLayer({
                 data: heatmapData,
                 map: map
@@ -598,5 +605,290 @@ class JobCaptureProTemplates
         </script>';
 
         return $output;
+    }
+    
+    /**
+     * Generate CSS styles for the heatmap
+     * 
+     * @return string CSS styles for the heatmap
+     */
+    private static function get_heatmap_styles()
+    {
+        return '<style>
+            .jcp-heatmap {
+                height: 500px;
+                width: 80%;
+                border-radius: 12px;
+                overflow: hidden;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* Responsive design */
+            @media (max-width: 1024px) {
+                .jcp-checkins-grid {
+                    column-count: 3;
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .jcp-checkins-grid {
+                    column-count: 2;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .jcp-checkins-grid {
+                    column-count: 1;
+                }
+            }
+        </style>';
+    }
+
+    /**
+     * Generate HTML for a Google Maps map with multiple markers
+     * 
+     * @param array $locations The location data as defined by geopoints in RFC 7946
+     * @return string HTML for a Google Maps map with multiple markers
+     */
+    public static function render_multimap($locations)
+    {
+        // Check for required fields
+        if (empty($locations)) {
+            return '';
+        }
+        
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $mapsApikey = trim($options['jobcapturepro_field_gmaps_apikey']);
+
+        // Ensure necessary scripts are loaded
+        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $mapsApikey, array(), null, array('strategy' => 'async'));
+
+        // Extract features array from the GeoJSON FeatureCollection
+        $features = $locations['features'];
+
+        // Calculate center point of 80% of checkins
+        $totalPoints = count($features);
+        $pointsToUse = (int) ($totalPoints * 0.8);
+
+        // Sort points by distance from mean center to get the central 80%
+        if ($totalPoints > 0) {
+            // First calculate the mean center
+            $sumLat = 0;
+            $sumLng = 0;
+            foreach ($features as $feature) {
+                $sumLat += $feature['geometry']['coordinates'][1];
+                $sumLng += $feature['geometry']['coordinates'][0];
+            }
+            $meanLat = $sumLat / $totalPoints;
+            $meanLng = $sumLng / $totalPoints;
+
+            // Calculate distance of each point from mean
+            $distanceFromMean = [];
+            foreach ($features as $index => $feature) {
+                $lat = $feature['geometry']['coordinates'][1];
+                $lng = $feature['geometry']['coordinates'][0];
+                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
+                $distanceFromMean[$index] = $distance;
+            }
+
+            // Sort points by distance
+            asort($distanceFromMean);
+
+            // Keep only the closest 80%
+            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
+
+            // Find bounds of these central points
+            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
+            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
+
+            foreach ($centralPoints as $index => $distance) {
+                $lat = $features[$index]['geometry']['coordinates'][1];
+                $lng = $features[$index]['geometry']['coordinates'][0];
+                $minLat = min($minLat, $lat);
+                $maxLat = max($maxLat, $lat);
+                $minLng = min($minLng, $lng);
+                $maxLng = max($maxLng, $lng);
+            }
+
+            // Calculate center of the 80% points
+            $centerLat = ($minLat + $maxLat) / 2;
+            $centerLng = ($minLng + $maxLng) / 2;
+        } else {
+            // Default center if no points
+            $centerLat = 0;
+            $centerLng = 0;
+            $minLat = $maxLat = 0;
+            $minLng = $maxLng = 0;
+        }
+
+        // Start building HTML output
+        $output = '<div id="multimap" class="jcp-multimap"></div>';
+
+        // Add CSS for modern responsive map
+        $output .= self::get_multimap_styles();
+
+        // Generate unique markers data with properties
+        $markersData = array();
+        foreach ($features as $index => $feature) {
+            // Extract relevant data for the marker
+            $lat = $feature['geometry']['coordinates'][1];
+            $lng = $feature['geometry']['coordinates'][0];
+            
+            // Get properties from feature if available
+            $title = !empty($feature['properties']['title']) ? 
+                esc_js($feature['properties']['title']) : 'Location ' . ($index + 1);
+            
+            $description = !empty($feature['properties']['description']) ? 
+                esc_js($feature['properties']['description']) : '';
+                
+            $address = !empty($feature['properties']['address']) ? 
+                esc_js($feature['properties']['address']) : '';
+                
+            $date = !empty($feature['properties']['createdAt']) ? 
+                date('F j, Y', $feature['properties']['createdAt']) : '';
+            
+            // Build the marker data
+            $markersData[] = "{
+                position: new google.maps.LatLng({$lat}, {$lng}),
+                title: '{$title}',
+                description: '{$description}',
+                address: '{$address}',
+                date: '{$date}'
+            }";
+        }
+
+        $output .= '<script>
+        function initMultiMap() {
+            const map = new google.maps.Map(document.getElementById("multimap"), {
+                mapTypeId: "roadmap",
+                zoom: 10,
+                center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' }
+            });
+            
+            // Define bounds for the map
+            const bounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
+                new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
+            );
+            
+            // Fit the map to these bounds
+            map.fitBounds(bounds);
+            
+            // Create an info window to share between markers
+            const infoWindow = new google.maps.InfoWindow();
+            
+            // Add markers to the map
+            const markers = [' . implode(',', $markersData) . '];
+            
+            // Create each marker on the map
+            markers.forEach((markerData, i) => {
+                const marker = new google.maps.Marker({
+                    position: markerData.position,
+                    map: map,
+                    title: markerData.title,
+                    animation: google.maps.Animation.DROP,
+                    // Optional: custom marker icon
+                    // icon: {
+                    //     url: "YOUR_CUSTOM_ICON_URL",
+                    //     scaledSize: new google.maps.Size(30, 30)
+                    // }
+                });
+                
+                // Construct info window content
+                const contentString = 
+                    \'<div class="jcp-info-window">\' +
+                    (markerData.title ? \'<h3>\' + markerData.title + \'</h3>\' : \'\') +
+                    (markerData.description ? \'<p>\' + markerData.description + \'</p>\' : \'\') +
+                    (markerData.address ? \'<p class="jcp-address"><strong>Location:</strong> \' + markerData.address + \'</p>\' : \'\') +
+                    (markerData.date ? \'<p class="jcp-date"><strong>Date:</strong> \' + markerData.date + \'</p>\' : \'\') +
+                    \'</div>\';
+                
+                // Add click event to each marker
+                marker.addListener("click", () => {
+                    infoWindow.setContent(contentString);
+                    infoWindow.open(map, marker);
+                });
+                
+                // Optional: Cluster markers if there are many
+                // markers[i] = marker; // If you want to implement clustering
+            });
+            
+            // Optional: Add marker clustering
+            // if (typeof MarkerClusterer !== \'undefined\') {
+            //     new MarkerClusterer(map, markers, {
+            //         imagePath: "PATH_TO_CLUSTER_IMAGES"
+            //     });
+            // }
+        }
+        window.addEventListener(\'load\', initMultiMap);
+        </script>';
+
+        return $output;
+    }
+    
+    /**
+     * Generate CSS styles for the multi markers map
+     * 
+     * @return string CSS styles for the multi markers map
+     */
+    private static function get_multimap_styles()
+    {
+        return '<style>
+            .jcp-multimap {
+                height: 500px;
+                width: 100%;
+                border-radius: 12px;
+                overflow: hidden;
+                margin-left: auto;
+                margin-right: auto;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .jcp-info-window {
+                padding: 5px;
+                max-width: 250px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            }
+            
+            .jcp-info-window h3 {
+                margin-top: 0;
+                margin-bottom: 8px;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            
+            .jcp-info-window p {
+                margin: 5px 0;
+                font-size: 14px;
+            }
+            
+            .jcp-info-window .jcp-address,
+            .jcp-info-window .jcp-date {
+                font-size: 12px;
+                color: #666;
+            }
+
+            /* Responsive design */
+            @media (max-width: 1024px) {
+                .jcp-multimap {
+                    width: 90%;
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .jcp-multimap {
+                    width: 95%;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .jcp-multimap {
+                    width: 100%;
+                    height: 400px;
+                }
+            }
+        </style>';
     }
 }

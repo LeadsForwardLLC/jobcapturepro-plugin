@@ -29,3 +29,12 @@ Click "Upload Plugin" on the next screen and select the zip file created in the 
 Click "Install Now" to install the plugin if this is the first time installing it, and then click "Activate Plugin" on the next screen. Otherwise, choose to replace the existing plugin and it will be updated automatically.
 
 Navigate to the Settings/General and make sure the API key is set.
+
+== Developer Documentation ==
+
+= Adding a Shortcode =
+
+1. Add your shortcode code to `class-jobcapturepro-shortcodes.php`. Most of these functions will have a similar structure. The common scenario is to make an API call to our backend and then pass processing onto an HTML template function.
+2. Add your HTML template code to `class-jobcapturepro-templates.php`. This should return HTML/CSS to the shortcode function. Consider separating styles into a separate function for maintainability.
+3. Define the shortcode in `class-jobcapturepro.php`. This can be added to the function `JobCaptureProPlugin::define_shortcodes()`.
+4. Make sure the backend is updated to support whatever API calls are necessary for the shortcode.
