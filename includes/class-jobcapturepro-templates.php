@@ -494,18 +494,18 @@ class JobCaptureProTemplates
      * @param array $locations The location data as defined by geopoints in RFC 7946
      * @return string HTML for a Google Maps heatmap
      */
-    public static function render_heatmap($locations)
+    public static function render_heatmap($locations, $maps_api_key)
     {
         // Check for required fields
         if (empty($locations)) {
             return '';
         }
+
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
-        $mapsApikey = trim($options['jobcapturepro_field_gmaps_apikey']);
 
         // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?libraries=visualization&key=' . $mapsApikey, array(), null, array('strategy' => 'async'));
+        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?libraries=visualization&key=' . $maps_api_key, array(), null, array('strategy' => 'async'));
 
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
@@ -651,19 +651,15 @@ class JobCaptureProTemplates
      * @param array $locations The location data as defined by geopoints in RFC 7946
      * @return string HTML for a Google Maps map with multiple markers
      */
-    public static function render_multimap($locations)
+    public static function render_multimap($locations, $maps_api_key)
     {
         // Check for required fields
         if (empty($locations)) {
             return '';
         }
-        
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-        $mapsApikey = trim($options['jobcapturepro_field_gmaps_apikey']);
 
         // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $mapsApikey, array(), null, array('strategy' => 'async'));
+        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key, array(), null, array('strategy' => 'async'));
 
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];

@@ -134,10 +134,15 @@ class JobCaptureProShortcodes
         } else {
             // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
 
-            // Convert JSON to PHP array
-            $locations = json_decode($body, true);
+            
+            // Decode JSON response
+            $response_data = json_decode($body, true);
+            
+            // Extract locations and maps API key from response
+            $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
+            $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
 
-            return JobCaptureProTemplates::render_heatmap($locations);
+            return JobCaptureProTemplates::render_heatmap($locations, $maps_api_key);
         }
     }
 
@@ -152,6 +157,7 @@ class JobCaptureProShortcodes
         $apikey = trim($options['jobcapturepro_field_apikey']);
 
         $url = $this->jcp_api_base_url . "map";
+        $mapsApiKeyUrl = $this->jcp_api_base_url . "config";
 
         // Set the API request headers
         $args = array(
@@ -167,13 +173,20 @@ class JobCaptureProShortcodes
         if (is_wp_error($request)) {
             return;
         } else {
-            // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
+                    // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
 
-            // Convert JSON to PHP array
-            $locations = json_decode($body, true);
+            
+            // Decode JSON response
+            $response_data = json_decode($body, true);
+            
+            // Extract locations and maps API key from response
+            $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
+            $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
 
-            return JobCaptureProTemplates::render_multimap($locations);
         }
+
+
+        return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
     }
 
 }
