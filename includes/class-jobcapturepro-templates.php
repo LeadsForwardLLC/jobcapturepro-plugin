@@ -94,46 +94,101 @@ class JobCaptureProTemplates
     }
 
     /**
-     * Generate HTML for the checkins grid layout with transposed order
+     * Generate HTML for the checkins grid layout with items sorted by date (newest first)
      * 
      * @param array $checkins Array of checkin data
      * @return string HTML for all checkins in a responsive grid
      */
     public static function render_checkins_grid($checkins)
     {
+        // Sort checkins by date (newest first)
+        usort($checkins, function($a, $b) {
+            // Compare timestamps (higher timestamp = more recent)
+            return $b['createdAt'] - $a['createdAt'];
+        });
+
         // Container with CSS Grid for responsive layout
         $output = '<div class="jcp-container">';
 
+        // Unique ID for this grid
+        $gridId = 'jcp-grid-' . wp_rand();
+
         // Add CSS for modern responsive grid
-        $output .= self::get_checkins_grid_styles();
+        $output .= self::get_checkins_grid_styles($gridId);
 
-        // Grid container
-        $output .= '<div class="jcp-checkins-grid">';
-
-        // Calculate number of columns for transposition
-        $columnCount = 4; // Default column count
-        $totalCheckins = count($checkins);
-        $rowCount = ceil($totalCheckins / $columnCount);
-
-        // Create a transposed array
-        $transposedOrder = [];
-
-        for ($col = 0; $col < $columnCount; $col++) {
-            for ($row = 0; $row < $rowCount; $row++) {
-                $index = $row * $columnCount + $col;
-                if ($index < $totalCheckins) {
-                    $transposedOrder[] = $checkins[$index];
-                }
-            }
-        }
-
-        // Add each checkin to the grid in transposed order
-        foreach ($transposedOrder as $checkin) {
+        // Grid container with data attribute to store the column count
+        $output .= '<div class="jcp-checkins-grid ' . $gridId . '" data-column-count="4">';
+        
+        // Add each checkin to the grid in date-sorted order
+        foreach ($checkins as $checkin) {
             $output .= self::render_checkin_card($checkin);
         }
 
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
+
+        // Add JavaScript to maintain proper masonry layout
+        $output .= '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const grid = document.querySelector(".' . $gridId . '");
+                if (!grid) return;
+                
+                // Function to detect column count from CSS
+                function getColumnCount() {
+                    const style = window.getComputedStyle(grid);
+                    const columnCount = style.getPropertyValue("column-count");
+                    return parseInt(columnCount) || 4; // Default to 4 if not set
+                }
+                
+                // Force items to be added in correct order for visual masonry
+                function rearrangeItems() {
+                    const items = Array.from(grid.children);
+                    
+                    // First remove all items
+                    items.forEach(item => grid.removeChild(item));
+                    
+                    // Calculate column count
+                    const columnCount = getColumnCount();
+
+                    // Update grid attribute with current column count
+                    grid.setAttribute("data-column-count", columnCount);
+                    
+                    // Only keep items that fit evenly into columns
+                    // This ensures the masonry layout works correctly
+                    const itemsToKeep = Math.floor(items.length / columnCount) * columnCount;
+                    const finalItems = items; //.slice(0, itemsToKeep); // TODO: just need a better algo for sorting the masonry grid
+
+                    // Create "virtual" columns - these will help us rearrange items properly
+                    const columns = Array.from({length: columnCount}, () => []);
+                    
+                    // Organize items by column (this ensures ordered reading left-to-right)
+                    items.forEach((item, index) => {
+                        const columnIndex = index % columnCount;
+                        columns[columnIndex].push(item);
+                    });
+                    
+                    // Add back to grid in column-first order
+                    columns.forEach(column => {
+                        column.forEach(item => {
+                            grid.appendChild(item);
+                        });
+                    });
+                }
+                
+                // Run on load
+                rearrangeItems();
+                
+                // Also run when window is resized (column count may change)
+                let previousColumnCount = getColumnCount();
+                window.addEventListener("resize", function() {
+                    const newColumnCount = getColumnCount();
+                    if (newColumnCount !== previousColumnCount) {
+                        previousColumnCount = newColumnCount;
+                        rearrangeItems();
+                    }
+                });
+            });
+        </script>';
 
         return $output;
     }
@@ -141,10 +196,13 @@ class JobCaptureProTemplates
     /**
      * Generate CSS styles for the checkins grid
      * 
+     * @param string $gridId The unique ID for the grid
      * @return string CSS styles for the checkins grid
      */
-    private static function get_checkins_grid_styles()
+    private static function get_checkins_grid_styles($gridId = null)
     {
+        $gridSelector = $gridId ? '.' . $gridId : '.jcp-checkins-grid';
+        
         return '<style>
             .jcp-container {
                 max-width: 1200px;
@@ -153,7 +211,7 @@ class JobCaptureProTemplates
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
             }
             
-            .jcp-checkins-grid {
+            ' . $gridSelector . ' {
                 /* Keep masonry-style layout with CSS columns */
                 column-count: 4;
                 column-gap: 20px;
@@ -315,21 +373,31 @@ class JobCaptureProTemplates
                 /* border-top: 1px solid #eee; */
             }
             
+            /* Abdul CSS */
+            .jcp-checkin-description {
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .jcp-checkin-date, .jcp-checkin-address {
+                padding: 0 15px;
+            }
+            /* end Abdul CSS */
+
             /* Responsive design */
             @media (max-width: 1024px) {
-                .jcp-checkins-grid {
+                ' . $gridSelector . ' {
                     column-count: 3;
                 }
             }
             
             @media (max-width: 768px) {
-                .jcp-checkins-grid {
+                ' . $gridSelector . ' {
                     column-count: 2;
                 }
             }
             
             @media (max-width: 480px) {
-                .jcp-checkins-grid {
+                ' . $gridSelector . ' {
                     column-count: 1;
                 }
             }
@@ -623,25 +691,6 @@ class JobCaptureProTemplates
                 margin-left: auto;
                 margin-right: auto;
             }
-
-            /* Responsive design */
-            @media (max-width: 1024px) {
-                .jcp-checkins-grid {
-                    column-count: 3;
-                }
-            }
-            
-            @media (max-width: 768px) {
-                .jcp-checkins-grid {
-                    column-count: 2;
-                }
-            }
-            
-            @media (max-width: 480px) {
-                .jcp-checkins-grid {
-                    column-count: 1;
-                }
-            }
         </style>';
     }
 
@@ -755,7 +804,27 @@ class JobCaptureProTemplates
             }";
         }
 
+       
         $output .= '<script>
+            async function initMap() {
+                // Request needed libraries.
+                const { Map } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+                const map = new Map(document.getElementById("map"), {
+                    center: { lat: 37.4239163, lng: -122.0947209 },
+                    zoom: 14,
+                    mapId: "4504f8b37365c3d0",
+                });
+                const marker = new AdvancedMarkerElement({
+                    map,
+                    position: { lat: 37.4239163, lng: -122.0947209 },
+                });
+            }
+
+            initMap();
+        </script>';
+
+        /*
         function initMultiMap() {
             const map = new google.maps.Map(document.getElementById("multimap"), {
                 mapTypeId: "roadmap",
@@ -820,6 +889,7 @@ class JobCaptureProTemplates
         }
         window.addEventListener(\'load\', initMultiMap);
         </script>';
+        */
 
         return $output;
     }
