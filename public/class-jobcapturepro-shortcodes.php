@@ -78,17 +78,24 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
+        // Check if companyid attribute was provided
+        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
         $apikey = trim($options['jobcapturepro_field_apikey']);
-
         $url = $this->jcp_api_base_url . "checkins";
+
+        // Add company_id as query parameter if provided
+        if ($company_id) {
+            $url .= "?companyId=" . urlencode($company_id);
+        }
 
         // Set the API request headers
         $args = array(
             'timeout' => 15,
             'headers' => array(
-                'API_KEY' => $apikey
+            'API_KEY' => $apikey
             )
         );
 
