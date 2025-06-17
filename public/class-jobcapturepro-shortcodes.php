@@ -68,7 +68,7 @@ class JobCaptureProShortcodes
             // Decode the JSON response
             $checkin = json_decode($body, true);
 
-            return JobCaptureProTemplates::render_checkins_grid([$checkin]);
+            return JobCaptureProTemplates::render_single_checkin($checkin);
 
         }
     }
