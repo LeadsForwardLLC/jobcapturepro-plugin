@@ -556,6 +556,40 @@ class JobCaptureProTemplates
         </script>';
     }
 
+    private static function determine_bounds($features) {
+        // Calculate center point of 80% of checkins
+        $totalPoints = count($features);
+
+        // Sort points by distance from mean center to get the central 80%
+        if ($totalPoints > 0) {
+            // Find bounds of all points
+            $minLat = $maxLat = $features[0]['geometry']['coordinates'][1];
+            $minLng = $maxLng = $features[0]['geometry']['coordinates'][0];
+
+            foreach ($features as $feature) {
+                $lat = $feature['geometry']['coordinates'][1];
+                $lng = $feature['geometry']['coordinates'][0];
+                $minLat = min($minLat, $lat);
+                $maxLat = max($maxLat, $lat);
+                $minLng = min($minLng, $lng);
+                $maxLng = max($maxLng, $lng);
+            }
+
+            // Add padding (approximately 1km)
+            $padding = 0.01;
+            $minLat -= $padding;
+            $maxLat += $padding;
+            $minLng -= $padding;
+            $maxLng += $padding;
+        } else {
+            // Default center if no points
+            $minLat = $maxLat = 0;
+            $minLng = $maxLng = 0;
+        }
+
+        return array($minLat, $maxLat, $minLng, $maxLng);
+    }
+
     /**
      * Generate HTML for a Google Maps heatmap
      * 
@@ -578,68 +612,14 @@ class JobCaptureProTemplates
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
-        // Calculate center point of 80% of checkins
-        $totalPoints = count($features);
-        $pointsToUse = (int) ($totalPoints * 0.8);
-
-        // Sort points by distance from mean center to get the central 80%
-        if ($totalPoints > 0) {
-            // First calculate the mean center
-            $sumLat = 0;
-            $sumLng = 0;
-            foreach ($features as $feature) {
-                $sumLat += $feature['geometry']['coordinates'][1];
-                $sumLng += $feature['geometry']['coordinates'][0];
-            }
-            $meanLat = $sumLat / $totalPoints;
-            $meanLng = $sumLng / $totalPoints;
-
-            // Calculate distance of each point from mean
-            $distanceFromMean = [];
-            foreach ($features as $index => $feature) {
-                $lat = $feature['geometry']['coordinates'][1];
-                $lng = $feature['geometry']['coordinates'][0];
-                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
-                $distanceFromMean[$index] = $distance;
-            }
-
-            // Sort points by distance
-            asort($distanceFromMean);
-
-            // Keep only the closest 80%
-            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
-
-            // Find bounds of these central points
-            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
-            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
-
-            foreach ($centralPoints as $index => $distance) {
-                $lat = $features[$index]['geometry']['coordinates'][1];
-                $lng = $features[$index]['geometry']['coordinates'][0];
-                $minLat = min($minLat, $lat);
-                $maxLat = max($maxLat, $lat);
-                $minLng = min($minLng, $lng);
-                $maxLng = max($maxLng, $lng);
-            }
-
-            // Calculate center of the 80% points
-            $centerLat = ($minLat + $maxLat) / 2;
-            $centerLng = ($minLng + $maxLng) / 2;
-        } else {
-            // Default center if no points
-            $centerLat = 0;
-            $centerLng = 0;
-            $minLat = $maxLat = 0;
-            $minLng = $maxLng = 0;
-        }
+        // Determine the bounds for the map
+        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
 
         // Start building HTML output
         $output = '<div id="heatmap" class="jcp-heatmap"></div>';
 
         // Add CSS for modern responsive grid
         $output .= self::get_heatmap_styles();
-
-
 
         $output .= '<script>
         function initHeatMap() {
@@ -708,65 +688,17 @@ class JobCaptureProTemplates
         }
 
         // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key, array(), null, array('strategy' => 'async'));
+        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
 
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
-        // Calculate center point of 80% of checkins
-        $totalPoints = count($features);
-        $pointsToUse = (int) ($totalPoints * 0.8);
+        // Determine the bounds for the map
+        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
 
-        // Sort points by distance from mean center to get the central 80%
-        if ($totalPoints > 0) {
-            // First calculate the mean center
-            $sumLat = 0;
-            $sumLng = 0;
-            foreach ($features as $feature) {
-                $sumLat += $feature['geometry']['coordinates'][1];
-                $sumLng += $feature['geometry']['coordinates'][0];
-            }
-            $meanLat = $sumLat / $totalPoints;
-            $meanLng = $sumLng / $totalPoints;
-
-            // Calculate distance of each point from mean
-            $distanceFromMean = [];
-            foreach ($features as $index => $feature) {
-                $lat = $feature['geometry']['coordinates'][1];
-                $lng = $feature['geometry']['coordinates'][0];
-                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
-                $distanceFromMean[$index] = $distance;
-            }
-
-            // Sort points by distance
-            asort($distanceFromMean);
-
-            // Keep only the closest 80%
-            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
-
-            // Find bounds of these central points
-            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
-            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
-
-            foreach ($centralPoints as $index => $distance) {
-                $lat = $features[$index]['geometry']['coordinates'][1];
-                $lng = $features[$index]['geometry']['coordinates'][0];
-                $minLat = min($minLat, $lat);
-                $maxLat = max($maxLat, $lat);
-                $minLng = min($minLng, $lng);
-                $maxLng = max($maxLng, $lng);
-            }
-
-            // Calculate center of the 80% points
-            $centerLat = ($minLat + $maxLat) / 2;
-            $centerLng = ($minLng + $maxLng) / 2;
-        } else {
-            // Default center if no points
-            $centerLat = 0;
-            $centerLng = 0;
-            $minLat = $maxLat = 0;
-            $minLng = $maxLng = 0;
-        }
+        // Calculate center point
+        $centerLat = ($minLat + $maxLat) / 2;
+        $centerLng = ($minLng + $maxLng) / 2;
 
         // Start building HTML output
         $output = '<div id="multimap" class="jcp-multimap"></div>';
@@ -796,7 +728,7 @@ class JobCaptureProTemplates
             
             // Build the marker data
             $markersData[] = "{
-                position: new google.maps.LatLng({$lat}, {$lng}),
+                position: { lat: {$lat}, lng: {$lng} },
                 title: '{$title}',
                 description: '{$description}',
                 address: '{$address}',
@@ -806,90 +738,70 @@ class JobCaptureProTemplates
 
        
         $output .= '<script>
-            async function initMap() {
-                // Request needed libraries.
-                const { Map } = await google.maps.importLibrary("maps");
-                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-                const map = new Map(document.getElementById("map"), {
-                    center: { lat: 37.4239163, lng: -122.0947209 },
-                    zoom: 14,
-                    mapId: "4504f8b37365c3d0",
-                });
-                const marker = new AdvancedMarkerElement({
-                    map,
-                    position: { lat: 37.4239163, lng: -122.0947209 },
-                });
+            async function initMultiMap() {
+                try {
+                    // Request needed libraries.
+                    const { Map } = await google.maps.importLibrary("maps");
+                    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+                    
+                    // Create the map
+                    const map = new Map(document.getElementById("multimap"), {
+                        center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' },
+                        zoom: 10,
+                        mapId: "f4a15cb6cd4f8d61", // You should replace this with your actual Map ID
+                    });
+
+                    // Define bounds for the map
+                    const bounds = new google.maps.LatLngBounds(
+                        new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
+                        new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
+                    );
+                    
+                    // Fit the map to these bounds
+                    map.fitBounds(bounds);
+
+                    // Markers data
+                    const markersData = [' . implode(',', $markersData) . '];
+
+                    // Create markers
+                    markersData.forEach((markerData, index) => {
+                        const marker = new AdvancedMarkerElement({
+                            map: map,
+                            position: markerData.position,
+                            title: markerData.title
+                        });
+
+                        // Add info window if there\'s additional content
+                        if (markerData.description || markerData.address || markerData.date) {
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: `
+                                    <div style="max-width: 200px;">
+                                        <h4>${markerData.title}</h4>
+                                        ${markerData.description ? `<p>${markerData.description}</p>` : ""}
+                                        ${markerData.address ? `<p><strong>Address:</strong> ${markerData.address}</p>` : ""}
+                                        ${markerData.date ? `<p><strong>Date:</strong> ${markerData.date}</p>` : ""}
+                                    </div>
+                                `
+                            });
+
+                            marker.addListener("click", () => {
+                                infoWindow.open(map, marker);
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error initializing map:", error);
+                }
             }
 
-            initMap();
+            // Initialize when page loads
+            if (typeof google !== "undefined" && google.maps) {
+                initMultiMap();
+            } else {
+                window.addEventListener("load", initMultiMap);
+            }
         </script>';
 
-        /*
-        function initMultiMap() {
-            const map = new google.maps.Map(document.getElementById("multimap"), {
-                mapTypeId: "roadmap",
-                zoom: 10,
-                center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' }
-            });
-            
-            // Define bounds for the map
-            const bounds = new google.maps.LatLngBounds(
-                new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
-                new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
-            );
-            
-            // Fit the map to these bounds
-            map.fitBounds(bounds);
-            
-            // Create an info window to share between markers
-            const infoWindow = new google.maps.InfoWindow();
-            
-            // Add markers to the map
-            const markers = [' . implode(',', $markersData) . '];
-            
-            // Create each marker on the map
-            markers.forEach((markerData, i) => {
-                const marker = new google.maps.Marker({
-                    position: markerData.position,
-                    map: map,
-                    title: markerData.title,
-                    animation: google.maps.Animation.DROP,
-                    // Optional: custom marker icon
-                    // icon: {
-                    //     url: "YOUR_CUSTOM_ICON_URL",
-                    //     scaledSize: new google.maps.Size(30, 30)
-                    // }
-                });
-                
-                // Construct info window content
-                const contentString = 
-                    \'<div class="jcp-info-window">\' +
-                    (markerData.title ? \'<h3>\' + markerData.title + \'</h3>\' : \'\') +
-                    (markerData.description ? \'<p>\' + markerData.description + \'</p>\' : \'\') +
-                    (markerData.address ? \'<p class="jcp-address"><strong>Location:</strong> \' + markerData.address + \'</p>\' : \'\') +
-                    (markerData.date ? \'<p class="jcp-date"><strong>Date:</strong> \' + markerData.date + \'</p>\' : \'\') +
-                    \'</div>\';
-                
-                // Add click event to each marker
-                marker.addListener("click", () => {
-                    infoWindow.setContent(contentString);
-                    infoWindow.open(map, marker);
-                });
-                
-                // Optional: Cluster markers if there are many
-                // markers[i] = marker; // If you want to implement clustering
-            });
-            
-            // Optional: Add marker clustering
-            // if (typeof MarkerClusterer !== \'undefined\') {
-            //     new MarkerClusterer(map, markers, {
-            //         imagePath: "PATH_TO_CLUSTER_IMAGES"
-            //     });
-            // }
-        }
-        window.addEventListener(\'load\', initMultiMap);
-        </script>';
-        */
 
         return $output;
     }

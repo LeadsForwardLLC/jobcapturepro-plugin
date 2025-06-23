@@ -37,8 +37,13 @@ class JobCaptureProShortcodes
      */
     public function get_checkin($atts)
     {
-        // Check if checkinid attribute was provided
+        // Check if checkinid attribute was provided, if not check URL parameter
         $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinid'])) {
+            $checkin_id = sanitize_text_field($_GET['checkinid']);
+        }
 
         if (!$checkin_id) {
             return 'No checkin ID provided';
@@ -78,17 +83,40 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
-        // Check if companyid attribute was provided
+        // Check if checkinid attribute was provided, if not check URL parameter
+        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinId'])) {
+            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        }
+
+        // Check if companyid attribute was provided, if not check URL parameter
         $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$company_id && isset($_GET['companyId'])) {
+            $company_id = sanitize_text_field($_GET['companyId']);
+        }
 
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
         $apikey = trim($options['jobcapturepro_field_apikey']);
         $url = $this->jcp_api_base_url . "checkins";
 
-        // Add company_id as query parameter if provided
+        // Add company_id and checkin_id as query parameters if provided
+        $query_params = array();
+        
         if ($company_id) {
-            $url .= "?companyId=" . urlencode($company_id);
+            $query_params[] = "companyId=" . urlencode($company_id);
+        }
+        
+        if ($checkin_id) {
+            $query_params[] = "checkinId=" . urlencode($checkin_id);
+        }
+        
+        if (!empty($query_params)) {
+            $url .= "?" . implode("&", $query_params);
         }
 
         // Set the API request headers
@@ -119,17 +147,48 @@ class JobCaptureProShortcodes
      */
     public function get_map($atts) // TODO: rename to get_heatmap
     {
+        // Check if checkinid attribute was provided, if not check URL parameter
+        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinId'])) {
+            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        }
+
+        // Check if companyid attribute was provided, if not check URL parameter
+        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$company_id && isset($_GET['companyId'])) {
+            $company_id = sanitize_text_field($_GET['companyId']);
+        }
+
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
         $apikey = trim($options['jobcapturepro_field_apikey']);
 
         $url = $this->jcp_api_base_url . "map";
 
+        // Add company_id and checkin_id as query parameters if provided
+        $query_params = array();
+        
+        if ($company_id) {
+            $query_params[] = "companyId=" . urlencode($company_id);
+        }
+        
+        if ($checkin_id) {
+            $query_params[] = "checkinId=" . urlencode($checkin_id);
+        }
+        
+        if (!empty($query_params)) {
+            $url .= "?" . implode("&", $query_params);
+        }
+
         // Set the API request headers
         $args = array(
             'timeout' => 15,
             'headers' => array(
-                'API_KEY' => $apikey
+            'API_KEY' => $apikey
             )
         );
 
@@ -159,12 +218,42 @@ class JobCaptureProShortcodes
      */
     public function get_multimap($atts)
     {
+        // Check if checkinid attribute was provided, if not check URL parameter
+        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinId'])) {
+            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        }
+
+        // Check if companyid attribute was provided, if not check URL parameter
+        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$company_id && isset($_GET['companyId'])) {
+            $company_id = sanitize_text_field($_GET['companyId']);
+        }
+
         // Get the API Key from the plugin options
         $options = get_option('jobcapturepro_options');
         $apikey = trim($options['jobcapturepro_field_apikey']);
 
         $url = $this->jcp_api_base_url . "map";
-        $mapsApiKeyUrl = $this->jcp_api_base_url . "config";
+
+        // Add company_id and checkin_id as query parameters if provided
+        $query_params = array();
+        
+        if ($company_id) {
+            $query_params[] = "companyId=" . urlencode($company_id);
+        }
+        
+        if ($checkin_id) {
+            $query_params[] = "checkinId=" . urlencode($checkin_id);
+        }
+        
+        if (!empty($query_params)) {
+            $url .= "?" . implode("&", $query_params);
+        }
 
         // Set the API request headers
         $args = array(
