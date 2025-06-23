@@ -583,49 +583,43 @@ class JobCaptureProTemplates
         $pointsToUse = (int) ($totalPoints * 0.8);
 
         // Sort points by distance from mean center to get the central 80%
-        if ($totalPoints > 0) {
-            // First calculate the mean center
-            $sumLat = 0;
-            $sumLng = 0;
+        if ($totalPoints > 1) {
+            // Find bounds of all points
+            $minLat = $maxLat = $features[0]['geometry']['coordinates'][1];
+            $minLng = $maxLng = $features[0]['geometry']['coordinates'][0];
+
             foreach ($features as $feature) {
-                $sumLat += $feature['geometry']['coordinates'][1];
-                $sumLng += $feature['geometry']['coordinates'][0];
-            }
-            $meanLat = $sumLat / $totalPoints;
-            $meanLng = $sumLng / $totalPoints;
-
-            // Calculate distance of each point from mean
-            $distanceFromMean = [];
-            foreach ($features as $index => $feature) {
-                $lat = $feature['geometry']['coordinates'][1];
-                $lng = $feature['geometry']['coordinates'][0];
-                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
-                $distanceFromMean[$index] = $distance;
+            $lat = $feature['geometry']['coordinates'][1];
+            $lng = $feature['geometry']['coordinates'][0];
+            $minLat = min($minLat, $lat);
+            $maxLat = max($maxLat, $lat);
+            $minLng = min($minLng, $lng);
+            $maxLng = max($maxLng, $lng);
             }
 
-            // Sort points by distance
-            asort($distanceFromMean);
+            // Add padding (approximately 1km)
+            $padding = 0.01;
+            $minLat -= $padding;
+            $maxLat += $padding;
+            $minLng -= $padding;
+            $maxLng += $padding;
 
-            // Keep only the closest 80%
-            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
-
-            // Find bounds of these central points
-            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
-            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
-
-            foreach ($centralPoints as $index => $distance) {
-                $lat = $features[$index]['geometry']['coordinates'][1];
-                $lng = $features[$index]['geometry']['coordinates'][0];
-                $minLat = min($minLat, $lat);
-                $maxLat = max($maxLat, $lat);
-                $minLng = min($minLng, $lng);
-                $maxLng = max($maxLng, $lng);
-            }
-
-            // Calculate center of the 80% points
+            // Calculate center of all points
             $centerLat = ($minLat + $maxLat) / 2;
             $centerLng = ($minLng + $maxLng) / 2;
+        } else if ($totalPoints === 1) {
+            // If only one point, use that as center
+            $padding = 0.01; // Approximately 1km padding
+            $centerLat = $features[0]['geometry']['coordinates'][1];
+            $centerLng = $features[0]['geometry']['coordinates'][0];
+            $minLat = $maxLat = $centerLat;
+            $minLng = $maxLng = $centerLng;
+            $minLat -= $padding;
+            $maxLat += $padding;
+            $minLng -= $padding;
+            $maxLng += $padding;
         } else {
+
             // Default center if no points
             $centerLat = 0;
             $centerLng = 0;
