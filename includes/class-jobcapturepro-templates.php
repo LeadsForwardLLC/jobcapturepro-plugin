@@ -19,7 +19,11 @@ class JobCaptureProTemplates
             return '';
         }
         
-        $output = '<div class="jcp-checkin-card">';
+        // Create clickable link with checkinId parameter
+        $current_url = $_SERVER['REQUEST_URI'];
+        $checkin_url = add_query_arg('checkinId', $checkin['id'], $current_url);
+        
+        $output = '<a href="' . esc_url($checkin_url) . '" class="jcp-checkin-card" style="text-decoration: none; color: inherit;">';
 
         // Images (if available)
         if (!empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])) {
@@ -89,7 +93,7 @@ class JobCaptureProTemplates
         $output .= '<p><strong>Near</strong> ' . esc_html($checkin['address']);
         $output .= '</p></div>';
 
-        $output .= '</div>'; // Close card
+        $output .= '</a>'; // Close clickable card
         return $output;
     }
 
