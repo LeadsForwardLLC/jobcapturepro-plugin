@@ -693,6 +693,7 @@ class JobCaptureProTemplates
 
         // Ensure necessary scripts are loaded
         wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
+        wp_enqueue_script('markerclusterer', 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', array('google-maps'), null, array('strategy' => 'async'));
 
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
@@ -767,6 +768,9 @@ class JobCaptureProTemplates
                     // Markers data
                     const markersData = [' . implode(',', $markersData) . '];
 
+                    // Create markers array for clustering
+                    const markers = [];
+
                     // Create markers
                     markersData.forEach((markerData, index) => {
                         const marker = new AdvancedMarkerElement({
@@ -774,6 +778,9 @@ class JobCaptureProTemplates
                             position: markerData.position,
                             title: markerData.title
                         });
+
+                        // Add marker to array for clustering
+                        markers.push(marker);
 
                         // Add info window if there\'s additional content
                         if (markerData.description || markerData.address || markerData.date) {
@@ -793,6 +800,15 @@ class JobCaptureProTemplates
                             });
                         }
                     });
+                    
+                    // After creating all markers, add clustering (only if there are multiple markers)
+                    if (markers.length > 1) {
+                        const markerCluster = new markerClusterer.MarkerClusterer({ 
+                            map: map, 
+                            markers: markers 
+                        });
+                    }
+
                 } catch (error) {
                     console.error("Error initializing map:", error);
                 }
