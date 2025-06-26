@@ -137,8 +137,13 @@ class JobCaptureProShortcodes
             // Decode the JSON response
             $checkins = json_decode($body, true);
 
-            return JobCaptureProTemplates::render_checkins_grid($checkins);
-
+            // If a specific checkin_id was provided, render as a single checkin
+            if ($checkin_id && count($checkins) === 1) {
+                return JobCaptureProTemplates::render_single_checkin($checkins[0]);
+            } else {
+                // Otherwise render as a grid of multiple checkins
+                return JobCaptureProTemplates::render_checkins_grid($checkins);
+            }
         }
     }
 
@@ -200,7 +205,6 @@ class JobCaptureProShortcodes
         } else {
             // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
 
-            
             // Decode JSON response
             $response_data = json_decode($body, true);
             
@@ -211,7 +215,6 @@ class JobCaptureProShortcodes
             return JobCaptureProTemplates::render_heatmap($locations, $maps_api_key);
         }
     }
-
 
     /**
      * Shortcode to display a map with multiple markers
@@ -269,8 +272,7 @@ class JobCaptureProShortcodes
         if (is_wp_error($request)) {
             return;
         } else {
-                    // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
-
+            // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
             
             // Decode JSON response
             $response_data = json_decode($body, true);
@@ -279,10 +281,13 @@ class JobCaptureProShortcodes
             $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
             $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
 
+            // Allow conditional rendering based on checkin_id - currently not used but can be extended
+            if ($checkin_id) {
+                return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
+            } else {
+                return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
+            }
         }
-
-
-        return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
     }
 
 }

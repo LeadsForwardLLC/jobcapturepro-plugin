@@ -5,6 +5,54 @@
  */
 class JobCaptureProTemplates
 {
+
+    /**
+     * Generate CSS styles for a single checkin page
+     * 
+     * @return string CSS styles for a single checkin page
+     */
+    private static function get_single_checkin_styles()
+    {
+        return '<style>
+            .jcp-checkins-page {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            }
+
+            .jcp-checkin-description {
+                background: #f5f5f5;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+        </style>';
+    }
+
+    /**
+     * Generate HTML for a single checkin page
+     * 
+     * @param array $checkin The checkin data
+     * @return string HTML for a single checkin page
+     */
+    public static function render_single_checkin($checkin)
+    {
+        $output = '<div class="jcp-checkin-page">';
+
+        $output .= self::get_single_checkin_styles();
+        
+        // Description
+        $output .= '<div class="jcp-checkin-description">
+            <p>' . esc_html($checkin['description']) . '</p>
+        </div>';
+
+        $output .= '</div>';
+
+        return $output;
+
+    }
+    
     /**
      * Generate HTML for a single checkin card
      * 
