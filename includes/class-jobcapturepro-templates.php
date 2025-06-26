@@ -7,6 +7,62 @@ class JobCaptureProTemplates
 {
 
     /**
+     * Helper method to render checkins with conditional logic
+     * 
+     * @param string|null $checkin_id The checkin ID if filtering for a specific checkin
+     * @param array $checkins Array of checkin data
+     * @return string HTML output for the checkins
+     */
+    public static function render_checkins_conditionally($checkin_id, $checkins)
+    {
+        // If a specific checkin_id was provided, render as a single checkin
+        if ($checkin_id && count($checkins) === 1) {
+            return JobCaptureProTemplates::render_single_checkin($checkins[0]);
+        } else {
+            // Otherwise render as a grid of multiple checkins
+            return JobCaptureProTemplates::render_checkins_grid($checkins);
+        }
+    }
+
+    /**
+     * Helper method to render map with conditional logic based on checkin_id
+     * 
+     * @param string|null $checkin_id The checkin ID if filtering for a specific checkin
+     * @param array $response_data The API response data containing locations and maps API key
+     * @return string HTML output for the map
+     */
+    public static function render_map_conditionally($checkin_id, $response_data)
+    {
+        // Extract locations and maps API key from response
+        $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
+        $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
+
+        // Allow conditional rendering based on checkin_id - currently not used but can be extended
+        if ($checkin_id) {
+            return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
+        } else {
+            return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
+        }
+    }
+
+    public static function render_combined_components($checkins, $map_data, $checkin_id)
+    {
+        
+        $output = '<div class="jcp-combined-components">';
+
+        // Render map with conditional logic
+        $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
+
+        // Render checkins with conditional logic
+        $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
+
+        $output .= '</div>';
+
+        return $output;
+    }
+
+
+    /**
      * Generate CSS styles for a single checkin page
      * 
      * @return string CSS styles for a single checkin page

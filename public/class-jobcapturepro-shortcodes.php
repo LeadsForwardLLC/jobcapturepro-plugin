@@ -8,6 +8,74 @@ class JobCaptureProShortcodes
 {
 
     /**
+     * Helper method to fetch data from API with common logic
+     * 
+     * @param string $endpoint The API endpoint (e.g., 'checkins', 'map')
+     * @param array $atts Shortcode attributes
+     * @return array|null Returns array with checkin_id, company_id, and API response data, or null on error
+     */
+    private function fetch_api_data($endpoint, $atts)
+    {
+        // Check if checkinid attribute was provided, if not check URL parameter
+        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinId'])) {
+            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        }
+
+        // Check if companyid attribute was provided, if not check URL parameter
+        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        
+        // If no attribute provided, check for URL parameter
+        if (!$company_id && isset($_GET['companyId'])) {
+            $company_id = sanitize_text_field($_GET['companyId']);
+        }
+
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options['jobcapturepro_field_apikey']);
+        $url = $this->jcp_api_base_url . $endpoint;
+
+        // Add company_id and checkin_id as query parameters if provided
+        $query_params = array();
+        
+        if ($company_id) {
+            $query_params[] = "companyId=" . urlencode($company_id);
+        }
+        
+        if ($checkin_id) {
+            $query_params[] = "checkinId=" . urlencode($checkin_id);
+        }
+        
+        if (!empty($query_params)) {
+            $url .= "?" . implode("&", $query_params);
+        }
+
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request
+        $request = wp_remote_get($url, $args);
+        $body = wp_remote_retrieve_body($request);
+        
+        if (is_wp_error($request)) {
+            return null;
+        }
+
+        return array(
+            'checkin_id' => $checkin_id,
+            'company_id' => $company_id,
+            'data' => json_decode($body, true)
+        );
+    }
+
+    /**
      * The ID of this plugin.
      */
     private $plugin_name;
@@ -49,33 +117,14 @@ class JobCaptureProShortcodes
             return 'No checkin ID provided';
         }
 
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-        $apikey = trim(sanitize_text_field($options['jobcapturepro_field_apikey']));
-
-        // Set the API endpoint URL
-        $url = $this->jcp_api_base_url . "checkins/" . $checkin_id;
-
-        // Set the API request headers
-        $args = array(
-            'timeout' => 15,
-            'headers' => array(
-                'API_KEY' => $apikey
-            )
-        );
-
-        // Make the API request and return the response body
-        $request = wp_remote_get($url, $args);
-        $body = wp_remote_retrieve_body($request);
-        if (is_wp_error($request)) {
-            return;
-        } else {
-            // Decode the JSON response
-            $checkin = json_decode($body, true);
-
-            return JobCaptureProTemplates::render_checkins_grid([$checkin]);
-
+        // Fetch specific checkin using the direct endpoint
+        $result = $this->fetch_api_data("checkins/" . $checkin_id, array());
+        if (!$result) {
+            return 'Error fetching checkin data';
         }
+
+        $checkin = $result['data'];
+        return JobCaptureProTemplates::render_checkins_grid([$checkin]);
     }
 
     /**
@@ -83,137 +132,33 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
-        // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
-        
-        // If no attribute provided, check for URL parameter
-        if (!$checkin_id && isset($_GET['checkinId'])) {
-            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        $result = $this->fetch_api_data('checkins', $atts);
+        if (!$result) {
+            return 'Error fetching checkins data';
         }
 
-        // Check if companyid attribute was provided, if not check URL parameter
-        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
-        
-        // If no attribute provided, check for URL parameter
-        if (!$company_id && isset($_GET['companyId'])) {
-            $company_id = sanitize_text_field($_GET['companyId']);
-        }
+        $checkin_id = $result['checkin_id'];
+        $checkins = $result['data'];
 
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-        $apikey = trim($options['jobcapturepro_field_apikey']);
-        $url = $this->jcp_api_base_url . "checkins";
-
-        // Add company_id and checkin_id as query parameters if provided
-        $query_params = array();
-        
-        if ($company_id) {
-            $query_params[] = "companyId=" . urlencode($company_id);
-        }
-        
-        if ($checkin_id) {
-            $query_params[] = "checkinId=" . urlencode($checkin_id);
-        }
-        
-        if (!empty($query_params)) {
-            $url .= "?" . implode("&", $query_params);
-        }
-
-        // Set the API request headers
-        $args = array(
-            'timeout' => 15,
-            'headers' => array(
-            'API_KEY' => $apikey
-            )
-        );
-
-        // Make the API request and return the response body
-        $request = wp_remote_get($url, $args);
-        $body = wp_remote_retrieve_body($request);
-
-        if (is_wp_error($request)) {
-            return;
-        } else {
-            // Decode the JSON response
-            $checkins = json_decode($body, true);
-
-            // If a specific checkin_id was provided, render as a single checkin
-            if ($checkin_id && count($checkins) === 1) {
-                return JobCaptureProTemplates::render_single_checkin($checkins[0]);
-            } else {
-                // Otherwise render as a grid of multiple checkins
-                return JobCaptureProTemplates::render_checkins_grid($checkins);
-            }
-        }
+        return JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
     }
 
     /**
      * Shortcode to display a heatmap
      */
-    public function get_map($atts) // TODO: rename to get_heatmap
+    public function get_heatmap($atts)
     {
-        // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
-        
-        // If no attribute provided, check for URL parameter
-        if (!$checkin_id && isset($_GET['checkinId'])) {
-            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        $result = $this->fetch_api_data('map', $atts);
+        if (!$result) {
+            return 'Error fetching map data';
         }
 
-        // Check if companyid attribute was provided, if not check URL parameter
-        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
-        
-        // If no attribute provided, check for URL parameter
-        if (!$company_id && isset($_GET['companyId'])) {
-            $company_id = sanitize_text_field($_GET['companyId']);
-        }
+        // Extract locations and maps API key from response
+        $response_data = $result['data'];
+        $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
+        $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
 
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-        $apikey = trim($options['jobcapturepro_field_apikey']);
-
-        $url = $this->jcp_api_base_url . "map";
-
-        // Add company_id and checkin_id as query parameters if provided
-        $query_params = array();
-        
-        if ($company_id) {
-            $query_params[] = "companyId=" . urlencode($company_id);
-        }
-        
-        if ($checkin_id) {
-            $query_params[] = "checkinId=" . urlencode($checkin_id);
-        }
-        
-        if (!empty($query_params)) {
-            $url .= "?" . implode("&", $query_params);
-        }
-
-        // Set the API request headers
-        $args = array(
-            'timeout' => 15,
-            'headers' => array(
-            'API_KEY' => $apikey
-            )
-        );
-
-        // Make the API request and return the response body
-        $request = wp_remote_get($url, $args);
-        $body = wp_remote_retrieve_body($request);
-        if (is_wp_error($request)) {
-            return;
-        } else {
-            // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
-
-            // Decode JSON response
-            $response_data = json_decode($body, true);
-            
-            // Extract locations and maps API key from response
-            $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
-            $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
-
-            return JobCaptureProTemplates::render_heatmap($locations, $maps_api_key);
-        }
+        return JobCaptureProTemplates::render_heatmap($locations, $maps_api_key);
     }
 
     /**
@@ -221,73 +166,44 @@ class JobCaptureProShortcodes
      */
     public function get_multimap($atts)
     {
-        // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
-        
-        // If no attribute provided, check for URL parameter
-        if (!$checkin_id && isset($_GET['checkinId'])) {
-            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        $result = $this->fetch_api_data('map', $atts);
+        if (!$result) {
+            return 'Error fetching map data';
         }
 
-        // Check if companyid attribute was provided, if not check URL parameter
-        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        $checkin_id = $result['checkin_id'];
         
-        // If no attribute provided, check for URL parameter
-        if (!$company_id && isset($_GET['companyId'])) {
-            $company_id = sanitize_text_field($_GET['companyId']);
+        return JobCaptureProTemplates::render_map_conditionally($checkin_id, $result['data']);
+    }
+
+    /**
+     * Shortcode to display combined components (checkins grid + multimap)
+     */
+    public function get_combined_components($atts)
+    {
+        // Fetch checkins data
+        $checkins_result = $this->fetch_api_data('checkins', $atts);
+        if (!$checkins_result) {
+            return 'Error fetching checkins data';
         }
 
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-        $apikey = trim($options['jobcapturepro_field_apikey']);
-
-        $url = $this->jcp_api_base_url . "map";
-
-        // Add company_id and checkin_id as query parameters if provided
-        $query_params = array();
-        
-        if ($company_id) {
-            $query_params[] = "companyId=" . urlencode($company_id);
-        }
-        
-        if ($checkin_id) {
-            $query_params[] = "checkinId=" . urlencode($checkin_id);
-        }
-        
-        if (!empty($query_params)) {
-            $url .= "?" . implode("&", $query_params);
+        // Fetch map data
+        $map_result = $this->fetch_api_data('map', $atts);
+        if (!$map_result) {
+            return 'Error fetching map data';
         }
 
-        // Set the API request headers
-        $args = array(
-            'timeout' => 15,
-            'headers' => array(
-                'API_KEY' => $apikey
-            )
+        $checkin_id = $checkins_result['checkin_id'];
+        $checkins = $checkins_result['data'];
+        
+        // Extract map data
+        $map_data = $map_result['data'];
+
+        return JobCaptureProTemplates::render_combined_components(
+            $checkins,
+            $map_data,
+            $checkin_id
         );
-
-        // Make the API request and return the response body
-        $request = wp_remote_get($url, $args);
-        $body = wp_remote_retrieve_body($request);
-        if (is_wp_error($request)) {
-            return;
-        } else {
-            // Assume the response body is a JSON array of locations as defined by geopoints in RFC 7946
-            
-            // Decode JSON response
-            $response_data = json_decode($body, true);
-            
-            // Extract locations and maps API key from response
-            $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
-            $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
-
-            // Allow conditional rendering based on checkin_id - currently not used but can be extended
-            if ($checkin_id) {
-                return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
-            } else {
-                return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
-            }
-        }
     }
 
 }
