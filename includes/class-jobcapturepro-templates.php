@@ -179,6 +179,24 @@ class JobCaptureProTemplates
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
 
+         // Add the jQuery code for line breaks after punctuation
+            $output .= '
+            <script>
+            jQuery.noConflict();
+            jQuery(document).ready(function($) {
+                // Add line breaks after punctuation in descriptions
+                $(".jcp-checkin-description p").each(function() {
+                    var $paragraph = $(this);
+                    $paragraph.html(
+                        $paragraph.html()
+                        .replace(/([.!?])(\s+)/g, function(match, punct, whitespace) {
+                            return punct + "<br>" + whitespace.replace(/^\s+/, "");
+                        })
+                    );
+                });
+            });
+         </script>';
+
         // Add JavaScript to maintain proper masonry layout
         $output .= '<script>
             document.addEventListener("DOMContentLoaded", function() {
