@@ -101,7 +101,7 @@ class JobCaptureProTemplates
 
         // Description
         $output .= '<div class="jcp-checkin-description">
-            <p>' . esc_html($checkin['description']) . '</p>
+            <p>' . nl2br(esc_html($checkin['description'])) . '</p>
         </div>';
 
         // Date
