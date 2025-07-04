@@ -5,54 +5,6 @@
  */
 class JobCaptureProTemplates
 {
-
-    /**
-     * Generate CSS styles for a single checkin page
-     * 
-     * @return string CSS styles for a single checkin page
-     */
-    private static function get_single_checkin_styles()
-    {
-        return '<style>
-            .jcp-checkins-page {
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-            }
-
-            .jcp-checkin-description {
-                background: #f5f5f5;
-                padding: 15px;
-                border-radius: 8px;
-                margin-bottom: 20px;
-            }
-        </style>';
-    }
-
-    /**
-     * Generate HTML for a single checkin page
-     * 
-     * @param array $checkin The checkin data
-     * @return string HTML for a single checkin page
-     */
-    public static function render_single_checkin($checkin)
-    {
-        $output = '<div class="jcp-checkin-page">';
-
-        $output .= self::get_single_checkin_styles();
-        
-        // Description
-        $output .= '<div class="jcp-checkin-description">
-            <p>' . esc_html($checkin['description']) . '</p>
-        </div>';
-
-        $output .= '</div>';
-
-        return $output;
-
-    }
-    
     /**
      * Generate HTML for a single checkin card
      * 
@@ -67,11 +19,7 @@ class JobCaptureProTemplates
             return '';
         }
         
-        // Create clickable link with checkinId parameter
-        $current_url = $_SERVER['REQUEST_URI'];
-        $checkin_url = add_query_arg('checkinId', $checkin['id'], $current_url);
-        
-        $output = '<a href="' . esc_url($checkin_url) . '" class="jcp-checkin-card" style="text-decoration: none; color: inherit;">';
+        $output = '<div class="jcp-checkin-card">';
 
         // Images (if available)
         if (!empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])) {
@@ -141,7 +89,7 @@ class JobCaptureProTemplates
         $output .= '<p><strong>Near</strong> ' . esc_html($checkin['address']);
         $output .= '</p></div>';
 
-        $output .= '</a>'; // Close clickable card
+        $output .= '</div>'; // Close card
         return $output;
     }
 
@@ -179,23 +127,23 @@ class JobCaptureProTemplates
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
 
-         // Add the jQuery code for line breaks after punctuation
-            $output .= '
+         // Add the jQuery code for line breaks after punctuation Abdul
+        $output .= '
             <script>
-            jQuery.noConflict();
-            jQuery(document).ready(function($) {
+                jQuery.noConflict();
+                jQuery(document).ready(function($) {
                 // Add line breaks after punctuation in descriptions
-                $(".jcp-checkin-description p").each(function() {
+                    $(".jcp-checkin-description p").each(function() {
                     var $paragraph = $(this);
                     $paragraph.html(
-                        $paragraph.html()
-                        .replace(/([.!?])(\s+)/g, function(match, punct, whitespace) {
-                            return punct + "<br>" + whitespace.replace(/^\s+/, "");
-                        })
-                    );
-                });
-            });
-         </script>';
+                    $paragraph.html()
+                    .replace(/([.!?])(\s+)/g, function(match, punct, whitespace) {
+                    return punct + "<br>" + whitespace.replace(/^\s+/, "");
+                })
+            );
+        });
+    });
+    </script>';
 
         // Add JavaScript to maintain proper masonry layout
         $output .= '<script>
@@ -623,41 +571,8 @@ class JobCaptureProTemplates
                 images[index].classList.add("active");
                 if (dots.length) dots[index].classList.add("active");
             }
+            
         </script>';
-    }
-
-    private static function determine_bounds($features) {
-        // Calculate center point of 80% of checkins
-        $totalPoints = count($features);
-
-        // Sort points by distance from mean center to get the central 80%
-        if ($totalPoints > 0) {
-            // Find bounds of all points
-            $minLat = $maxLat = $features[0]['geometry']['coordinates'][1];
-            $minLng = $maxLng = $features[0]['geometry']['coordinates'][0];
-
-            foreach ($features as $feature) {
-                $lat = $feature['geometry']['coordinates'][1];
-                $lng = $feature['geometry']['coordinates'][0];
-                $minLat = min($minLat, $lat);
-                $maxLat = max($maxLat, $lat);
-                $minLng = min($minLng, $lng);
-                $maxLng = max($maxLng, $lng);
-            }
-
-            // Add padding (approximately 1km)
-            $padding = 0.01;
-            $minLat -= $padding;
-            $maxLat += $padding;
-            $minLng -= $padding;
-            $maxLng += $padding;
-        } else {
-            // Default center if no points
-            $minLat = $maxLat = 0;
-            $minLng = $maxLng = 0;
-        }
-
-        return array($minLat, $maxLat, $minLng, $maxLng);
     }
 
     /**
@@ -682,14 +597,68 @@ class JobCaptureProTemplates
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
-        // Determine the bounds for the map
-        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
+        // Calculate center point of 80% of checkins
+        $totalPoints = count($features);
+        $pointsToUse = (int) ($totalPoints * 0.8);
+
+        // Sort points by distance from mean center to get the central 80%
+        if ($totalPoints > 0) {
+            // First calculate the mean center
+            $sumLat = 0;
+            $sumLng = 0;
+            foreach ($features as $feature) {
+                $sumLat += $feature['geometry']['coordinates'][1];
+                $sumLng += $feature['geometry']['coordinates'][0];
+            }
+            $meanLat = $sumLat / $totalPoints;
+            $meanLng = $sumLng / $totalPoints;
+
+            // Calculate distance of each point from mean
+            $distanceFromMean = [];
+            foreach ($features as $index => $feature) {
+                $lat = $feature['geometry']['coordinates'][1];
+                $lng = $feature['geometry']['coordinates'][0];
+                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
+                $distanceFromMean[$index] = $distance;
+            }
+
+            // Sort points by distance
+            asort($distanceFromMean);
+
+            // Keep only the closest 80%
+            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
+
+            // Find bounds of these central points
+            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
+            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
+
+            foreach ($centralPoints as $index => $distance) {
+                $lat = $features[$index]['geometry']['coordinates'][1];
+                $lng = $features[$index]['geometry']['coordinates'][0];
+                $minLat = min($minLat, $lat);
+                $maxLat = max($maxLat, $lat);
+                $minLng = min($minLng, $lng);
+                $maxLng = max($maxLng, $lng);
+            }
+
+            // Calculate center of the 80% points
+            $centerLat = ($minLat + $maxLat) / 2;
+            $centerLng = ($minLng + $maxLng) / 2;
+        } else {
+            // Default center if no points
+            $centerLat = 0;
+            $centerLng = 0;
+            $minLat = $maxLat = 0;
+            $minLng = $maxLng = 0;
+        }
 
         // Start building HTML output
         $output = '<div id="heatmap" class="jcp-heatmap"></div>';
 
         // Add CSS for modern responsive grid
         $output .= self::get_heatmap_styles();
+
+
 
         $output .= '<script>
         function initHeatMap() {
@@ -758,18 +727,65 @@ class JobCaptureProTemplates
         }
 
         // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
-        wp_enqueue_script('markerclusterer', 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', array('google-maps'), null, array('strategy' => 'async'));
+        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key, array(), null, array('strategy' => 'async'));
 
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
-        // Determine the bounds for the map
-        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
+        // Calculate center point of 80% of checkins
+        $totalPoints = count($features);
+        $pointsToUse = (int) ($totalPoints * 0.8);
 
-        // Calculate center point
-        $centerLat = ($minLat + $maxLat) / 2;
-        $centerLng = ($minLng + $maxLng) / 2;
+        // Sort points by distance from mean center to get the central 80%
+        if ($totalPoints > 0) {
+            // First calculate the mean center
+            $sumLat = 0;
+            $sumLng = 0;
+            foreach ($features as $feature) {
+                $sumLat += $feature['geometry']['coordinates'][1];
+                $sumLng += $feature['geometry']['coordinates'][0];
+            }
+            $meanLat = $sumLat / $totalPoints;
+            $meanLng = $sumLng / $totalPoints;
+
+            // Calculate distance of each point from mean
+            $distanceFromMean = [];
+            foreach ($features as $index => $feature) {
+                $lat = $feature['geometry']['coordinates'][1];
+                $lng = $feature['geometry']['coordinates'][0];
+                $distance = sqrt(pow($lat - $meanLat, 2) + pow($lng - $meanLng, 2));
+                $distanceFromMean[$index] = $distance;
+            }
+
+            // Sort points by distance
+            asort($distanceFromMean);
+
+            // Keep only the closest 80%
+            $centralPoints = array_slice($distanceFromMean, 0, $pointsToUse, true);
+
+            // Find bounds of these central points
+            $minLat = $maxLat = $features[array_key_first($centralPoints)]['geometry']['coordinates'][1];
+            $minLng = $maxLng = $features[array_key_first($centralPoints)]['geometry']['coordinates'][0];
+
+            foreach ($centralPoints as $index => $distance) {
+                $lat = $features[$index]['geometry']['coordinates'][1];
+                $lng = $features[$index]['geometry']['coordinates'][0];
+                $minLat = min($minLat, $lat);
+                $maxLat = max($maxLat, $lat);
+                $minLng = min($minLng, $lng);
+                $maxLng = max($maxLng, $lng);
+            }
+
+            // Calculate center of the 80% points
+            $centerLat = ($minLat + $maxLat) / 2;
+            $centerLng = ($minLng + $maxLng) / 2;
+        } else {
+            // Default center if no points
+            $centerLat = 0;
+            $centerLng = 0;
+            $minLat = $maxLat = 0;
+            $minLng = $maxLng = 0;
+        }
 
         // Start building HTML output
         $output = '<div id="multimap" class="jcp-multimap"></div>';
@@ -799,7 +815,7 @@ class JobCaptureProTemplates
             
             // Build the marker data
             $markersData[] = "{
-                position: { lat: {$lat}, lng: {$lng} },
+                position: new google.maps.LatLng({$lat}, {$lng}),
                 title: '{$title}',
                 description: '{$description}',
                 address: '{$address}',
@@ -809,85 +825,90 @@ class JobCaptureProTemplates
 
        
         $output .= '<script>
-            async function initMultiMap() {
-                try {
-                    // Request needed libraries.
-                    const { Map } = await google.maps.importLibrary("maps");
-                    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-                    
-                    // Create the map
-                    const map = new Map(document.getElementById("multimap"), {
-                        center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' },
-                        zoom: 10,
-                        mapId: "f4a15cb6cd4f8d61", // You should replace this with your actual Map ID
-                    });
-
-                    // Define bounds for the map
-                    const bounds = new google.maps.LatLngBounds(
-                        new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
-                        new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
-                    );
-                    
-                    // Fit the map to these bounds
-                    map.fitBounds(bounds);
-
-                    // Markers data
-                    const markersData = [' . implode(',', $markersData) . '];
-
-                    // Create markers array for clustering
-                    const markers = [];
-
-                    // Create markers
-                    markersData.forEach((markerData, index) => {
-                        const marker = new AdvancedMarkerElement({
-                            map: map,
-                            position: markerData.position,
-                            title: markerData.title
-                        });
-
-                        // Add marker to array for clustering
-                        markers.push(marker);
-
-                        // Add info window if there\'s additional content
-                        if (markerData.description || markerData.address || markerData.date) {
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `
-                                    <div style="max-width: 200px;">
-                                        <h4>${markerData.title}</h4>
-                                        ${markerData.description ? `<p>${markerData.description}</p>` : ""}
-                                        ${markerData.address ? `<p><strong>Address:</strong> ${markerData.address}</p>` : ""}
-                                        ${markerData.date ? `<p><strong>Date:</strong> ${markerData.date}</p>` : ""}
-                                    </div>
-                                `
-                            });
-
-                            marker.addListener("click", () => {
-                                infoWindow.open(map, marker);
-                            });
-                        }
-                    });
-                    
-                    // After creating all markers, add clustering (only if there are multiple markers)
-                    if (markers.length > 1) {
-                        const markerCluster = new markerClusterer.MarkerClusterer({ 
-                            map: map, 
-                            markers: markers 
-                        });
-                    }
-
-                } catch (error) {
-                    console.error("Error initializing map:", error);
-                }
+            async function initMap() {
+                // Request needed libraries.
+                const { Map } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+                const map = new Map(document.getElementById("map"), {
+                    center: { lat: 37.4239163, lng: -122.0947209 },
+                    zoom: 14,
+                    mapId: "4504f8b37365c3d0",
+                });
+                const marker = new AdvancedMarkerElement({
+                    map,
+                    position: { lat: 37.4239163, lng: -122.0947209 },
+                });
             }
 
-            // Initialize when page loads
-            if (typeof google !== "undefined" && google.maps) {
-                initMultiMap();
-            } else {
-                window.addEventListener("load", initMultiMap);
-            }
+            initMap();
         </script>';
 
+        /*
+        function initMultiMap() {
+            const map = new google.maps.Map(document.getElementById("multimap"), {
+                mapTypeId: "roadmap",
+                zoom: 10,
+                center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' }
+            });
+            
+            // Define bounds for the map
+            const bounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
+                new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
+            );
+            
+            // Fit the map to these bounds
+            map.fitBounds(bounds);
+            
+            // Create an info window to share between markers
+            const infoWindow = new google.maps.InfoWindow();
+            
+            // Add markers to the map
+            const markers = [' . implode(',', $markersData) . '];
+            
+            // Create each marker on the map
+            markers.forEach((markerData, i) => {
+                const marker = new google.maps.Marker({
+                    position: markerData.position,
+                    map: map,
+                    title: markerData.title,
+                    animation: google.maps.Animation.DROP,
+                    // Optional: custom marker icon
+                    // icon: {
+                    //     url: "YOUR_CUSTOM_ICON_URL",
+                    //     scaledSize: new google.maps.Size(30, 30)
+                    // }
+                });
+                
+                // Construct info window content
+                const contentString = 
+                    \'<div class="jcp-info-window">\' +
+                    (markerData.title ? \'<h3>\' + markerData.title + \'</h3>\' : \'\') +
+                    (markerData.description ? \'<p>\' + markerData.description + \'</p>\' : \'\') +
+                    (markerData.address ? \'<p class="jcp-address"><strong>Location:</strong> \' + markerData.address + \'</p>\' : \'\') +
+                    (markerData.date ? \'<p class="jcp-date"><strong>Date:</strong> \' + markerData.date + \'</p>\' : \'\') +
+                    \'</div>\';
+                
+                // Add click event to each marker
+                marker.addListener("click", () => {
+                    infoWindow.setContent(contentString);
+                    infoWindow.open(map, marker);
+                });
+                
+                // Optional: Cluster markers if there are many
+                // markers[i] = marker; // If you want to implement clustering
+            });
+            
+            // Optional: Add marker clustering
+            // if (typeof MarkerClusterer !== \'undefined\') {
+            //     new MarkerClusterer(map, markers, {
+            //         imagePath: "PATH_TO_CLUSTER_IMAGES"
+            //     });
+            // }
+        }
+        window.addEventListener(\'load\', initMultiMap);
+        </script>';
+        */
 
         return $output;
     }
@@ -954,5 +975,136 @@ class JobCaptureProTemplates
                 }
             }
         </style>';
+    }
+ /**
+ * Generate HTML for company information
+ * 
+ * @param array $company_info Company data
+ * @return string HTML for company info section
+ */
+public static function render_company_info($company_info)
+{
+    // Check for required fields
+    if (empty($company_info['name']) || empty($company_info['address'])) {
+        return '';
+    }
+
+    $output = '<div class="jcp-company-info jcp-container">';
+    
+    // Company details (now comes first)
+    $output .= '<div class="jcp-company-details">
+        <h2 class="jcp-company-name">' . esc_html($company_info['name']) . '</h2>';
+        
+    // Address
+    $output .= '<div class="jcp-company-address">
+        <p>' . nl2br(esc_html($company_info['address'])) . '</p>
+    </div>';
+    
+    // Contact info section
+    $output .= '<div class="jcp-company-contact">';
+    
+    // Check if we have either phone or URL
+    $has_phone = !empty($company_info['tn']);
+    $has_url = !empty($company_info['url']);
+    
+    if ($has_phone) {
+        $output .= '<p><strong>Phone:</strong> <a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['tn']) . '</a></p>';
+    }
+    
+    if ($has_url) {
+        $parsed_url = parse_url($company_info['url']);
+        $display_url = $parsed_url['host'] ?? $company_info['url'];
+        $output .= '<p><strong>Website:</strong> <a href="' . esc_url($company_info['url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html($display_url) . '</a></p>';
+    }
+    
+    // Show message if no contact info
+    if (!$has_phone && !$has_url) {
+        $output .= '<p class="jcp-no-contact-info">Contact No. and Website information not available</p>';
+    }
+    
+    $output .= '</div></div>'; // Close jcp-company-contact and jcp-company-details
+    
+    // Logo (now comes after details)
+    if (!empty($company_info['logoUrl'])) {
+        $output .= '<div class="jcp-company-logo">
+            <img src="' . esc_url($company_info['logoUrl']) . '" alt="' . esc_attr($company_info['name']) . ' Logo">
+        </div>';
+    }
+    
+    $output .= '</div>'; // Close jcp-company-info
+    
+    // Add CSS
+    $output .= self::get_company_info_styles();
+    
+    return $output;
+}
+
+/**
+ * Generate CSS styles for the company info section
+ * 
+ * @return string CSS styles for the company info section
+ */
+private static function get_company_info_styles()
+{
+    return '<style>
+        .jcp-company-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 30px;
+            padding: 25px !important;
+        }
+
+        .jcp-company-logo img {
+            max-width: 200px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .jcp-company-details {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .jcp-company-name {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .jcp-company-address p,
+        .jcp-company-contact p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .jcp-company-contact a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .jcp-company-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .jcp-no-contact-info {
+            color: #999;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .jcp-company-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .jcp-company-logo img {
+                max-width: 150px;
+            }
+        }
+    </style>';
     }
 }
