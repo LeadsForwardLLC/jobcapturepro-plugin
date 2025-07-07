@@ -206,4 +206,53 @@ class JobCaptureProShortcodes
         );
     }
 
+    /**
+    * Shortcode to display company information
+    */
+    public function get_company_info($atts)
+    {
+        // Check if companyid attribute was provided
+        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+
+        if (!$company_id) {
+            return 'No company ID provided';
+        }
+
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options['jobcapturepro_field_apikey']);
+
+        // Set the API endpoint URL
+        $url = $this->jcp_api_base_url . "companies/" . $company_id;
+
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request and return the response body
+        $request = wp_remote_get($url, $args);
+        $body = wp_remote_retrieve_body($request);
+
+        if (is_wp_error($request)) {
+            return 'Error fetching company information';
+        } else {
+            // Decode the JSON response
+            $company_data = json_decode($body, true);
+
+            // Prepare company info array with expected structure
+            $company_info = [
+                'address' => isset($company_data['address']) ? $company_data['address'] : '',
+                'name' => isset($company_data['name']) ? $company_data['name'] : '',
+                'url' => isset($company_data['url']) ? $company_data['url'] : '',
+                'tn' => isset($company_data['tn']) ? $company_data['tn'] : '',
+                'logoUrl' => isset($company_data['logoUrl']) ? $company_data['logoUrl'] : ''
+            ];
+
+            return JobCaptureProTemplates::render_company_info($company_info);
+        }
+    }
 }

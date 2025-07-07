@@ -100,6 +100,7 @@ class JobCaptureProPlugin {
 		$this->loader->add_shortcode( shortcode: 'jcp_all_checkins', component: $plugin_shortcodes, callback: 'get_all_checkins' );
 		$this->loader->add_shortcode( shortcode: 'jcp_map', component: $plugin_shortcodes, callback: 'get_heatmap' );
 		$this->loader->add_shortcode( shortcode: 'jcp_multimap', component: $plugin_shortcodes, callback: 'get_multimap' );
+        $this->loader->add_shortcode( shortcode: 'jcp_company_info', component: $plugin_shortcodes, callback: 'get_company_info' );
 		$this->loader->add_shortcode( shortcode: 'jcp_combined_components', component: $plugin_shortcodes, callback: 'get_combined_components' );
     }
 

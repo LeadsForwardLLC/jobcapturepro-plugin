@@ -157,7 +157,7 @@ class JobCaptureProTemplates
 
         // Description
         $output .= '<div class="jcp-checkin-description">
-            <p>' . esc_html($checkin['description']) . '</p>
+            <p>' . nl2br(esc_html($checkin['description'])) . '</p>
         </div>';
 
         // Date
@@ -481,7 +481,6 @@ class JobCaptureProTemplates
                 /* border-top: 1px solid #eee; */
             }
             
-            /* Abdul CSS */
             .jcp-checkin-description {
                 border-bottom: 1px solid #f0f0f0;
             }
@@ -489,7 +488,6 @@ class JobCaptureProTemplates
             .jcp-checkin-date, .jcp-checkin-address {
                 padding: 0 15px;
             }
-            /* end Abdul CSS */
 
             /* Responsive design */
             @media (max-width: 1024px) {
@@ -993,4 +991,137 @@ class JobCaptureProTemplates
             }
         </style>';
     }
+
+    /**
+     * Generate HTML for company information
+     * 
+     * @param array $company_info Company data
+     * @return string HTML for company info section
+     */
+    public static function render_company_info($company_info)
+    {
+        // Check for required fields
+        if (empty($company_info['name']) || empty($company_info['address'])) {
+            return '';
+        }
+
+        $output = '<div class="jcp-company-info jcp-container">';
+        
+        // Company details (now comes first)
+        $output .= '<div class="jcp-company-details">
+            <h2 class="jcp-company-name">' . esc_html($company_info['name']) . '</h2>';
+            
+        // Address
+        $output .= '<div class="jcp-company-address">
+            <p>' . nl2br(esc_html($company_info['address'])) . '</p>
+        </div>';
+        
+        // Contact info section
+        $output .= '<div class="jcp-company-contact">';
+        
+        // Check if we have either phone or URL
+        $has_phone = !empty($company_info['tn']);
+        $has_url = !empty($company_info['url']);
+        
+        if ($has_phone) {
+            $output .= '<p><strong>Phone:</strong> <a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['tn']) . '</a></p>';
+        }
+        
+        if ($has_url) {
+            $parsed_url = parse_url($company_info['url']);
+            $display_url = $parsed_url['host'] ?? $company_info['url'];
+            $output .= '<p><strong>Website:</strong> <a href="' . esc_url($company_info['url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html($display_url) . '</a></p>';
+        }
+        
+        // Show message if no contact info
+        if (!$has_phone && !$has_url) {
+            $output .= '<p class="jcp-no-contact-info">Contact No. and Website information not available</p>';
+        }
+        
+        $output .= '</div></div>'; // Close jcp-company-contact and jcp-company-details
+        
+        // Logo (now comes after details)
+        if (!empty($company_info['logoUrl'])) {
+            $output .= '<div class="jcp-company-logo">
+                <img src="' . esc_url($company_info['logoUrl']) . '" alt="' . esc_attr($company_info['name']) . ' Logo">
+            </div>';
+        }
+        
+        $output .= '</div>'; // Close jcp-company-info
+        
+        // Add CSS
+        $output .= self::get_company_info_styles();
+        
+        return $output;
+    }
+
+    /**
+     * Generate CSS styles for the company info section
+     * 
+     * @return string CSS styles for the company info section
+     */
+    private static function get_company_info_styles()
+    {
+        return '<style>
+            .jcp-company-info {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 30px;
+                padding: 25px !important;
+            }
+
+            .jcp-company-logo img {
+                max-width: 200px;
+                height: auto;
+                object-fit: contain;
+            }
+
+            .jcp-company-details {
+                flex: 1;
+                min-width: 250px;
+            }
+
+            .jcp-company-name {
+                margin-top: 0;
+                margin-bottom: 15px;
+                color: #333;
+                font-size: 28px;
+            }
+
+            .jcp-company-address p,
+            .jcp-company-contact p {
+                margin: 8px 0;
+                font-size: 16px;
+                color: #555;
+            }
+
+            .jcp-company-contact a {
+                color: #0066cc;
+                text-decoration: none;
+            }
+
+            .jcp-company-contact a:hover {
+                text-decoration: underline;
+            }
+
+            .jcp-no-contact-info {
+                color: #999;
+                font-style: italic;
+            }
+
+            @media (max-width: 600px) {
+                .jcp-company-info {
+                    flex-direction: column;
+                    text-align: center;
+                    gap: 20px;
+                }
+                
+                .jcp-company-logo img {
+                    max-width: 150px;
+                }
+            }
+        </style>';
+    }   
+
 }
