@@ -181,11 +181,29 @@ class JobCaptureProShortcodes
      */
     public function get_combined_components($atts)
     {
+        // Check if companyid attribute was provided
+        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+
+        if ($company_id) {
+            // Fetch specific company information using the direct endpoint)
+            $company_info = $this->fetch_api_data("companies/" . $company_id, array())['data'];
+        } else {
+            // If no company ID provided, fetch default company info
+            $company_info = $this->fetch_api_data('companies', $atts)['data'];
+        }
+
+        if (!$company_info) {
+            return 'No company info found';
+        }
+
         // Fetch checkins data
         $checkins_result = $this->fetch_api_data('checkins', $atts);
         if (!$checkins_result) {
             return 'Error fetching checkins data';
         }
+
+        $checkin_id = $checkins_result['checkin_id'];
+        $checkins = $checkins_result['data'];
 
         // Fetch map data
         $map_result = $this->fetch_api_data('map', $atts);
@@ -193,15 +211,13 @@ class JobCaptureProShortcodes
             return 'Error fetching map data';
         }
 
-        $checkin_id = $checkins_result['checkin_id'];
-        $checkins = $checkins_result['data'];
-        
         // Extract map data
         $map_data = $map_result['data'];
 
         return JobCaptureProTemplates::render_combined_components(
-            $checkins,
+            $company_info,
             $map_data,
+            $checkins,
             $checkin_id
         );
     }

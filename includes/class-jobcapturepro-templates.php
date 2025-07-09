@@ -44,11 +44,26 @@ class JobCaptureProTemplates
             return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
         }
     }
-
-    public static function render_combined_components($checkins, $map_data, $checkin_id)
+    
+    /**
+     * Renders combined components for job capture display
+     *
+     * This method processes and renders multiple UI components together, including
+     * company information, map visualization, and check-in data for a specific job.
+     *
+     * @param array $company_info Contains company details and information
+     * @param array $map_data Map-related data for location visualization
+     * @param array $checkins Collection of check-in records
+     * @param int $checkin_id Specific check-in identifier for single check-in display (see conditional rendering logic)
+     * @return string HTML output for the combined components
+     */
+    public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id)
     {
         
         $output = '<div class="jcp-combined-components">';
+
+        // Render the company info section
+        $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
         $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
@@ -60,7 +75,6 @@ class JobCaptureProTemplates
 
         return $output;
     }
-
 
     /**
      * Generate CSS styles for a single checkin page
