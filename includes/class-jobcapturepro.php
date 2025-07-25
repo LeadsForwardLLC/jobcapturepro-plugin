@@ -42,6 +42,7 @@ class JobCaptureProPlugin {
 		$this->load_dependencies();
 		$this->define_admin_hooks();
 		$this->define_shortcodes();
+		$this->define_widgets();
 
 	}
 
@@ -69,6 +70,16 @@ class JobCaptureProPlugin {
 		 * The class responsible for defining all actions for public-facing shortcodes
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jobcapturepro-shortcodes.php';
+
+		/**
+		 * The class responsible for defining the reviews widget
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jobcapturepro-reviews-widget.php';
+
+		/**
+		 * The class responsible for defining the nearby checkins widget
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jobcapturepro-nearby-checkins-widget.php';
 
 		// Create an instance of the loader which will be used to register the hooks with WordPress.
 		$this->loader = new JobCaptureProLoader();
@@ -102,7 +113,25 @@ class JobCaptureProPlugin {
 		$this->loader->add_shortcode( shortcode: 'jcp_multimap', component: $plugin_shortcodes, callback: 'get_multimap' );
         $this->loader->add_shortcode( shortcode: 'jcp_company_info', component: $plugin_shortcodes, callback: 'get_company_info' );
 		$this->loader->add_shortcode( shortcode: 'jcp_combined_components', component: $plugin_shortcodes, callback: 'get_combined_components' );
+		$this->loader->add_shortcode( shortcode: 'jcp_reviews', component: $plugin_shortcodes, callback: 'get_reviews' );
+		$this->loader->add_shortcode( shortcode: 'jcp_nearby_checkins', component: $plugin_shortcodes, callback: 'get_nearby_checkins' );
     }
+
+	/**
+	 * Register all of the widgets related to the public-facing functionality of the plugin.
+	 */
+	private function define_widgets(): void {
+		// Register the widgets_init action to register our custom widgets
+		$this->loader->add_action( hook: 'widgets_init', component: $this, callback: 'register_widgets' );
+	}
+
+	/**
+	 * Register custom widgets with WordPress
+	 */
+	public function register_widgets(): void {
+		register_widget( 'JobCaptureProReviewsWidget' );
+		register_widget( 'JobCaptureProNearbyCheckinsWidget' );
+	}
 
 
 	/**

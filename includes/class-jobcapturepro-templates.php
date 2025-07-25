@@ -1138,4 +1138,404 @@ class JobCaptureProTemplates
         </style>';
     }   
 
+    /**
+     * Render reviews HTML
+     */
+    public static function render_reviews($reviews)
+    {
+        $output = '<div class="jcp-reviews-container">';
+        $output .= JobCaptureProTemplates::get_reviews_styles();
+        
+        if (is_array($reviews) && !empty($reviews)) {
+            $output .= '<div class="jcp-reviews-list">';
+            
+            foreach ($reviews as $review) {
+                $output .= JobCaptureProTemplates::render_single_review($review);
+            }
+            
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>';
+        
+        return $output;
+    }
+
+    /**
+     * Render a single review
+     */
+    public static function render_single_review($review)
+    {
+        $output = '<div class="jcp-review-item">';
+        
+        // Review header with rating and author
+        $output .= '<div class="jcp-review-header">';
+        
+        // Rating stars
+        if (isset($review['rating']) && is_numeric($review['rating'])) {
+            $rating = (float)$review['rating'];
+            $output .= '<div class="jcp-review-rating">';
+            $output .= JobCaptureProTemplates::render_star_rating($rating);
+            $output .= '</div>';
+        }
+        
+        // Author name
+        if (isset($review['author_name'])) {
+            $output .= '<div class="jcp-review-author">';
+            $output .= '<strong>' . esc_html($review['author_name']) . '</strong>';
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>';
+        
+        // Review text
+        if (isset($review['text']) && !empty($review['text'])) {
+            $output .= '<div class="jcp-review-text">';
+            $output .= '<p>' . esc_html($review['text']) . '</p>';
+            $output .= '</div>';
+        }
+        
+        // Review date
+        if (isset($review['time'])) {
+            $output .= '<div class="jcp-review-date">';
+            $date = is_numeric($review['time']) ? date('M j, Y', $review['time']) : esc_html($review['time']);
+            $output .= '<small>' . $date . '</small>';
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>';
+        
+        return $output;
+    }
+
+    /**
+     * Render star rating
+     */
+    public static function render_star_rating($rating)
+    {
+        $output = '<div class="jcp-stars">';
+        
+        for ($i = 1; $i <= 5; $i++) {
+            if ($i <= $rating) {
+                $output .= '<span class="jcp-star jcp-star-filled">★</span>';
+            } elseif ($i - 0.5 <= $rating) {
+                $output .= '<span class="jcp-star jcp-star-half">☆</span>';
+            } else {
+                $output .= '<span class="jcp-star jcp-star-empty">☆</span>';
+            }
+        }
+        
+        $output .= '</div>';
+        
+        return $output;
+    }
+
+    /**
+     * Get CSS styles for reviews
+     */
+    public static function get_reviews_styles()
+    {
+        return '<style>
+            .jcp-reviews-container {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                margin: 20px 0;
+            }
+            
+            .jcp-reviews-list {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .jcp-review-item {
+                background: #f9f9f9;
+                padding: 15px;
+                border-radius: 8px;
+                border-left: 4px solid #0073aa;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .jcp-review-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .jcp-review-rating {
+                flex-shrink: 0;
+            }
+            
+            .jcp-review-author {
+                flex-grow: 1;
+            }
+            
+            .jcp-stars {
+                display: flex;
+                gap: 2px;
+            }
+            
+            .jcp-star {
+                font-size: 16px;
+                line-height: 1;
+            }
+            
+            .jcp-star-filled {
+                color: #ffa500;
+            }
+            
+            .jcp-star-half {
+                color: #ffa500;
+            }
+            
+            .jcp-star-empty {
+                color: #ddd;
+            }
+            
+            .jcp-review-text {
+                margin-bottom: 10px;
+            }
+            
+            .jcp-review-text p {
+                margin: 0;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .jcp-review-date {
+                color: #666;
+                font-size: 12px;
+            }
+            
+            .jcp-no-reviews {
+                text-align: center;
+                padding: 20px;
+                color: #666;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+            
+            .jcp-no-reviews p {
+                margin: 0;
+                font-style: italic;
+            }
+            
+            .jcp-reviews-shortcode {
+                margin: 20px 0;
+            }
+            
+            .jcp-reviews-shortcode h3 {
+                margin-top: 0;
+                margin-bottom: 15px;
+                color: #333;
+            }
+            
+            @media (max-width: 768px) {
+                .jcp-review-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                }
+                
+                .jcp-review-item {
+                    padding: 12px;
+                }
+            }
+        </style>';
+    }
+
+    /**
+     * Render nearby checkins HTML
+     */
+    public static function render_nearby_checkins($checkins, $city)
+    {
+        $output = '<div class="jcp-nearby-checkins-container">';
+        $output .= JobCaptureProTemplates::get_nearby_checkins_styles();
+        
+        if (is_array($checkins) && !empty($checkins)) {
+            $output .= '<div class="jcp-nearby-checkins-list">';
+            
+            foreach ($checkins as $checkin) {
+                $output .= JobCaptureProTemplates::render_nearby_checkin_item($checkin);
+            }
+            
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>';
+        
+        return $output;
+    }
+
+    /**
+     * Render a single nearby checkin item
+     */
+    public static function render_nearby_checkin_item($checkin)
+    {
+        // Create clickable link with checkinId parameter
+        $current_url = $_SERVER['REQUEST_URI'];
+        $checkin_url = add_query_arg('checkinId', $checkin['id'], $current_url);
+        
+        $output = '<a href="' . esc_url($checkin_url) . '" class="jcp-nearby-checkin-item" style="text-decoration: none; color: inherit;">';
+        
+        // Checkin image (if available)
+        if (!empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])) {
+            $output .= '<div class="jcp-nearby-checkin-image">';
+            $output .= '<img src="' . esc_url($checkin['imageUrls'][0]) . '" alt="Checkin image">';
+            $output .= '</div>';
+        }
+        
+        // Checkin content
+        $output .= '<div class="jcp-nearby-checkin-content">';
+        
+        // Description
+        if (!empty($checkin['description'])) {
+            $output .= '<div class="jcp-nearby-checkin-description">';
+            $output .= '<p>' . esc_html(wp_trim_words($checkin['description'], 20)) . '</p>';
+            $output .= '</div>';
+        }
+        
+        // Address
+        if (!empty($checkin['address'])) {
+            $output .= '<div class="jcp-nearby-checkin-address">';
+            $output .= '<p><small>' . esc_html($checkin['address']) . '</small></p>';
+            $output .= '</div>';
+        }
+        
+        // Date
+        if (!empty($checkin['createdAt'])) {
+            $output .= '<div class="jcp-nearby-checkin-date">';
+            $timestamp = $checkin['createdAt'];
+            $current_time = time();
+            $time_diff = $current_time - $timestamp;
+            
+            if ($time_diff < 60 * 60 * 24 * 7) { // Within a week
+                $days = floor($time_diff / (60 * 60 * 24));
+                if ($days == 0) {
+                    $relative_time = 'Today';
+                } elseif ($days == 1) {
+                    $relative_time = 'Yesterday';
+                } else {
+                    $relative_time = $days . ' days ago';
+                }
+                $output .= '<p><small>' . esc_html($relative_time) . '</small></p>';
+            } else {
+                $output .= '<p><small>' . esc_html(date('M j, Y', $timestamp)) . '</small></p>';
+            }
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>'; // Close content
+        $output .= '</a>';
+        
+        return $output;
+    }
+
+    /**
+     * Get CSS styles for nearby checkins
+     */
+    public static function get_nearby_checkins_styles()
+    {
+        return '<style>
+            .jcp-nearby-checkins-container {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                margin: 20px 0;
+            }
+            
+            .jcp-nearby-checkins-list {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .jcp-nearby-checkin-item {
+                display: flex;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                overflow: hidden;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                cursor: pointer;
+            }
+            
+            .jcp-nearby-checkin-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                border-color: #0073aa;
+            }
+            
+            .jcp-nearby-checkin-image {
+                flex-shrink: 0;
+                width: 80px;
+                height: 80px;
+                overflow: hidden;
+            }
+            
+            .jcp-nearby-checkin-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+            
+            .jcp-nearby-checkin-content {
+                flex: 1;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            
+            .jcp-nearby-checkin-description {
+                margin-bottom: 8px;
+            }
+            
+            .jcp-nearby-checkin-description p {
+                margin: 0;
+                font-size: 14px;
+                color: #333;
+                line-height: 1.4;
+            }
+            
+            .jcp-nearby-checkin-address {
+                margin-bottom: 4px;
+            }
+            
+            .jcp-nearby-checkin-address p {
+                margin: 0;
+                color: #666;
+                font-size: 12px;
+            }
+            
+            .jcp-nearby-checkin-date p {
+                margin: 0;
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .jcp-no-nearby-checkins {
+                text-align: center;
+                padding: 20px;
+                color: #666;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+            
+            .jcp-no-nearby-checkins p {
+                margin: 0;
+                font-style: italic;
+            }
+            
+            @media (max-width: 480px) {
+                .jcp-nearby-checkin-item {
+                    flex-direction: column;
+                }
+                
+                .jcp-nearby-checkin-image {
+                    width: 100%;
+                    height: 120px;
+                }
+            }
+        </style>';
+    }
 }

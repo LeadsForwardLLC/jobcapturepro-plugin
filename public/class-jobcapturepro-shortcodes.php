@@ -271,4 +271,275 @@ class JobCaptureProShortcodes
             return JobCaptureProTemplates::render_company_info($company_info);
         }
     }
+
+    /**
+     * Shortcode to display reviews
+     */
+    public function get_reviews($atts)
+    {
+        // Extract attributes
+        $atts = shortcode_atts(array(
+            'companyid' => '',
+            'limit' => 5,
+            'title' => 'Recent Reviews'
+        ), $atts, 'jcp_reviews');
+
+        $company_id = sanitize_text_field($atts['companyid']);
+        $limit = (int)$atts['limit'];
+        $title = sanitize_text_field($atts['title']);
+
+        // Check for checkin ID in URL parameter
+        $checkin_id = isset($_GET['checkinId']) ? sanitize_text_field($_GET['checkinId']) : null;
+
+        // Check for company ID in URL parameter if not provided in shortcode
+        if (!$company_id && isset($_GET['companyId'])) {
+            $company_id = sanitize_text_field($_GET['companyId']);
+        }
+
+        // Fetch reviews data
+        $reviews = $this->fetch_reviews_data($company_id, $checkin_id, $limit);
+
+        // Generate output
+        $output = '<div class="jcp-reviews-shortcode">';
+        
+        if (!empty($title)) {
+            $output .= '<h3>' . esc_html($title) . '</h3>';
+        }
+
+        if ($reviews && !empty($reviews)) {
+            $output .= JobCaptureProTemplates::render_reviews($reviews);
+        } else {
+            $output .= '<div class="jcp-no-reviews">';
+            $output .= '<p>There are no recent reviews.</p>';
+            $output .= '</div>';
+        }
+
+        $output .= '</div>';
+
+        return $output;
+    }
+
+    /**
+     * Fetch reviews data from API
+     */
+    private function fetch_reviews_data($company_id = null, $checkin_id = null, $limit = 5)
+    {
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options['jobcapturepro_field_apikey']);
+        
+        if (empty($apikey)) {
+            return null;
+        }
+
+        $url = $this->jcp_api_base_url . 'reviews';
+
+        // Build query parameters
+        $query_params = array();
+        
+        if ($company_id) {
+            $query_params[] = "companyId=" . urlencode($company_id);
+        }
+        
+        if ($checkin_id) {
+            $query_params[] = "checkinId=" . urlencode($checkin_id);
+        }
+        
+        if ($limit) {
+            $query_params[] = "limit=" . urlencode($limit);
+        }
+        
+        if (!empty($query_params)) {
+            $url .= "?" . implode("&", $query_params);
+        }
+
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request
+        $request = wp_remote_get($url, $args);
+        
+        if (is_wp_error($request)) {
+            return null;
+        }
+
+        $body = wp_remote_retrieve_body($request);
+        $response = json_decode($body, true);
+
+        return $response;
+    }
+
+    /**
+     * Shortcode to display nearby checkins
+     */
+    public function get_nearby_checkins($atts)
+    {
+        // Extract attributes
+        $atts = shortcode_atts(array(
+            'checkinid' => '',
+            'limit' => 10,
+            'title' => 'Nearby Checkins',
+            'exclude_current' => 'true'
+        ), $atts, 'jcp_nearby_checkins');
+
+        $provided_checkin_id = sanitize_text_field($atts['checkinid']);
+        $limit = (int)$atts['limit'];
+        $title = sanitize_text_field($atts['title']);
+        $exclude_current = $atts['exclude_current'] === 'true';
+
+        // Check for checkin ID - use provided or URL parameter
+        $checkin_id = $provided_checkin_id;
+        if (!$checkin_id && isset($_GET['checkinId'])) {
+            $checkin_id = sanitize_text_field($_GET['checkinId']);
+        }
+
+        if (!$checkin_id) {
+            return '<div class="jcp-no-nearby-checkins"><p>No checkin ID provided to find nearby checkins.</p></div>';
+        }
+
+        // Get the city from the current checkin
+        $city = $this->get_checkin_city($checkin_id);
+        
+        if (!$city) {
+            return '<div class="jcp-no-nearby-checkins"><p>Could not determine city for nearby checkins.</p></div>';
+        }
+
+        // Fetch nearby checkins data
+        $checkins = $this->fetch_nearby_checkins($city, $limit, $exclude_current ? $checkin_id : null);
+
+        // Generate output
+        $output = '<div class="jcp-nearby-checkins-shortcode">';
+        
+        if (!empty($title)) {
+            $output .= '<h3>' . esc_html($title) . '</h3>';
+        }
+
+        if ($checkins && !empty($checkins)) {
+            $output .= JobCaptureProTemplates::render_nearby_checkins($checkins, $city);
+        } else {
+            $output .= '<div class="jcp-no-nearby-checkins">';
+            $output .= '<p>No nearby checkins found.</p>';
+            $output .= '</div>';
+        }
+
+        $output .= '</div>';
+
+        return $output;
+    }
+
+    /**
+     * Get the city from a specific checkin
+     */
+    private function get_checkin_city($checkin_id)
+    {
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options['jobcapturepro_field_apikey']);
+        
+        if (empty($apikey)) {
+            return null;
+        }
+
+        $url = $this->jcp_api_base_url . 'checkins/' . urlencode($checkin_id);
+
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request
+        $request = wp_remote_get($url, $args);
+        
+        if (is_wp_error($request)) {
+            return null;
+        }
+
+        $body = wp_remote_retrieve_body($request);
+        $checkin = json_decode($body, true);
+
+        // Extract city from the checkin data
+        if (isset($checkin['city'])) {
+            return $checkin['city'];
+        }
+        
+        // If city is not directly available, try to extract from address
+        if (isset($checkin['address'])) {
+            // Try to parse city from address string
+            // This is a simple approach - you might need more sophisticated parsing
+            $address_parts = explode(',', $checkin['address']);
+            if (count($address_parts) >= 2) {
+                // Assume city is the second-to-last part (before state/province)
+                $city_part = trim($address_parts[count($address_parts) - 2]);
+                return $city_part;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch nearby checkins from API
+     */
+    private function fetch_nearby_checkins($city, $limit = 10, $exclude_checkin_id = null)
+    {
+        // Get the API Key from the plugin options
+        $options = get_option('jobcapturepro_options');
+        $apikey = trim($options['jobcapturepro_field_apikey']);
+        
+        if (empty($apikey)) {
+            return null;
+        }
+
+        $url = $this->jcp_api_base_url . 'checkins';
+
+        // Build query parameters
+        $query_params = array();
+        
+        if ($city) {
+            $query_params[] = "city=" . urlencode($city);
+        }
+        
+        if ($limit) {
+            $query_params[] = "limit=" . urlencode($limit);
+        }
+        
+        if (!empty($query_params)) {
+            $url .= "?" . implode("&", $query_params);
+        }
+
+        // Set the API request headers
+        $args = array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+
+        // Make the API request
+        $request = wp_remote_get($url, $args);
+        
+        if (is_wp_error($request)) {
+            return null;
+        }
+
+        $body = wp_remote_retrieve_body($request);
+        $checkins = json_decode($body, true);
+
+        // Filter out the current checkin if requested
+        if ($exclude_checkin_id && is_array($checkins)) {
+            $checkins = array_filter($checkins, function($checkin) use ($exclude_checkin_id) {
+                return isset($checkin['id']) && $checkin['id'] != $exclude_checkin_id;
+            });
+        }
+
+        return $checkins;
+    }
 }
