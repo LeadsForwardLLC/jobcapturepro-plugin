@@ -44,6 +44,7 @@ class JobCaptureProTemplates
             return JobCaptureProTemplates::render_multimap($locations, $maps_api_key);
         }
     }
+
     
     /**
      * Renders combined components for job capture display
@@ -63,7 +64,7 @@ class JobCaptureProTemplates
         $output = '<div class="jcp-combined-components">';
 
         // Render the company info section
-        $output .= JobCaptureProTemplates::render_company_info($company_info);
+         $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
         $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
@@ -100,28 +101,424 @@ class JobCaptureProTemplates
         </style>';
     }
 
-    /**
-     * Generate HTML for a single checkin page
-     * 
-     * @param array $checkin The checkin data
-     * @return string HTML for a single checkin page
-     */
-    public static function render_single_checkin($checkin)
-    {
-        $output = '<div class="jcp-checkin-page">';
-
-        $output .= self::get_single_checkin_styles();
+/**
+ * Generate HTML for a single checkin page matching screenshot style
+ */
+public static function render_single_checkin($checkin)
+{
+    $output = '<div class="jcp-single-checkin">';
+    
+    // Add CSS styles
+    $output .= '<style>
+        .jcp-single-checkin {
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            color: #333;
+            line-height: 1.5;
+            background: #f9f9f9;
+        }
         
-        // Description
-        $output .= '<div class="jcp-checkin-description">
-            <p>' . esc_html($checkin['description']) . '</p>
-        </div>';
+        .jcp-flex-div{
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 2rem 5rem auto;
+            padding: 0 2rem;
+            align-items: start;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 3rem;
+        }
 
-        $output .= '</div>';
+        .jcp-ts-div{
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 2rem 5rem auto;
+            padding: 2rem 2rem;
+            align-items: start;
+        }
 
-        return $output;
+        .jcp-faq-div{
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 2rem 0rem auto;
+            padding: 2rem 0;
+            align-items: start;
+            border-top: 1px solid #eee;
+            padding-bottom: 3rem;
+        }
 
+        .jcp-checkin-header{
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        }
+        .jcp-content-block {
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #fff;
+        }
+        
+        .jcp-hero-img {
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .jcp-checkin-header h1 {
+            font-size: 24px;
+            margin: 0 0 5px 0;
+            color: #222;
+        }
+        
+        .jcp-checkin-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            justify-content: space-between;
+        }
+        
+        .jcp-checkin-description {
+            font-size: 15px;
+            margin: 15px 0;
+        }
+        
+        .jcp-section-title {
+            margin: 0 0 15px 0;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: #222;
+        }
+        
+        .jcp-review-content {
+           margin-bottom: 15px;
+            background: #fef9c3;
+            border-left: 4px solid #facc15;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+        
+        .jcp-review-text {
+            font-style: italic;
+            margin: 0 0 5px 0;
+        }
+        
+        .jcp-review-author {
+            font-weight: bold;
+            text-align: right;
+            margin: 0;
+        }
+        
+        .jcp-verified-badge {
+            background: #f9f9f9;
+            background-color: #e6f4ea;
+            color: #1e7f3e;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 999px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .jcp-verified-badge svg {
+            width: 18px;
+            height: 18px;
+            fill: #1e7f3e;
+        }
+
+        .jcp-cta-link {
+            font-size: 15px;
+            margin: 15px 0 0 0;
+        }
+        
+        .jcp-cta-link strong {
+            color: #e74c3c;
+        }
+        
+        .jcp-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .jcp-list li {
+            padding: 5px 0;
+            font-size: 15px;
+        }
+        
+        .jcp-tags-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .jcp-tags-table td {
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .jcp-tag-list{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .job-tag{
+            background-color: #e9e9e9;
+            color: #000;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 999px;
+            display: inline-block;
+            margin: 6px;
+        }
+
+        .jcp-title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+         .jcp-title-container .jcp-hero-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50px;
+        }
+
+        .jcp-job-reviews {
+            display: flex;
+            gap: 2px;
+            margin: 5px 0;
+            justify-content: end;
+        }
+
+        .jcp-job-reviews svg{
+            width: 18px;
+            height: 18px;
+            fill: #facc15;
+        }
+
+        .get-quote-btn {
+            background-color: #ff503e;
+            color: #fff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.2s ease;
+            width: 100%;
+        }
+
+        .jcp-related-checkins{
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+            padding-top: 1.25rem;
+        }
+
+        .jcp-list li {
+            padding: 5px 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .jcp-list svg {
+            width: 14px;
+            height: 14px;
+            fill: #999;
+            margin-right: 5px;
+        }
+
+        .jcp-checkin-date {
+            display: flex;
+            align-items: center;
+        }
+
+         .jcp-checkin-meta span {
+           font-size: 0.95rem;
+            color: #666;
+        }
+
+        .jcp-checkin-meta svg {
+            width: 16px;
+            height: 16px;
+            fill: #999;
+            margin-right: 0.4rem;
+        }
+
+         /* Hide specific elements on single check-in page */
+        .jcp-company-details,
+        .jcp-heatmap,
+        .jcp-gallery-filters,
+        .jcp-company-info {
+            display: none !important;
+        }
+        
+        @media (max-width: 600px) {
+            .jcp-single-checkin {
+                padding: 15px;
+            }
+            
+            .jcp-content-block {
+                padding: 15px;
+            }
+            
+            .jcp-checkin-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .jcp-flex-div, .jcp-ts-div, .jcp-faq-div {
+                display: contents;
+        }
+
+        .jcp-section-title {
+                margin-top: 2rem;
+        }
     }
+    </style>';
+    
+    // First content block (header and description)
+    $output .= '<div class="jcp-single-content-block">';
+   
+    $output .= '<div class="jcp-flex-div">';
+
+    $output .= '<div class="jcp-checkin-header">';
+    $output .= '<div class="jcp-title-container">';
+    $output .= '<img class="jcp-hero-img" src="https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg" alt="Roof Soft Wash in Venice">';
+    $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
+    $output .= '</div>';
+   // $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
+    // Add the hero image below the title
+    $output .= '<img class="jcp-hero-img" src="https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg" alt="Roof Soft Wash in Venice">';
+    $output .= '<div class="jcp-checkin-meta">';
+    $output .= '<span class="jcp-checkin-date"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"></path></svg>' . esc_html(date('F j, Y', $checkin['createdAt'] ?? strtotime('July 6, 2025'))) . '</span>';
+    $output .= '<span class="jcp-checkin-tech"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>' . esc_html($checkin['assignedUser']['name'] ?? 'Chris (Tech)') . '</span>';
+    $output .= '<span class="jcp-checkin-location"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>' . esc_html($checkin['address'] ?? 'Venice, FL') . '</span>';
+    $output .= '</div>';
+    $output .= '<div class="jcp-checkin-description">';
+    $output .= '<p>' . esc_html($checkin['description'] ?? 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.') . '</p>';
+    $output .= '</div>';
+    $output .= '</div>'; // close first content block
+    
+    // Second content block (all other sections)
+    $output .= '<div class="jcp-content-block">';
+    
+    // Review section
+    $output .= '<div class="jcp-checkin-review">';
+    $output .= '<h2 class="jcp-section-title">Review</h2>';
+    $output .= '<div class="jcp-review-content">';
+    $output .= '<p class="jcp-review-text">"Looks brand new! Friendly, professional, fast. Highly recommend."</p>';
+    $output .= '<p class="jcp-review-author">– Danielle P.</p>';
+    $output .= '</div>';
+
+    // job Reviews
+    $output .= '<div class="jcp-job-reviews">
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+        </span>
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+        </span>
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+        </span>
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+        </span>
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+        </span>
+    </div>';
+
+    $output .= '<div class="jcp-verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm84.4-299.3l-80 128c-4.2 6.7-11.4 10.9-19.3 11.3s-15.5-3.2-20.2-9.6l-48-64c-8-10.6-5.8-25.6 4.8-33.6s25.6-5.8 33.6 4.8l27 36 61.4-98.3c7-11.2 21.8-14.7 33.1-7.6s14.7 21.8 7.6 33.1z"/></svg> Verified Job Check-In</div>';
+    $output .= '<a href="#" class="get-quote-btn">Get a Quote Like This</a>';
+    $output .= '<div class="jcp-related-checkins">';
+    $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
+    $output .= '<ul class="jcp-list">';
+    $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> Driveway Pressure Wash – Sarasota</li>';
+    $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M562.1 383.9c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144C540.6 93.4 520 85.4 504.2 73 490.1 61.9 470 61.7 456 73c-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3z"/></svg> Pool Deck Cleaning – Nokomis</li>';
+    $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-16 160H64v-84c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v84z"/></svg> Window Cleaning – Lakewood Ranch</li>';
+    $output .= '</ul>';
+    $output .= '</div>';
+    $output .= '</div>';
+    
+    $output .= '</div>'; // close second content block
+   
+    $output .= '</div>'; // close jcp-flex-div
+
+    // Testimonials & Services div
+    $output .= '<div class="jcp-ts-div">';
+
+     // Testimonials
+     $output .= '<div class="jcp-testimonials">';
+     $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
+     $output .= '<ul class="jcp-list">';
+     $output .= '<li>"Cleaned it like new in 2 hours." – Brian M.</li>';
+     $output .= '<li>"Didn\'t even need to be home." – Linda R.</li>';
+     $output .= '<li>"No upsells. Just results." – Mark D.</li>';
+     $output .= '</ul>';
+     $output .= '</div>';
+
+     // Service tags
+     $output .= '<div class="jcp-service-tags">';
+     $output .= '<h2 class="jcp-section-title">Nearby Service Tags</h2>';
+     $output .= '<div class="jcp-tags-list">';
+     $output .= '<span class="job-tag">Venice, FL</span>';
+     $output .= '<span class="job-tag">Roof Cleaning</span>';
+     $output .= '<span class="job-tag">Soft Wash</span>';
+     $output .= '<span class="job-tag">Exterior Algae</span>';
+     $output .= '</div>';
+
+     $output .= '</div>'; // close Testimonials & Services div
+
+      // FAQ div
+    $output .= '<div class="jcp-faq-div">';
+     
+     // FAQs
+     $output .= '<div class="jcp-faqs">';
+     $output .= '<h2 class="jcp-section-title">FAQs</h2>';
+     $output .= '<ul class="jcp-list">';
+     $output .= '<li>► Do I need to be home?</li>';
+     $output .= '<li>► How long does it take?</li>';
+     $output .= '</ul>';
+     $output .= '</div>';
+
+     $output .= '</div>'; // close FAQ div
+
+    $output .= '</div>'; // close jcp-single-checkin
+    
+    return $output;
+}
+
     
     /**
      * Generate HTML for a single checkin card
@@ -165,6 +562,26 @@ class JobCaptureProTemplates
                     <p>' . esc_html($checkin['assignedUser']['name']) . '</p>
                 </div>';
             }
+
+            // job Reviews
+                $output .= '<div class="jcp-job-reviews">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                    </span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                    </span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                    </span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                    </span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                    </span>
+                </div>';
+            
             
             $output .= '</div>';
         }
@@ -174,43 +591,29 @@ class JobCaptureProTemplates
             <p>' . nl2br(esc_html($checkin['description'])) . '</p>
         </div>';
 
-        // Date
+        // Date - Simplified to only show the formatted date
         $output .= '<div class="jcp-checkin-date">';
         $timestamp = $checkin['createdAt'];
-        $current_time = time();
-        $time_diff = $current_time - $timestamp;
-        $three_months = 3 * 30 * 24 * 60 * 60; // Approximate 3 months in seconds
-
-        if ($time_diff < $three_months) {
-            // Relative time for dates within 3 months
-            if ($time_diff < 60 * 60) {
-                // Less than an hour ago
-                $relative_time = '1 hour ago';
-            } elseif ($time_diff < 24 * 60 * 60) {
-                // Hours ago
-                $hours = floor($time_diff / (60 * 60));
-                $relative_time = $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
-            } elseif ($time_diff < 30 * 24 * 60 * 60) {
-                // Days ago
-                $days = floor($time_diff / (24 * 60 * 60));
-                $relative_time = $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
-            } else {
-                // Months ago
-                $months = floor($time_diff / (30 * 24 * 60 * 60));
-                $relative_time = $months . ' month' . ($months > 1 ? 's' : '') . ' ago';
-            }
-            $output .= '<p>' . esc_html($relative_time) . '</p>';
-        } else {
-            // Standard date format for older dates
-            $output .= '<p>' . esc_html(date('F j, Y', $timestamp)) . '</p>';
-        }
+        $output .= '<p class="date-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"/></svg>' . esc_html(date('F j, Y', $timestamp)) . '</p>'; // Format: "Month Day, Year" (e.g., "July 23, 2025")
         $output .= '</div>';
 
-        // Address
+            // Address - Extract city and state only
         $output .= '<div class="jcp-checkin-address">';
-        $output .= '<p><strong>Near</strong> ' . esc_html($checkin['address']);
-        $output .= '</p></div>';
 
+        // Parse address (assuming format: "Street, City, State, ZIP, Country")
+        $address_parts = explode(',', $checkin['address']);
+
+        // Get city (2nd last part) and state (last part before country/ZIP)
+        $city = trim($address_parts[1] ?? ''); // City
+        $state = trim($address_parts[2] ?? ''); // State (full name)
+
+        // Shorten state abbreviation if needed (e.g., "California" → "CA")
+        $state_abbr = strlen($state) > 2 ? substr($state, 0, 2) : $state;
+
+        // Display "City, ST" format (e.g., "Miami, FL")
+        $output .= '<p><strong>Near</strong> ' . esc_html($city . ', ' . $state_abbr) . '</p>';
+
+        $output .= '</div>';
         $output .= '</a>'; // Close clickable card
         return $output;
     }
@@ -239,7 +642,7 @@ class JobCaptureProTemplates
         $output .= self::get_checkins_grid_styles($gridId);
 
         // Grid container with data attribute to store the column count
-        $output .= '<div class="jcp-checkins-grid ' . $gridId . '" data-column-count="4">';
+        $output .= '<div class="jcp-checkins-grid ' . $gridId . '" data-column-count="3">';
         
         // Add each checkin to the grid in date-sorted order
         foreach ($checkins as $checkin) {
@@ -248,6 +651,43 @@ class JobCaptureProTemplates
 
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
+
+         // jcp stats section
+    
+    $output .= '<div class="jcp-stats-container">';
+    
+    // Stat 1 - Jobs Posted This Month
+    $output .= '<div class="jcp-stat-item">
+        <div class="jcp-stat-number">86</div>
+        <div class="jcp-stat-label">Jobs Posted This Month</div>
+    </div>';
+    
+    // Stat 2 - Average 5-Star Rating
+    $output .= '<div class="jcp-stat-item">
+        <div class="jcp-stat-number">96%</div>
+        <div class="jcp-stat-label">Average 5-Star Rating</div>
+    </div>';
+    
+    // Stat 3 - Last Job Check-In
+    $output .= '<div class="jcp-stat-item">
+        <div class="jcp-stat-number">12 mins ago</div>
+        <div class="jcp-stat-label">Last Job Check-In</div>
+    </div>';
+    
+    $output .= '</div>'; // Close jcp-stats-container
+
+         // jcp CTA section
+    
+         $output .= '<div class="jcp-cta-container">';
+    
+         // cta Heading
+         $output .= '<div class="jcp-cta">
+                    <h2>Let Your Work Speak For Itself</h2>
+                    <p>Capture check-ins like these with JobCapturePro. Set it and forget it.</p>
+                    <a href="#" class="quote-btn">Get JobCapturePro</a>
+                    </div>';
+         
+         $output .= '</div>'; // Close jcp-cta-container
 
         // Add JavaScript to maintain proper masonry layout
         $output .= '<script>
@@ -329,20 +769,26 @@ class JobCaptureProTemplates
             .jcp-container {
                 max-width: 1200px;
                 margin: 0 auto;
-                padding: 20px;
+                padding: 0 20px;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
             }
             
             ' . $gridSelector . ' {
                 /* Keep masonry-style layout with CSS columns */
-                column-count: 4;
+                column-count: 3;
                 column-gap: 20px;
                 width: 100%;
+            }
+
+            .jcp-checkins-grid {
+                gap: 2rem;
+                padding: 0rem 0rem 2rem 0rem;
+                margin: 0 auto;
             }
                         
             .jcp-checkin-card {
                 break-inside: avoid;
-                margin-bottom: 20px;
+                margin-bottom: 2rem;
                 background: #fff;
                 border-radius: 12px;
                 box-shadow: rgba(0, 0, 0, 0.11) 0px 1px 10px 0px;
@@ -381,7 +827,8 @@ class JobCaptureProTemplates
             
             .jcp-user-name {
                 flex-grow: 1;
-                text-align: right;
+                text-align: left;
+                margin-left: 0.75rem;
             }
             
             .jcp-user-name p {
@@ -395,8 +842,10 @@ class JobCaptureProTemplates
             .jcp-checkin-image {
                 position: relative;
                 width: 100%;
-                height: 200px;
+                height: 215px;
                 overflow: hidden;
+                border-radius: 12px;
+                margin-bottom: 1.5rem;
             }
             
             .gallery-image {
@@ -487,21 +936,114 @@ class JobCaptureProTemplates
             .jcp-checkin-date {
                 font-size: 0.9em;
                 color: #666;
+                float: left;
+            }
+
+            .date-icon{
+                display: flex;
+                align-items: center;
             }
                         
             .jcp-checkin-address {
                 font-size: 0.85em;
                 /* background-color: #f8f8f8; */
                 /* border-top: 1px solid #eee; */
+                text-align: right;
             }
             
             .jcp-checkin-description {
                 border-bottom: 1px solid #f0f0f0;
             }
 
-            .jcp-checkin-date, .jcp-checkin-address {
+            /*.jcp-checkin-date, .jcp-checkin-address {
                 padding: 0 15px;
+            }*/
+
+            .jcp-job-reviews {
+                display: flex;
+                gap: 2px; /* Adjust the space between stars */
+                margin: 5px 0; /* Add some vertical spacing */
             }
+
+            .jcp-job-reviews svg {
+                width: 18px; /* Adjust star size */
+                height: 18px;
+                fill: #facc15; /* Star color */
+            }
+
+            .date-icon svg{
+                width: 16px;
+                margin-right: 0.4rem;
+                fill: #999;
+            }
+
+            .jcp-stats-section {
+                background-color: #fff;
+                padding: 30px 20px;
+                margin: 30px 0;
+                text-align: center;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+            .jcp-stats-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                max-width: 1000px;
+                margin: 0 auto;
+                gap: 0rem;
+                background: #fff;
+                padding: 2rem 5rem;
+        }
+        
+        .jcp-stat-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .jcp-stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+       .jcp-stat-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .jcp-cta-container{
+            background-color: #111;
+            color: #fff;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+         .jcp-cta-container h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .jcp-stats-container {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .jcp-stat-item {
+                min-width: 100%;
+            }
+            
+            .jcp-stat-number {
+                font-size: 2rem;
+            }
+        }
 
             /* Responsive design */
             @media (max-width: 1024px) {
@@ -521,8 +1063,123 @@ class JobCaptureProTemplates
                     column-count: 1;
                 }
             }
+
+         .jcp-single-checkin {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .jcp-checkin-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        
+        .jcp-checkin-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .jcp-checkin-description {
+            margin: 0px 0;
+            font-size: 16px;
+        }
+        
+        .jcp-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 30px 0;
+        }
+        
+        .jcp-checkin-review h2,
+        .jcp-related-checkins h2,
+        .jcp-testimonials h2,
+        .jcp-faqs h2,
+        .jcp-service-tags h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #222;
+        }
+        
+        .jcp-review-content {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .jcp-review-text {
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .jcp-review-author {
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .jcp-verified-badge {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .jcp-cta-link {
+            font-size: 16px;
+            margin: 15px 0;
+        }
+        
+        .jcp-cta-link strong {
+            color: #e74c3c;
+        }
+        
+        .jcp-related-list,
+        .jcp-testimonial-list,
+        .jcp-faq-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .jcp-related-list li,
+        .jcp-testimonial-list li,
+        .jcp-faq-list li {
+            padding: 8px 0;
+            font-size: 15px;
+        }
+        
+        .jcp-tags-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .jcp-tags-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        @media (max-width: 600px) {
+            .jcp-single-checkin {
+                padding: 15px;
+            }
+            
+            .jcp-checkin-header h1 {
+                font-size: 24px;
+            }
+            
+            .jcp-checkin-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
         </style>';
     }
+
 
     /**
      * Generate HTML for the address section
@@ -738,6 +1395,15 @@ class JobCaptureProTemplates
         // Start building HTML output
         $output = '<div id="heatmap" class="jcp-heatmap"></div>';
 
+        // Add filter buttons UI
+        $output .= '<div class="jcp-gallery-filters">';
+        $output .= '<button class="jcp-filter-btn active" data-filter="all">All Jobs</button>';
+        $output .= '<button class="jcp-filter-btn" data-filter="pressure-washing">Pressure Washing</button>';
+        $output .= '<button class="jcp-filter-btn" data-filter="roof-cleaning">Roof Cleaning</button>';
+        $output .= '<button class="jcp-filter-btn" data-filter="window-cleaning">Window Cleaning</button>';
+        $output .= '<button class="jcp-filter-btn" data-filter="5-star">5-Star Jobs</button>';
+        $output .= '</div>';
+
         // Add CSS for modern responsive grid
         $output .= self::get_heatmap_styles();
 
@@ -790,6 +1456,38 @@ class JobCaptureProTemplates
                 overflow: hidden;
                 margin-left: auto;
                 margin-right: auto;
+                margin-top: 2rem;
+            }
+            .jcp-gallery-filters {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+                padding: 3rem;
+            }
+                    
+            .jcp-filter-btn {
+                text-transform: capitalize;
+                color: #000;
+                background: #e5e5e5;
+                border: none;
+                padding: 0.6rem 1.2rem;
+                border-radius: 999px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+                    
+            .jcp-filter-btn:hover {
+                background: #000;
+                color: #fff;
+            }
+                    
+            .jcp-filter-btn.active {
+                background: #000;
+                color: white;
+                border-color: #000;
             }
         </style>';
     }
@@ -1019,32 +1717,46 @@ class JobCaptureProTemplates
             return '';
         }
 
-        $output = '<div class="jcp-company-info jcp-container">';
+        $output = '<div class="jcp-company-info">';
         
         // Company details (now comes first)
         $output .= '<div class="jcp-company-details">
             <h2 class="jcp-company-name">' . esc_html($company_info['name']) . '</h2>';
-            
-        // Address
-        $output .= '<div class="jcp-company-address">
-            <p>' . nl2br(esc_html($company_info['address'])) . '</p>
-        </div>';
         
-        // Contact info section
-        $output .= '<div class="jcp-company-contact">';
+        // Intro text
+        $output .= '<div class="jcp-company-into-text">
+            <p>Sarasota’s #1 for exterior cleaning. Trusted by 200+ homeowners.</p>
+        </div>';
+
+        $output .= '<div class="jcp-company-div-2">';
+
+        // Company Reviews text
+        $output .= '<div class="jcp-company-reviews-text">
+            <p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"/></svg> 4.9 (212 reviews)</p>
+        </div>';
+
+        // Address
+       // $output .= '<div class="jcp-company-address">
+         //   <p>' . nl2br(esc_html($company_info['address'])) . '</p>
+        //</div>';
+
         
         // Check if we have either phone or URL
         $has_phone = !empty($company_info['tn']);
         $has_url = !empty($company_info['url']);
         
         if ($has_phone) {
-            $output .= '<p><strong>Phone:</strong> <a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['tn']) . '</a></p>';
+            $output .= '<p> <strong> &nbsp;.&nbsp; </strong><a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['tn']) . '</a></p>';
         }
         
         if ($has_url) {
             $parsed_url = parse_url($company_info['url']);
-            $display_url = $parsed_url['host'] ?? $company_info['url'];
-            $output .= '<p><strong>Website:</strong> <a href="' . esc_url($company_info['url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html($display_url) . '</a></p>';
+            $host = $parsed_url['host'] ?? $company_info['url'];
+            
+            // Remove www. prefix if it exists
+            $display_url = preg_replace('/^www\./i', '', $host);
+            
+            $output .= '<p> <strong> &nbsp;.&nbsp; </strong><a href="' . esc_url($company_info['url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html($display_url) . '</a></p>';
         }
         
         // Show message if no contact info
@@ -1053,13 +1765,21 @@ class JobCaptureProTemplates
         }
         
         $output .= '</div></div>'; // Close jcp-company-contact and jcp-company-details
+
+         // Quote btn and text
+        
+            $output .= '<div class="jcp-company-logo">
+                <a href="#" class="quote-btn">Get a Quote</a>
+                <p class="powered-by">Powered by <b>JobCapturePro</b></p>
+            </div>';
+        
         
         // Logo (now comes after details)
-        if (!empty($company_info['logoUrl'])) {
-            $output .= '<div class="jcp-company-logo">
-                <img src="' . esc_url($company_info['logoUrl']) . '" alt="' . esc_attr($company_info['name']) . ' Logo">
-            </div>';
-        }
+        //if (!empty($company_info['logoUrl'])) {
+        //    $output .= '<div class="jcp-company-logo">
+        //        <img src="' . esc_url($company_info['logoUrl']) . '" alt="' . esc_attr($company_info['name']) . ' Logo">
+        //    </div>';
+        //}
         
         $output .= '</div>'; // Close jcp-company-info
         
@@ -1079,10 +1799,34 @@ class JobCaptureProTemplates
         return '<style>
             .jcp-company-info {
                 display: flex;
-                flex-wrap: wrap;
                 align-items: center;
-                gap: 30px;
-                padding: 25px !important;
+                flex-wrap: wrap;
+                padding: 2.5rem 2rem;
+                background-color: #fff;
+                border-bottom: 1px solid #eee;
+                gap: 1.5rem;
+            }
+
+            .jcp-company-into-text p {
+                margin: 0;
+                font-size: 1rem;
+                color: #444;
+            }
+
+            .jcp-company-div-2 p {
+                margin: 0;
+                font-size: 1rem;
+                color: #444;
+                display: flex;
+                align-items: center;
+            }
+
+            .jcp-company-div-2 a {
+                color: #111;
+            }
+
+            .jcp-company-div-2 a:hover {
+                color: #e2353c;
             }
 
             .jcp-company-logo img {
@@ -1097,10 +1841,11 @@ class JobCaptureProTemplates
             }
 
             .jcp-company-name {
-                margin-top: 0;
-                margin-bottom: 15px;
                 color: #333;
-                font-size: 28px;
+                margin: 0;
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 0.6rem;
             }
 
             .jcp-company-address p,
@@ -1124,6 +1869,37 @@ class JobCaptureProTemplates
                 font-style: italic;
             }
 
+            .jcp-company-reviews-text p svg{
+                width : 18px;
+            }
+
+            .jcp-company-div-2{
+                display: flex;
+            }
+
+            .jcp-company-logo{
+                text-align: end;
+            }
+
+            .quote-btn {
+                background-color: #ff503e;
+                color: #fff;
+                font-weight: bold;
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+                border-radius: 999px;
+                transition: background-color 0.2s ease;
+            }
+
+            .powered-by {
+                font-size: 0.75rem;
+                color: #888;
+            }
+
+            .powered-by b {
+               color: #000;
+            }
+
             @media (max-width: 600px) {
                 .jcp-company-info {
                     flex-direction: column;
@@ -1134,8 +1910,13 @@ class JobCaptureProTemplates
                 .jcp-company-logo img {
                     max-width: 150px;
                 }
-            }
-        </style>';
-    }   
 
+                .jcp-company-div-2{
+                    display: block;
+                }
+            }
+                
+        </style>';
+    }
+    
 }
