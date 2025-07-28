@@ -7,20 +7,45 @@ class JobCaptureProTemplates
 {
 
     /**
+     * Helper function to check if a feature should be displayed
+     * Features are controlled at the plugin code level, not via UI
+     * 
+     * @param string $feature_name The feature option name
+     * @param bool $data_exists Whether the required data exists
+     * @return bool Whether the feature should be displayed
+     */
+    private static function should_show_feature($feature_name, $data_exists = false)
+    {
+        // Feature toggles controlled at plugin code level
+        // Set to false by default since backend features are not yet implemented
+        $feature_toggles = array(
+            'show_customer_reviews' => false,
+            'show_star_ratings' => false,
+            'show_verified_badges' => false,
+            'show_company_stats' => false,
+            'show_company_reviews' => false
+        );
+        
+        $feature_enabled = isset($feature_toggles[$feature_name]) ? $feature_toggles[$feature_name] : false;
+        return $feature_enabled && $data_exists;
+    }
+
+    /**
      * Helper method to render checkins with conditional logic
      * 
      * @param string|null $checkin_id The checkin ID if filtering for a specific checkin
      * @param array $checkins Array of checkin data
+     * @param array $company_info Company data for features
      * @return string HTML output for the checkins
      */
-    public static function render_checkins_conditionally($checkin_id, $checkins)
+    public static function render_checkins_conditionally($checkin_id, $checkins, $company_info = array())
     {
         // If a specific checkin_id was provided, render as a single checkin
         if ($checkin_id && count($checkins) === 1) {
-            return JobCaptureProTemplates::render_single_checkin($checkins[0]);
+            return JobCaptureProTemplates::render_single_checkin($checkins[0], $company_info);
         } else {
             // Otherwise render as a grid of multiple checkins
-            return JobCaptureProTemplates::render_checkins_grid($checkins);
+            return JobCaptureProTemplates::render_checkins_grid($checkins, $company_info);
         }
     }
 
@@ -70,7 +95,7 @@ class JobCaptureProTemplates
         $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
 
         // Render checkins with conditional logic
-        $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
+        $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins, $company_info);
 
         $output .= '</div>';
 
@@ -104,7 +129,7 @@ class JobCaptureProTemplates
 /**
  * Generate HTML for a single checkin page matching screenshot style
  */
-public static function render_single_checkin($checkin)
+public static function render_single_checkin($checkin, $company_info = array())
 {
     $output = '<div class="jcp-single-checkin">';
     
@@ -413,62 +438,126 @@ public static function render_single_checkin($checkin)
 
     $output .= '<div class="jcp-checkin-header">';
     $output .= '<div class="jcp-title-container">';
-    $output .= '<img class="jcp-hero-img" src="https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg" alt="Roof Soft Wash in Venice">';
+    
+    // Use actual checkin image or fallback
+    $hero_image = !empty($checkin['imageUrls'][0]) ? $checkin['imageUrls'][0] : 'https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg';
+    $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
     $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
     $output .= '</div>';
    // $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
     // Add the hero image below the title
-    $output .= '<img class="jcp-hero-img" src="https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg" alt="Roof Soft Wash in Venice">';
+    $hero_image_full = !empty($checkin['imageUrls'][1]) ? $checkin['imageUrls'][1] : $hero_image;
+    $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image_full) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
     $output .= '<div class="jcp-checkin-meta">';
-    $output .= '<span class="jcp-checkin-date"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"></path></svg>' . esc_html(date('F j, Y', $checkin['createdAt'] ?? strtotime('July 6, 2025'))) . '</span>';
-    $output .= '<span class="jcp-checkin-tech"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>' . esc_html($checkin['assignedUser']['name'] ?? 'Chris (Tech)') . '</span>';
-    $output .= '<span class="jcp-checkin-location"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>' . esc_html($checkin['address'] ?? 'Venice, FL') . '</span>';
+    
+    // Use actual data or fallbacks
+    $checkin_date = isset($checkin['createdAt']) ? date('F j, Y', $checkin['createdAt']) : 'July 6, 2025';
+    $tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
+    $location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
+    
+    $output .= '<span class="jcp-checkin-date"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"></path></svg>' . esc_html($checkin_date) . '</span>';
+    $output .= '<span class="jcp-checkin-tech"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>' . esc_html($tech_name) . '</span>';
+    $output .= '<span class="jcp-checkin-location"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>' . esc_html($location) . '</span>';
     $output .= '</div>';
     $output .= '<div class="jcp-checkin-description">';
-    $output .= '<p>' . esc_html($checkin['description'] ?? 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.') . '</p>';
+    
+    // Use actual description or fallback
+    $description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
+    $output .= '<p>' . esc_html($description) . '</p>';
     $output .= '</div>';
     $output .= '</div>'; // close first content block
     
     // Second content block (all other sections)
     $output .= '<div class="jcp-content-block">';
     
-    // Review section
-    $output .= '<div class="jcp-checkin-review">';
-    $output .= '<h2 class="jcp-section-title">Review</h2>';
-    $output .= '<div class="jcp-review-content">';
-    $output .= '<p class="jcp-review-text">"Looks brand new! Friendly, professional, fast. Highly recommend."</p>';
-    $output .= '<p class="jcp-review-author">– Danielle P.</p>';
-    $output .= '</div>';
+    // Review section - only show if customer review data exists
+    $show_reviews = self::should_show_feature('show_customer_reviews', !empty($checkin['customer_review']));
+    if ($show_reviews && !empty($checkin['customer_review'])) {
+        $output .= '<div class="jcp-checkin-review">';
+        $output .= '<h2 class="jcp-section-title">Review</h2>';
+        $output .= '<div class="jcp-review-content">';
+        $output .= '<p class="jcp-review-text">"' . esc_html($checkin['customer_review']['text']) . '"</p>';
+        $output .= '<p class="jcp-review-author">– ' . esc_html($checkin['customer_review']['author']) . '</p>';
+        $output .= '</div>';
+    } else {
+        // Fallback to hard-coded review if feature is enabled but no data
+        $show_fallback_review = self::should_show_feature('show_customer_reviews', true);
+        if ($show_fallback_review) {
+            $output .= '<div class="jcp-checkin-review">';
+            $output .= '<h2 class="jcp-section-title">Review</h2>';
+            $output .= '<div class="jcp-review-content">';
+            $output .= '<p class="jcp-review-text">"Looks brand new! Friendly, professional, fast. Highly recommend."</p>';
+            $output .= '<p class="jcp-review-author">– Danielle P.</p>';
+            $output .= '</div>';
+        }
+    }
 
-    // job Reviews
-    $output .= '<div class="jcp-job-reviews">
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
-        </span>
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
-        </span>
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
-        </span>
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
-        </span>
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
-        </span>
-    </div>';
+    // Star ratings - only show if rating data exists or feature is enabled
+    $show_ratings = self::should_show_feature('show_star_ratings', !empty($checkin['rating']));
+    if ($show_ratings && !empty($checkin['rating'])) {
+        $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
+        $output .= '<div class="jcp-job-reviews">';
+        for ($i = 1; $i <= 5; $i++) {
+            $filled = $i <= $rating ? 'filled' : 'empty';
+            $output .= '<span class="star-' . $filled . '">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+            </span>';
+        }
+        $output .= '</div>';
+    } else {
+        // Fallback to 5-star rating if feature is enabled but no data
+        $show_fallback_rating = self::should_show_feature('show_star_ratings', true);
+        if ($show_fallback_rating) {
+            $output .= '<div class="jcp-job-reviews">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                </span>
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                </span>
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                </span>
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                </span>
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
+                </span>
+            </div>';
+        }
+    }
 
-    $output .= '<div class="jcp-verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm84.4-299.3l-80 128c-4.2 6.7-11.4 10.9-19.3 11.3s-15.5-3.2-20.2-9.6l-48-64c-8-10.6-5.8-25.6 4.8-33.6s25.6-5.8 33.6 4.8l27 36 61.4-98.3c7-11.2 21.8-14.7 33.1-7.6s14.7 21.8 7.6 33.1z"/></svg> Verified Job Check-In</div>';
+    // Verified badge - only show if job is verified
+    $show_verified = self::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']);
+    if ($show_verified || self::should_show_feature('show_verified_badges', true)) {
+        $output .= '<div class="jcp-verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm84.4-299.3l-80 128c-4.2 6.7-11.4 10.9-19.3 11.3s-15.5-3.2-20.2-9.6l-48-64c-8-10.6-5.8-25.6 4.8-33.6s25.6-5.8 33.6 4.8l27 36 61.4-98.3c7-11.2 21.8-14.7 33.1-7.6s14.7 21.8 7.6 33.1z"/></svg> Verified Job Check-In</div>';
+    }
+    
     $output .= '<a href="#" class="get-quote-btn">Get a Quote Like This</a>';
-    $output .= '<div class="jcp-related-checkins">';
-    $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
-    $output .= '<ul class="jcp-list">';
-    $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> Driveway Pressure Wash – Sarasota</li>';
-    $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M562.1 383.9c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144C540.6 93.4 520 85.4 504.2 73 490.1 61.9 470 61.7 456 73c-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3z"/></svg> Pool Deck Cleaning – Nokomis</li>';
-    $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-16 160H64v-84c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v84z"/></svg> Window Cleaning – Lakewood Ranch</li>';
-    $output .= '</ul>';
-    $output .= '</div>';
+    
+    // Related check-ins - only show if related checkins exist
+    $show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
+    if ($show_related) {
+        $output .= '<div class="jcp-related-checkins">';
+        $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
+        $output .= '<ul class="jcp-list">';
+        foreach ($checkin['related_checkins'] as $related) {
+            $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> ' . esc_html($related['title']) . '</li>';
+        }
+        $output .= '</ul>';
+        $output .= '</div>';
+    } else {
+        // Fallback to hard-coded related checkins
+        $output .= '<div class="jcp-related-checkins">';
+        $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
+        $output .= '<ul class="jcp-list">';
+        $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> Driveway Pressure Wash – Sarasota</li>';
+        $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M562.1 383.9c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144C540.6 93.4 520 85.4 504.2 73 490.1 61.9 470 61.7 456 73c-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3z"/></svg> Pool Deck Cleaning – Nokomis</li>';
+        $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-16 160H64v-84c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v84z"/></svg> Window Cleaning – Lakewood Ranch</li>';
+        $output .= '</ul>';
+        $output .= '</div>';
+    }
     $output .= '</div>';
     
     $output .= '</div>'; // close second content block
@@ -478,25 +567,52 @@ public static function render_single_checkin($checkin)
     // Testimonials & Services div
     $output .= '<div class="jcp-ts-div">';
 
-     // Testimonials
-     $output .= '<div class="jcp-testimonials">';
-     $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
-     $output .= '<ul class="jcp-list">';
-     $output .= '<li>"Cleaned it like new in 2 hours." – Brian M.</li>';
-     $output .= '<li>"Didn\'t even need to be home." – Linda R.</li>';
-     $output .= '<li>"No upsells. Just results." – Mark D.</li>';
-     $output .= '</ul>';
-     $output .= '</div>';
+    // Testimonials - only show if testimonials exist or pass company_info parameter
+    $show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
+    if ($show_testimonials) {
+        $output .= '<div class="jcp-testimonials">';
+        $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
+        $output .= '<ul class="jcp-list">';
+        foreach ($company_info['testimonials'] as $testimonial) {
+            $output .= '<li>"' . esc_html($testimonial['text']) . '" – ' . esc_html($testimonial['author']) . '</li>';
+        }
+        $output .= '</ul>';
+        $output .= '</div>';
+    } else {
+        // Fallback to hard-coded testimonials
+        $output .= '<div class="jcp-testimonials">';
+        $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
+        $output .= '<ul class="jcp-list">';
+        $output .= '<li>"Cleaned it like new in 2 hours." – Brian M.</li>';
+        $output .= '<li>"Didn\'t even need to be home." – Linda R.</li>';
+        $output .= '<li>"No upsells. Just results." – Mark D.</li>';
+        $output .= '</ul>';
+        $output .= '</div>';
+    }
 
-     // Service tags
-     $output .= '<div class="jcp-service-tags">';
-     $output .= '<h2 class="jcp-section-title">Nearby Service Tags</h2>';
-     $output .= '<div class="jcp-tags-list">';
-     $output .= '<span class="job-tag">Venice, FL</span>';
-     $output .= '<span class="job-tag">Roof Cleaning</span>';
-     $output .= '<span class="job-tag">Soft Wash</span>';
-     $output .= '<span class="job-tag">Exterior Algae</span>';
-     $output .= '</div>';
+    // Service tags - use actual tags if available
+    $show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
+    if ($show_service_tags) {
+        $output .= '<div class="jcp-service-tags">';
+        $output .= '<h2 class="jcp-section-title">Service Tags</h2>';
+        $output .= '<div class="jcp-tags-list">';
+        foreach ($checkin['service_tags'] as $tag) {
+            $output .= '<span class="job-tag">' . esc_html($tag) . '</span>';
+        }
+        $output .= '</div>';
+        $output .= '</div>';
+    } else {
+        // Fallback to hard-coded service tags
+        $output .= '<div class="jcp-service-tags">';
+        $output .= '<h2 class="jcp-section-title">Nearby Service Tags</h2>';
+        $output .= '<div class="jcp-tags-list">';
+        $output .= '<span class="job-tag">Venice, FL</span>';
+        $output .= '<span class="job-tag">Roof Cleaning</span>';
+        $output .= '<span class="job-tag">Soft Wash</span>';
+        $output .= '<span class="job-tag">Exterior Algae</span>';
+        $output .= '</div>';
+        $output .= '</div>';
+    }
 
      $output .= '</div>'; // close Testimonials & Services div
 
@@ -622,9 +738,10 @@ public static function render_single_checkin($checkin)
      * Generate HTML for the checkins grid layout with items sorted by date (newest first)
      * 
      * @param array $checkins Array of checkin data
+     * @param array $company_info Company data for stats
      * @return string HTML for all checkins in a responsive grid
      */
-    public static function render_checkins_grid($checkins)
+    public static function render_checkins_grid($checkins, $company_info = array())
     {
         // Sort checkins by date (newest first)
         usort($checkins, function($a, $b) {
@@ -652,29 +769,57 @@ public static function render_single_checkin($checkin)
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
 
-         // jcp stats section
-    
-    $output .= '<div class="jcp-stats-container">';
-    
-    // Stat 1 - Jobs Posted This Month
-    $output .= '<div class="jcp-stat-item">
-        <div class="jcp-stat-number">86</div>
-        <div class="jcp-stat-label">Jobs Posted This Month</div>
-    </div>';
-    
-    // Stat 2 - Average 5-Star Rating
-    $output .= '<div class="jcp-stat-item">
-        <div class="jcp-stat-number">96%</div>
-        <div class="jcp-stat-label">Average 5-Star Rating</div>
-    </div>';
-    
-    // Stat 3 - Last Job Check-In
-    $output .= '<div class="jcp-stat-item">
-        <div class="jcp-stat-number">12 mins ago</div>
-        <div class="jcp-stat-label">Last Job Check-In</div>
-    </div>';
-    
-    $output .= '</div>'; // Close jcp-stats-container
+         // jcp stats section - only show if stats data is available or feature is enabled
+    $show_stats = self::should_show_feature('show_company_stats', !empty($company_info['stats']));
+    if ($show_stats && !empty($company_info['stats'])) {
+        $output .= '<div class="jcp-stats-container">';
+        
+        if (!empty($company_info['stats']['jobs_this_month'])) {
+            $output .= '<div class="jcp-stat-item">
+                <div class="jcp-stat-number">' . esc_html($company_info['stats']['jobs_this_month']) . '</div>
+                <div class="jcp-stat-label">Jobs Posted This Month</div>
+            </div>';
+        }
+        
+        if (!empty($company_info['stats']['average_rating'])) {
+            $output .= '<div class="jcp-stat-item">
+                <div class="jcp-stat-number">' . esc_html($company_info['stats']['average_rating']) . '</div>
+                <div class="jcp-stat-label">Average Rating</div>
+            </div>';
+        }
+        
+        if (!empty($company_info['stats']['last_checkin'])) {
+            $output .= '<div class="jcp-stat-item">
+                <div class="jcp-stat-number">' . esc_html($company_info['stats']['last_checkin']) . '</div>
+                <div class="jcp-stat-label">Last Job Check-In</div>
+            </div>';
+        }
+        
+        $output .= '</div>'; // Close jcp-stats-container
+    } else {
+        // Fallback to hard-coded stats if feature is enabled but no data
+        $show_fallback_stats = self::should_show_feature('show_company_stats', true);
+        if ($show_fallback_stats) {
+            $output .= '<div class="jcp-stats-container">';
+            
+            $output .= '<div class="jcp-stat-item">
+                <div class="jcp-stat-number">86</div>
+                <div class="jcp-stat-label">Jobs Posted This Month</div>
+            </div>';
+            
+            $output .= '<div class="jcp-stat-item">
+                <div class="jcp-stat-number">96%</div>
+                <div class="jcp-stat-label">Average 5-Star Rating</div>
+            </div>';
+            
+            $output .= '<div class="jcp-stat-item">
+                <div class="jcp-stat-number">12 mins ago</div>
+                <div class="jcp-stat-label">Last Job Check-In</div>
+            </div>';
+            
+            $output .= '</div>'; // Close jcp-stats-container
+        }
+    }
 
          // jcp CTA section
     
