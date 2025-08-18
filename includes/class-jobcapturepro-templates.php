@@ -40,6 +40,30 @@ class JobCaptureProTemplates
      */
     public static function render_checkins_conditionally($checkin_id, $checkins, $company_info = array())
     {
+        // Handle empty checkins case
+        if (empty($checkins)) {
+            return '<div class="jcp-no-checkins-message" style="
+                padding: 60px 20px;
+                text-align: center;
+                background: #f8f9fa;
+                border-radius: 12px;
+                margin: 20px 0;
+                border: 2px dashed #dee2e6;
+            ">
+                <div style="
+                    font-size: 48px;
+                    color: #6c757d;
+                    margin-bottom: 20px;
+                ">📱</div>
+                <p style="
+                    font-size: 18px;
+                    color: #495057;
+                    margin: 0;
+                    font-weight: 500;
+                ">Submit check-ins via the app and they will appear here!</p>
+            </div>';
+        }
+
         // If a specific checkin_id was provided, render as a single checkin
         if ($checkin_id && count($checkins) === 1) {
             return JobCaptureProTemplates::render_single_checkin($checkins[0], $company_info);
@@ -1479,35 +1503,50 @@ public static function render_single_checkin($checkin, $company_info = array())
     }
 
     private static function determine_bounds($features) {
-        // Calculate center point of 80% of checkins
-        $totalPoints = count($features);
-
-        // Sort points by distance from mean center to get the central 80%
-        if ($totalPoints > 0) {
-            // Find bounds of all points
-            $minLat = $maxLat = $features[0]['geometry']['coordinates'][1];
-            $minLng = $maxLng = $features[0]['geometry']['coordinates'][0];
-
-            foreach ($features as $feature) {
-                $lat = $feature['geometry']['coordinates'][1];
-                $lng = $feature['geometry']['coordinates'][0];
-                $minLat = min($minLat, $lat);
-                $maxLat = max($maxLat, $lat);
-                $minLng = min($minLng, $lng);
-                $maxLng = max($maxLng, $lng);
-            }
-
-            // Add padding (approximately 1km)
-            $padding = 0.01;
-            $minLat -= $padding;
-            $maxLat += $padding;
-            $minLng -= $padding;
-            $maxLng += $padding;
-        } else {
-            // Default center if no points
-            $minLat = $maxLat = 0;
-            $minLng = $maxLng = 0;
+        // Handle empty or invalid features array
+        if (empty($features) || !is_array($features)) {
+            return [null, null, null, null];
         }
+
+        $validCoords = [];
+        
+        // Collect valid coordinates
+        foreach ($features as $feature) {
+            if (!isset($feature['geometry']['coordinates']) || 
+                !is_array($feature['geometry']['coordinates']) ||
+                count($feature['geometry']['coordinates']) < 2) {
+                continue;
+            }
+            
+            $lat = $feature['geometry']['coordinates'][1];
+            $lng = $feature['geometry']['coordinates'][0];
+            
+            // Validate coordinates are numeric
+            if (is_numeric($lat) && is_numeric($lng)) {
+                $validCoords[] = ['lat' => (float)$lat, 'lng' => (float)$lng];
+            }
+        }
+        
+        // If no valid coordinates found, return null bounds
+        if (empty($validCoords)) {
+            return [null, null, null, null];
+        }
+        
+        // Calculate bounds from valid coordinates
+        $lats = array_column($validCoords, 'lat');
+        $lngs = array_column($validCoords, 'lng');
+        
+        $minLat = min($lats);
+        $maxLat = max($lats);
+        $minLng = min($lngs);
+        $maxLng = max($lngs);
+        
+        // Add padding (approximately 1km)
+        $padding = 0.01;
+        $minLat -= $padding;
+        $maxLat += $padding;
+        $minLng -= $padding;
+        $maxLng += $padding;
 
         return array($minLat, $maxLat, $minLng, $maxLng);
     }
@@ -1520,22 +1559,55 @@ public static function render_single_checkin($checkin, $company_info = array())
      */
     public static function render_heatmap($locations, $maps_api_key)
     {
-        // Check for required fields
-        if (empty($locations)) {
-            return '';
-        }
-
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-
         // Ensure necessary scripts are loaded
         wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?libraries=visualization&key=' . $maps_api_key, array(), null, array('strategy' => 'async'));
 
-        // Extract features array from the GeoJSON FeatureCollection
-        $features = $locations['features'];
+        // Default center coordinates (you can adjust these to your preferred default location)
+        $defaultCenterLat = 39.8283; // Example: USA center
+        $defaultCenterLng = -98.5795;
+        $defaultZoom = 4;
 
-        // Determine the bounds for the map
-        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
+        // Check if we have valid location data and extract features
+        $hasValidLocations = !empty($locations) && isset($locations['features']) && !empty($locations['features']);
+        $validFeatures = [];
+
+        if ($hasValidLocations) {
+            // Extract features array from the GeoJSON FeatureCollection
+            $features = $locations['features'];
+
+            // Filter features to only include those with valid coordinates
+            $validFeatures = array_filter($features, function($feature) {
+                return isset($feature['geometry']['coordinates']) &&
+                       is_array($feature['geometry']['coordinates']) &&
+                       count($feature['geometry']['coordinates']) >= 2 &&
+                       is_numeric($feature['geometry']['coordinates'][0]) &&
+                       is_numeric($feature['geometry']['coordinates'][1]);
+            });
+        }
+
+        // Determine map center and bounds
+        if (!empty($validFeatures)) {
+            // Determine the bounds for the map
+            list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($validFeatures);
+
+            // If bounds calculation was successful, use calculated center
+            if ($minLat !== null && $maxLat !== null && $minLng !== null && $maxLng !== null) {
+                $centerLat = ($minLat + $maxLat) / 2;
+                $centerLng = ($minLng + $maxLng) / 2;
+                $useCalculatedBounds = true;
+            } else {
+                // Fall back to default if bounds calculation failed
+                $centerLat = $defaultCenterLat;
+                $centerLng = $defaultCenterLng;
+                $useCalculatedBounds = false;
+                $validFeatures = []; // Clear features since they're invalid
+            }
+        } else {
+            // No valid features, use defaults
+            $centerLat = $defaultCenterLat;
+            $centerLng = $defaultCenterLng;
+            $useCalculatedBounds = false;
+        }
 
         // Start building HTML output
         $output = '<div id="heatmap" class="jcp-heatmap"></div>';
@@ -1555,8 +1627,14 @@ public static function render_single_checkin($checkin, $company_info = array())
         $output .= '<script>
         function initHeatMap() {
             const map = new google.maps.Map(document.getElementById("heatmap"), {
+                center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' },
+                zoom: ' . ($useCalculatedBounds ? '10' : $defaultZoom) . ',
                 mapTypeId: "roadmap"
-            });
+            });';
+
+        // Only add bounds fitting if we have calculated bounds
+        if (!empty($validFeatures) && $useCalculatedBounds) {
+            $output .= '
             
             // Define bounds for the map
             const bounds = new google.maps.LatLngBounds(
@@ -1565,20 +1643,26 @@ public static function render_single_checkin($checkin, $company_info = array())
             );
             
             // Fit the map to these bounds
-            map.fitBounds(bounds);
+            map.fitBounds(bounds);';
+        }
+
+        // Only add heatmap data if we have valid features
+        if (!empty($validFeatures)) {
+            $output .= '
 
             const heatmapData = [' .
             implode(',', array_map(function ($point) {
                 return 'new google.maps.LatLng(' . $point['geometry']['coordinates'][1] . ',' . $point['geometry']['coordinates'][0] . ')';
-            }, $features)) .
+            }, $validFeatures)) .
             '];
-
-           
 
             new google.maps.visualization.HeatmapLayer({
                 data: heatmapData,
                 map: map
-            });
+            });';
+        }
+
+        $output .= '
         }
         window.addEventListener(\'load\', initHeatMap);
         </script>';
@@ -1645,24 +1729,44 @@ public static function render_single_checkin($checkin, $company_info = array())
      */
     public static function render_multimap($locations, $maps_api_key)
     {
-        // Check for required fields
-        if (empty($locations)) {
-            return '';
-        }
-
         // Ensure necessary scripts are loaded
         wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
         wp_enqueue_script('markerclusterer', 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', array('google-maps'), null, array('strategy' => 'async'));
 
-        // Extract features array from the GeoJSON FeatureCollection
-        $features = $locations['features'];
+        // Default center coordinates (you can adjust these to your preferred default location)
+        $defaultCenterLat = 39.8283; // Example: USA center
+        $defaultCenterLng = -98.5795;
+        $defaultZoom = 4;
 
-        // Determine the bounds for the map
-        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
+        // Check if we have valid location data
+        $hasValidLocations = !empty($locations) && !empty($locations['features']) && is_array($locations['features']);
+        
+        if ($hasValidLocations) {
+            // Extract features array from the GeoJSON FeatureCollection
+            $features = $locations['features'];
 
-        // Calculate center point
-        $centerLat = ($minLat + $maxLat) / 2;
-        $centerLng = ($minLng + $maxLng) / 2;
+            // Determine the bounds for the map if we have features
+            list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
+
+            // If bounds calculation was successful, use calculated center
+            if ($minLat !== null && $maxLat !== null && $minLng !== null && $maxLng !== null) {
+                $centerLat = ($minLat + $maxLat) / 2;
+                $centerLng = ($minLng + $maxLng) / 2;
+                $useCalculatedBounds = true;
+            } else {
+                // Fall back to default if bounds calculation failed
+                $centerLat = $defaultCenterLat;
+                $centerLng = $defaultCenterLng;
+                $useCalculatedBounds = false;
+                $features = []; // Clear features since they're invalid
+            }
+        } else {
+            // No valid locations, use defaults
+            $centerLat = $defaultCenterLat;
+            $centerLng = $defaultCenterLng;
+            $useCalculatedBounds = false;
+            $features = [];
+        }
 
         // Start building HTML output
         $output = '<div id="multimap" class="jcp-multimap"></div>';
@@ -1670,37 +1774,53 @@ public static function render_single_checkin($checkin, $company_info = array())
         // Add CSS for modern responsive map
         $output .= self::get_multimap_styles();
 
-        // Generate unique markers data with properties
+        // Generate unique markers data with properties (only if we have valid features)
         $markersData = array();
-        foreach ($features as $index => $feature) {
-            // Extract relevant data for the marker
-            $lat = $feature['geometry']['coordinates'][1];
-            $lng = $feature['geometry']['coordinates'][0];
-            
-            // Get properties from feature if available
-            $title = !empty($feature['properties']['title']) ? 
-                esc_js($feature['properties']['title']) : 'Location ' . ($index + 1);
-            
-            $description = !empty($feature['properties']['description']) ? 
-                esc_js($feature['properties']['description']) : '';
+        if (!empty($features)) {
+            foreach ($features as $index => $feature) {
+                // Validate feature structure
+                if (!isset($feature['geometry']['coordinates']) || 
+                    !is_array($feature['geometry']['coordinates']) ||
+                    count($feature['geometry']['coordinates']) < 2) {
+                    continue; // Skip invalid features
+                }
                 
-            $address = !empty($feature['properties']['address']) ? 
-                esc_js($feature['properties']['address']) : '';
+                // Extract relevant data for the marker
+                $lat = $feature['geometry']['coordinates'][1];
+                $lng = $feature['geometry']['coordinates'][0];
                 
-            $date = !empty($feature['properties']['createdAt']) ? 
-                date('F j, Y', $feature['properties']['createdAt']) : '';
-            
-            // Build the marker data
-            $markersData[] = "{
-                position: { lat: {$lat}, lng: {$lng} },
-                title: '{$title}',
-                description: '{$description}',
-                address: '{$address}',
-                date: '{$date}'
-            }";
+                // Validate coordinates are numeric
+                if (!is_numeric($lat) || !is_numeric($lng)) {
+                    continue; // Skip invalid coordinates
+                }
+                
+                // Get properties from feature if available
+                $title = !empty($feature['properties']['title']) ? 
+                    esc_js($feature['properties']['title']) : 'Location ' . ($index + 1);
+                
+                $description = !empty($feature['properties']['description']) ? 
+                    esc_js($feature['properties']['description']) : '';
+                    
+                $address = !empty($feature['properties']['address']) ? 
+                    esc_js($feature['properties']['address']) : '';
+                    
+                $date = !empty($feature['properties']['createdAt']) ? 
+                    date('F j, Y', $feature['properties']['createdAt']) : '';
+                
+                // Build the marker data
+                $markersData[] = "{
+                    position: { lat: {$lat}, lng: {$lng} },
+                    title: '{$title}',
+                    description: '{$description}',
+                    address: '{$address}',
+                    date: '{$date}'
+                }";
+            }
         }
 
-       
+        // Generate JavaScript for the map
+        $markersString = empty($markersData) ? '' : implode(',', $markersData);
+        
         $output .= '<script>
             async function initMultiMap() {
                 try {
@@ -1711,10 +1831,13 @@ public static function render_single_checkin($checkin, $company_info = array())
                     // Create the map
                     const map = new Map(document.getElementById("multimap"), {
                         center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' },
-                        zoom: 10,
+                        zoom: ' . ($useCalculatedBounds ? '10' : $defaultZoom) . ',
                         mapId: "f4a15cb6cd4f8d61", // You should replace this with your actual Map ID
-                    });
+                    });';
 
+        // Only add bounds fitting if we have calculated bounds
+        if ($hasValidLocations && $useCalculatedBounds) {
+            $output .= '
                     // Define bounds for the map
                     const bounds = new google.maps.LatLngBounds(
                         new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
@@ -1722,65 +1845,64 @@ public static function render_single_checkin($checkin, $company_info = array())
                     );
                     
                     // Fit the map to these bounds
-                    map.fitBounds(bounds);
+                    map.fitBounds(bounds);';
+        }
 
-                    // Markers data
-                    const markersData = [' . implode(',', $markersData) . '];
-
-                    // Create markers array for clustering
+        // Only add markers if we have valid marker data
+        if (!empty($markersData)) {
+            $output .= '
+                    // Create markers array
+                    const markersData = [' . $markersString . '];
                     const markers = [];
 
-                    // Create markers
+                    // Add markers to the map
                     markersData.forEach((markerData, index) => {
                         const marker = new AdvancedMarkerElement({
-                            map: map,
                             position: markerData.position,
-                            title: markerData.title
+                            map: map,
+                            title: markerData.title,
                         });
 
-                        // Add marker to array for clustering
+                        // Create info window content
+                        const infoContent = `
+                            <div style="max-width: 200px;">
+                                <h3 style="margin: 0 0 10px 0; font-size: 14px;">${markerData.title}</h3>
+                                ${markerData.description ? `<p style="margin: 0 0 5px 0; font-size: 12px;">${markerData.description}</p>` : ""}
+                                ${markerData.address ? `<p style="margin: 0 0 5px 0; font-size: 12px;"><strong>Address:</strong> ${markerData.address}</p>` : ""}
+                                ${markerData.date ? `<p style="margin: 0; font-size: 12px;"><strong>Date:</strong> ${markerData.date}</p>` : ""}
+                            </div>
+                        `;
+
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: infoContent
+                        });
+
+                        marker.addListener("click", () => {
+                            infoWindow.open(map, marker);
+                        });
+
                         markers.push(marker);
-
-                        // Add info window if there\'s additional content
-                        if (markerData.description || markerData.address || markerData.date) {
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `
-                                    <div style="max-width: 200px;">
-                                        <h4>${markerData.title}</h4>
-                                        ${markerData.description ? `<p>${markerData.description}</p>` : ""}
-                                        ${markerData.address ? `<p><strong>Address:</strong> ${markerData.address}</p>` : ""}
-                                        ${markerData.date ? `<p><strong>Date:</strong> ${markerData.date}</p>` : ""}
-                                    </div>
-                                `
-                            });
-
-                            marker.addListener("click", () => {
-                                infoWindow.open(map, marker);
-                            });
-                        }
                     });
-                    
-                    // After creating all markers, add clustering (only if there are multiple markers)
-                    if (markers.length > 1) {
-                        const markerCluster = new markerClusterer.MarkerClusterer({ 
-                            map: map, 
-                            markers: markers 
-                        });
-                    }
 
+                    // Add clustering if there are multiple markers
+                    if (markers.length > 1) {
+                        new markerClusterer.MarkerClusterer({ markers, map });
+                    }';
+        }
+
+        $output .= '
                 } catch (error) {
-                    console.error("Error initializing map:", error);
+                    console.error("Error loading Google Maps:", error);
                 }
             }
-
-            // Initialize when page loads
+            
+            // Initialize the map when the page loads
             if (typeof google !== "undefined" && google.maps) {
                 initMultiMap();
             } else {
                 window.addEventListener("load", initMultiMap);
             }
         </script>';
-
 
         return $output;
     }
