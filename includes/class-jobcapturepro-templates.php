@@ -25,7 +25,7 @@ class JobCaptureProTemplates
             'show_company_stats' => false,
             'show_company_reviews' => false
         );
-        
+
         $feature_enabled = isset($feature_toggles[$feature_name]) ? $feature_toggles[$feature_name] : false;
         return $feature_enabled && $data_exists;
     }
@@ -70,7 +70,7 @@ class JobCaptureProTemplates
         }
     }
 
-    
+
     /**
      * Renders combined components for job capture display
      *
@@ -85,11 +85,11 @@ class JobCaptureProTemplates
      */
     public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id)
     {
-        
+
         $output = '<div class="jcp-combined-components">';
 
         // Render the company info section
-         $output .= JobCaptureProTemplates::render_company_info($company_info);
+        $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
         $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
@@ -126,15 +126,15 @@ class JobCaptureProTemplates
         </style>';
     }
 
-/**
- * Generate HTML for a single checkin page matching screenshot style
- */
-public static function render_single_checkin($checkin, $company_info = array())
-{
-    $output = '<div class="jcp-single-checkin">';
-    
-    // Add CSS styles
-    $output .= '<style>
+    /**
+     * Generate HTML for a single checkin page matching screenshot style
+     */
+    public static function render_single_checkin($checkin, $company_info = array())
+    {
+        $output = '<div class="jcp-single-checkin">';
+
+        // Add CSS styles
+        $output .= '<style>
         .jcp-single-checkin {
             margin: 0 auto;
             padding: 20px;
@@ -430,85 +430,85 @@ public static function render_single_checkin($checkin, $company_info = array())
         }
     }
     </style>';
-    
-    // First content block (header and description)
-    $output .= '<div class="jcp-single-content-block">';
-   
-    $output .= '<div class="jcp-flex-div">';
 
-    $output .= '<div class="jcp-checkin-header">';
-    $output .= '<div class="jcp-title-container">';
-    
-    // Use actual checkin image or fallback
-    $hero_image = !empty($checkin['imageUrls'][0]) ? $checkin['imageUrls'][0] : 'https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg';
-    $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
-    $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
-    $output .= '</div>';
-   // $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
-    // Add the hero image below the title
-    $hero_image_full = !empty($checkin['imageUrls'][1]) ? $checkin['imageUrls'][1] : $hero_image;
-    $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image_full) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
-    $output .= '<div class="jcp-checkin-meta">';
-    
-    // Use actual data or fallbacks
-    $checkin_date = isset($checkin['createdAt']) ? date('F j, Y', $checkin['createdAt']) : 'July 6, 2025';
-    $tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
-    $location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
-    
-    $output .= '<span class="jcp-checkin-date"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"></path></svg>' . esc_html($checkin_date) . '</span>';
-    $output .= '<span class="jcp-checkin-tech"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>' . esc_html($tech_name) . '</span>';
-    $output .= '<span class="jcp-checkin-location"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>' . esc_html($location) . '</span>';
-    $output .= '</div>';
-    $output .= '<div class="jcp-checkin-description">';
-    
-    // Use actual description or fallback
-    $description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
-    $output .= '<p>' . esc_html($description) . '</p>';
-    $output .= '</div>';
-    $output .= '</div>'; // close first content block
-    
-    // Second content block (all other sections)
-    $output .= '<div class="jcp-content-block">';
-    
-    // Review section - only show if customer review data exists
-    $show_reviews = self::should_show_feature('show_customer_reviews', !empty($checkin['customer_review']));
-    if ($show_reviews && !empty($checkin['customer_review'])) {
-        $output .= '<div class="jcp-checkin-review">';
-        $output .= '<h2 class="jcp-section-title">Review</h2>';
-        $output .= '<div class="jcp-review-content">';
-        $output .= '<p class="jcp-review-text">"' . esc_html($checkin['customer_review']['text']) . '"</p>';
-        $output .= '<p class="jcp-review-author">– ' . esc_html($checkin['customer_review']['author']) . '</p>';
+        // First content block (header and description)
+        $output .= '<div class="jcp-single-content-block">';
+
+        $output .= '<div class="jcp-flex-div">';
+
+        $output .= '<div class="jcp-checkin-header">';
+        $output .= '<div class="jcp-title-container">';
+
+        // Use actual checkin image or fallback
+        $hero_image = !empty($checkin['imageUrls'][0]) ? $checkin['imageUrls'][0] : 'https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg';
+        $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
+        $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
         $output .= '</div>';
-    } else {
-        // Fallback to hard-coded review if feature is enabled but no data
-        $show_fallback_review = self::should_show_feature('show_customer_reviews', true);
-        if ($show_fallback_review) {
+        // $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
+        // Add the hero image below the title
+        $hero_image_full = !empty($checkin['imageUrls'][1]) ? $checkin['imageUrls'][1] : $hero_image;
+        $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image_full) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
+        $output .= '<div class="jcp-checkin-meta">';
+
+        // Use actual data or fallbacks
+        $checkin_date = isset($checkin['createdAt']) ? date('F j, Y', $checkin['createdAt']) : 'July 6, 2025';
+        $tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
+        $location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
+
+        $output .= '<span class="jcp-checkin-date"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"></path></svg>' . esc_html($checkin_date) . '</span>';
+        $output .= '<span class="jcp-checkin-tech"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>' . esc_html($tech_name) . '</span>';
+        $output .= '<span class="jcp-checkin-location"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>' . esc_html($location) . '</span>';
+        $output .= '</div>';
+        $output .= '<div class="jcp-checkin-description">';
+
+        // Use actual description or fallback
+        $description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
+        $output .= '<p>' . esc_html($description) . '</p>';
+        $output .= '</div>';
+        $output .= '</div>'; // close first content block
+
+        // Second content block (all other sections)
+        $output .= '<div class="jcp-content-block">';
+
+        // Review section - only show if customer review data exists
+        $show_reviews = self::should_show_feature('show_customer_reviews', !empty($checkin['customer_review']));
+        if ($show_reviews && !empty($checkin['customer_review'])) {
             $output .= '<div class="jcp-checkin-review">';
             $output .= '<h2 class="jcp-section-title">Review</h2>';
             $output .= '<div class="jcp-review-content">';
-            $output .= '<p class="jcp-review-text">"Looks brand new! Friendly, professional, fast. Highly recommend."</p>';
-            $output .= '<p class="jcp-review-author">– Danielle P.</p>';
+            $output .= '<p class="jcp-review-text">"' . esc_html($checkin['customer_review']['text']) . '"</p>';
+            $output .= '<p class="jcp-review-author">– ' . esc_html($checkin['customer_review']['author']) . '</p>';
             $output .= '</div>';
+        } else {
+            // Fallback to hard-coded review if feature is enabled but no data
+            $show_fallback_review = self::should_show_feature('show_customer_reviews', true);
+            if ($show_fallback_review) {
+                $output .= '<div class="jcp-checkin-review">';
+                $output .= '<h2 class="jcp-section-title">Review</h2>';
+                $output .= '<div class="jcp-review-content">';
+                $output .= '<p class="jcp-review-text">"Looks brand new! Friendly, professional, fast. Highly recommend."</p>';
+                $output .= '<p class="jcp-review-author">– Danielle P.</p>';
+                $output .= '</div>';
+            }
         }
-    }
 
-    // Star ratings - only show if rating data exists or feature is enabled
-    $show_ratings = self::should_show_feature('show_star_ratings', !empty($checkin['rating']));
-    if ($show_ratings && !empty($checkin['rating'])) {
-        $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
-        $output .= '<div class="jcp-job-reviews">';
-        for ($i = 1; $i <= 5; $i++) {
-            $filled = $i <= $rating ? 'filled' : 'empty';
-            $output .= '<span class="star-' . $filled . '">
+        // Star ratings - only show if rating data exists or feature is enabled
+        $show_ratings = self::should_show_feature('show_star_ratings', !empty($checkin['rating']));
+        if ($show_ratings && !empty($checkin['rating'])) {
+            $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
+            $output .= '<div class="jcp-job-reviews">';
+            for ($i = 1; $i <= 5; $i++) {
+                $filled = $i <= $rating ? 'filled' : 'empty';
+                $output .= '<span class="star-' . $filled . '">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
             </span>';
-        }
-        $output .= '</div>';
-    } else {
-        // Fallback to 5-star rating if feature is enabled but no data
-        $show_fallback_rating = self::should_show_feature('show_star_ratings', true);
-        if ($show_fallback_rating) {
-            $output .= '<div class="jcp-job-reviews">
+            }
+            $output .= '</div>';
+        } else {
+            // Fallback to 5-star rating if feature is enabled but no data
+            $show_fallback_rating = self::should_show_feature('show_star_ratings', true);
+            if ($show_fallback_rating) {
+                $output .= '<div class="jcp-job-reviews">
                 <span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
                 </span>
@@ -525,117 +525,117 @@ public static function render_single_checkin($checkin, $company_info = array())
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
                 </span>
             </div>';
+            }
         }
-    }
 
-    // Verified badge - only show if job is verified
-    $show_verified = self::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']);
-    if ($show_verified || self::should_show_feature('show_verified_badges', true)) {
-        $output .= '<div class="jcp-verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm84.4-299.3l-80 128c-4.2 6.7-11.4 10.9-19.3 11.3s-15.5-3.2-20.2-9.6l-48-64c-8-10.6-5.8-25.6 4.8-33.6s25.6-5.8 33.6 4.8l27 36 61.4-98.3c7-11.2 21.8-14.7 33.1-7.6s14.7 21.8 7.6 33.1z"/></svg> Verified Job Check-In</div>';
-    }
-    
-    $output .= '<a href="#" class="get-quote-btn">Get a Quote Like This</a>';
-    
-    // Related check-ins - only show if related checkins exist
-    $show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
-    if ($show_related) {
-        $output .= '<div class="jcp-related-checkins">';
-        $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
-        $output .= '<ul class="jcp-list">';
-        foreach ($checkin['related_checkins'] as $related) {
-            $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> ' . esc_html($related['title']) . '</li>';
+        // Verified badge - only show if job is verified
+        $show_verified = self::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']);
+        if ($show_verified || self::should_show_feature('show_verified_badges', true)) {
+            $output .= '<div class="jcp-verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm84.4-299.3l-80 128c-4.2 6.7-11.4 10.9-19.3 11.3s-15.5-3.2-20.2-9.6l-48-64c-8-10.6-5.8-25.6 4.8-33.6s25.6-5.8 33.6 4.8l27 36 61.4-98.3c7-11.2 21.8-14.7 33.1-7.6s14.7 21.8 7.6 33.1z"/></svg> Verified Job Check-In</div>';
         }
-        $output .= '</ul>';
-        $output .= '</div>';
-    } else {
-        // Fallback to hard-coded related checkins
-        $output .= '<div class="jcp-related-checkins">';
-        $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
-        $output .= '<ul class="jcp-list">';
-        $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> Driveway Pressure Wash – Sarasota</li>';
-        $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M562.1 383.9c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144C540.6 93.4 520 85.4 504.2 73 490.1 61.9 470 61.7 456 73c-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3z"/></svg> Pool Deck Cleaning – Nokomis</li>';
-        $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-16 160H64v-84c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v84z"/></svg> Window Cleaning – Lakewood Ranch</li>';
-        $output .= '</ul>';
-        $output .= '</div>';
-    }
-    $output .= '</div>';
-    
-    $output .= '</div>'; // close second content block
-   
-    $output .= '</div>'; // close jcp-flex-div
 
-    // Testimonials & Services div
-    $output .= '<div class="jcp-ts-div">';
+        $output .= '<a href="#" class="get-quote-btn">Get a Quote Like This</a>';
 
-    // Testimonials - only show if testimonials exist or pass company_info parameter
-    $show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
-    if ($show_testimonials) {
-        $output .= '<div class="jcp-testimonials">';
-        $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
-        $output .= '<ul class="jcp-list">';
-        foreach ($company_info['testimonials'] as $testimonial) {
-            $output .= '<li>"' . esc_html($testimonial['text']) . '" – ' . esc_html($testimonial['author']) . '</li>';
-        }
-        $output .= '</ul>';
-        $output .= '</div>';
-    } else {
-        // Fallback to hard-coded testimonials
-        $output .= '<div class="jcp-testimonials">';
-        $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
-        $output .= '<ul class="jcp-list">';
-        $output .= '<li>"Cleaned it like new in 2 hours." – Brian M.</li>';
-        $output .= '<li>"Didn\'t even need to be home." – Linda R.</li>';
-        $output .= '<li>"No upsells. Just results." – Mark D.</li>';
-        $output .= '</ul>';
-        $output .= '</div>';
-    }
-
-    // Service tags - use actual tags if available
-    $show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
-    if ($show_service_tags) {
-        $output .= '<div class="jcp-service-tags">';
-        $output .= '<h2 class="jcp-section-title">Service Tags</h2>';
-        $output .= '<div class="jcp-tags-list">';
-        foreach ($checkin['service_tags'] as $tag) {
-            $output .= '<span class="job-tag">' . esc_html($tag) . '</span>';
+        // Related check-ins - only show if related checkins exist
+        $show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
+        if ($show_related) {
+            $output .= '<div class="jcp-related-checkins">';
+            $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
+            $output .= '<ul class="jcp-list">';
+            foreach ($checkin['related_checkins'] as $related) {
+                $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> ' . esc_html($related['title']) . '</li>';
+            }
+            $output .= '</ul>';
+            $output .= '</div>';
+        } else {
+            // Fallback to hard-coded related checkins
+            $output .= '<div class="jcp-related-checkins">';
+            $output .= '<h2 class="jcp-section-title">Related Check-ins</h2>';
+            $output .= '<ul class="jcp-list">';
+            $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M338.8-9.9c11.9 8.6 16.3 24.2 10.9 37.8L271.3 224 416 224c13.5 0 25.5 8.4 30.1 21.1s.7 26.9-9.6 35.5l-288 240c-11.3 9.4-27.4 9.9-39.3 1.3s-16.3-24.2-10.9-37.8L176.7 288 32 288c-13.5 0-25.5-8.4-30.1-21.1s-.7-26.9 9.6-35.5l288-240c11.3-9.4 27.4-9.9 39.3-1.3z"/></svg> Driveway Pressure Wash – Sarasota</li>';
+            $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M562.1 383.9c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144c-21.5-2.4-42.1-10.5-57.9-22.9-14.1-11.1-34.2-11.3-48.2 0-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3zm0-144C540.6 93.4 520 85.4 504.2 73 490.1 61.9 470 61.7 456 73c-37.9 30.4-107.2 30.4-145.7-1.5-13.5-11.2-33-9.1-46.7 1.8-38 30.1-106.9 30-145.2-1.7-13.5-11.2-33.3-8.9-47.1 2-15.5 12.2-36 20.1-57.7 22.4-7.9.8-13.6 7.8-13.6 15.7v32.2c0 9.1 7.6 16.8 16.7 16 28.8-2.5 56.1-11.4 79.4-25.9 56.5 34.6 137 34.1 192 0 56.5 34.6 137 34.1 192 0 23.3 14.2 50.9 23.3 79.1 25.8 9.1.8 16.7-6.9 16.7-16v-31.6c.1-8-5.7-15.4-13.8-16.3z"/></svg> Pool Deck Cleaning – Nokomis</li>';
+            $output .= '<li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-16 160H64v-84c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12v84z"/></svg> Window Cleaning – Lakewood Ranch</li>';
+            $output .= '</ul>';
+            $output .= '</div>';
         }
         $output .= '</div>';
+
+        $output .= '</div>'; // close second content block
+
+        $output .= '</div>'; // close jcp-flex-div
+
+        // Testimonials & Services div
+        $output .= '<div class="jcp-ts-div">';
+
+        // Testimonials - only show if testimonials exist or pass company_info parameter
+        $show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
+        if ($show_testimonials) {
+            $output .= '<div class="jcp-testimonials">';
+            $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
+            $output .= '<ul class="jcp-list">';
+            foreach ($company_info['testimonials'] as $testimonial) {
+                $output .= '<li>"' . esc_html($testimonial['text']) . '" – ' . esc_html($testimonial['author']) . '</li>';
+            }
+            $output .= '</ul>';
+            $output .= '</div>';
+        } else {
+            // Fallback to hard-coded testimonials
+            $output .= '<div class="jcp-testimonials">';
+            $output .= '<h2 class="jcp-section-title">What Homeowners Say</h2>';
+            $output .= '<ul class="jcp-list">';
+            $output .= '<li>"Cleaned it like new in 2 hours." – Brian M.</li>';
+            $output .= '<li>"Didn\'t even need to be home." – Linda R.</li>';
+            $output .= '<li>"No upsells. Just results." – Mark D.</li>';
+            $output .= '</ul>';
+            $output .= '</div>';
+        }
+
+        // Service tags - use actual tags if available
+        $show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
+        if ($show_service_tags) {
+            $output .= '<div class="jcp-service-tags">';
+            $output .= '<h2 class="jcp-section-title">Service Tags</h2>';
+            $output .= '<div class="jcp-tags-list">';
+            foreach ($checkin['service_tags'] as $tag) {
+                $output .= '<span class="job-tag">' . esc_html($tag) . '</span>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        } else {
+            // Fallback to hard-coded service tags
+            $output .= '<div class="jcp-service-tags">';
+            $output .= '<h2 class="jcp-section-title">Nearby Service Tags</h2>';
+            $output .= '<div class="jcp-tags-list">';
+            $output .= '<span class="job-tag">Venice, FL</span>';
+            $output .= '<span class="job-tag">Roof Cleaning</span>';
+            $output .= '<span class="job-tag">Soft Wash</span>';
+            $output .= '<span class="job-tag">Exterior Algae</span>';
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        $output .= '</div>'; // close Testimonials & Services div
+
+        // FAQ div
+        $output .= '<div class="jcp-faq-div">';
+
+        // FAQs
+        $output .= '<div class="jcp-faqs">';
+        $output .= '<h2 class="jcp-section-title">FAQs</h2>';
+        $output .= '<ul class="jcp-list">';
+        $output .= '<li>► Do I need to be home?</li>';
+        $output .= '<li>► How long does it take?</li>';
+        $output .= '</ul>';
         $output .= '</div>';
-    } else {
-        // Fallback to hard-coded service tags
-        $output .= '<div class="jcp-service-tags">';
-        $output .= '<h2 class="jcp-section-title">Nearby Service Tags</h2>';
-        $output .= '<div class="jcp-tags-list">';
-        $output .= '<span class="job-tag">Venice, FL</span>';
-        $output .= '<span class="job-tag">Roof Cleaning</span>';
-        $output .= '<span class="job-tag">Soft Wash</span>';
-        $output .= '<span class="job-tag">Exterior Algae</span>';
-        $output .= '</div>';
-        $output .= '</div>';
+
+        $output .= '</div>'; // close FAQ div
+
+        $output .= '</div>'; // close jcp-single-checkin
+
+        return $output;
     }
 
-     $output .= '</div>'; // close Testimonials & Services div
 
-      // FAQ div
-    $output .= '<div class="jcp-faq-div">';
-     
-     // FAQs
-     $output .= '<div class="jcp-faqs">';
-     $output .= '<h2 class="jcp-section-title">FAQs</h2>';
-     $output .= '<ul class="jcp-list">';
-     $output .= '<li>► Do I need to be home?</li>';
-     $output .= '<li>► How long does it take?</li>';
-     $output .= '</ul>';
-     $output .= '</div>';
-
-     $output .= '</div>'; // close FAQ div
-
-    $output .= '</div>'; // close jcp-single-checkin
-    
-    return $output;
-}
-
-    
     /**
      * Generate HTML for a single checkin card
      * 
@@ -649,11 +649,11 @@ public static function render_single_checkin($checkin, $company_info = array())
         if (empty($checkin['description']) || empty($checkin['address']) || empty($checkin['createdAt'])) {
             return '';
         }
-        
+
         // Create clickable link with checkinId parameter
         $current_url = $_SERVER['REQUEST_URI'];
         $checkin_url = add_query_arg('checkinId', $checkin['id'], $current_url);
-        
+
         $output = '<a href="' . esc_url($checkin_url) . '" class="jcp-checkin-card" style="text-decoration: none; color: inherit;">';
 
         // Images (if available)
@@ -664,14 +664,14 @@ public static function render_single_checkin($checkin, $company_info = array())
         // User info (if available)
         if (!empty($checkin['assignedUser'])) {
             $output .= '<div class="jcp-checkin-user">';
-            
+
             // Profile image
             if (!empty($checkin['assignedUser']['profileImageUrl'])) {
                 $output .= '<div class="jcp-user-image">
                     <img src="' . esc_url($checkin['assignedUser']['profileImageUrl']) . '" alt="User profile">
                 </div>';
             }
-            
+
             // User name
             if (!empty($checkin['assignedUser']['name'])) {
                 $output .= '<div class="jcp-user-name">
@@ -680,7 +680,7 @@ public static function render_single_checkin($checkin, $company_info = array())
             }
 
             // job Reviews
-                $output .= '<div class="jcp-job-reviews">
+            $output .= '<div class="jcp-job-reviews">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
                     </span>
@@ -697,8 +697,8 @@ public static function render_single_checkin($checkin, $company_info = array())
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
                     </span>
                 </div>';
-            
-            
+
+
             $output .= '</div>';
         }
 
@@ -713,7 +713,7 @@ public static function render_single_checkin($checkin, $company_info = array())
         $output .= '<p class="date-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"/></svg>' . esc_html(date('F j, Y', $timestamp)) . '</p>'; // Format: "Month Day, Year" (e.g., "July 23, 2025")
         $output .= '</div>';
 
-            // Address - Extract city and state only
+        // Address - Extract city and state only
         $output .= '<div class="jcp-checkin-address">';
 
         // Parse address (assuming format: "Street, City, State, ZIP, Country")
@@ -744,7 +744,7 @@ public static function render_single_checkin($checkin, $company_info = array())
     public static function render_checkins_grid($checkins, $company_info = array())
     {
         // Sort checkins by date (newest first)
-        usort($checkins, function($a, $b) {
+        usort($checkins, function ($a, $b) {
             // Compare timestamps (higher timestamp = more recent)
             return $b['createdAt'] - $a['createdAt'];
         });
@@ -760,7 +760,7 @@ public static function render_single_checkin($checkin, $company_info = array())
 
         // Grid container with data attribute to store the column count
         $output .= '<div class="jcp-checkins-grid ' . $gridId . '" data-column-count="3">';
-        
+
         // Add each checkin to the grid in date-sorted order
         foreach ($checkins as $checkin) {
             $output .= self::render_checkin_card($checkin);
@@ -769,70 +769,70 @@ public static function render_single_checkin($checkin, $company_info = array())
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
 
-         // jcp stats section - only show if stats data is available or feature is enabled
-    $show_stats = self::should_show_feature('show_company_stats', !empty($company_info['stats']));
-    if ($show_stats && !empty($company_info['stats'])) {
-        $output .= '<div class="jcp-stats-container">';
-        
-        if (!empty($company_info['stats']['jobs_this_month'])) {
-            $output .= '<div class="jcp-stat-item">
+        // jcp stats section - only show if stats data is available or feature is enabled
+        $show_stats = self::should_show_feature('show_company_stats', !empty($company_info['stats']));
+        if ($show_stats && !empty($company_info['stats'])) {
+            $output .= '<div class="jcp-stats-container">';
+
+            if (!empty($company_info['stats']['jobs_this_month'])) {
+                $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">' . esc_html($company_info['stats']['jobs_this_month']) . '</div>
                 <div class="jcp-stat-label">Jobs Posted This Month</div>
             </div>';
-        }
-        
-        if (!empty($company_info['stats']['average_rating'])) {
-            $output .= '<div class="jcp-stat-item">
+            }
+
+            if (!empty($company_info['stats']['average_rating'])) {
+                $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">' . esc_html($company_info['stats']['average_rating']) . '</div>
                 <div class="jcp-stat-label">Average Rating</div>
             </div>';
-        }
-        
-        if (!empty($company_info['stats']['last_checkin'])) {
-            $output .= '<div class="jcp-stat-item">
+            }
+
+            if (!empty($company_info['stats']['last_checkin'])) {
+                $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">' . esc_html($company_info['stats']['last_checkin']) . '</div>
                 <div class="jcp-stat-label">Last Job Check-In</div>
             </div>';
-        }
-        
-        $output .= '</div>'; // Close jcp-stats-container
-    } else {
-        // Fallback to hard-coded stats if feature is enabled but no data
-        $show_fallback_stats = self::should_show_feature('show_company_stats', true);
-        if ($show_fallback_stats) {
-            $output .= '<div class="jcp-stats-container">';
-            
-            $output .= '<div class="jcp-stat-item">
+            }
+
+            $output .= '</div>'; // Close jcp-stats-container
+        } else {
+            // Fallback to hard-coded stats if feature is enabled but no data
+            $show_fallback_stats = self::should_show_feature('show_company_stats', true);
+            if ($show_fallback_stats) {
+                $output .= '<div class="jcp-stats-container">';
+
+                $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">86</div>
                 <div class="jcp-stat-label">Jobs Posted This Month</div>
             </div>';
-            
-            $output .= '<div class="jcp-stat-item">
+
+                $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">96%</div>
                 <div class="jcp-stat-label">Average 5-Star Rating</div>
             </div>';
-            
-            $output .= '<div class="jcp-stat-item">
+
+                $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">12 mins ago</div>
                 <div class="jcp-stat-label">Last Job Check-In</div>
             </div>';
-            
-            $output .= '</div>'; // Close jcp-stats-container
-        }
-    }
 
-         // jcp CTA section
-    
-         $output .= '<div class="jcp-cta-container">';
-    
-         // cta Heading
-         $output .= '<div class="jcp-cta">
+                $output .= '</div>'; // Close jcp-stats-container
+            }
+        }
+
+        // jcp CTA section
+
+        $output .= '<div class="jcp-cta-container">';
+
+        // cta Heading
+        $output .= '<div class="jcp-cta">
                     <h2>Let Your Work Speak For Itself</h2>
                     <p>Capture check-ins like these with JobCapturePro. Set it and forget it.</p>
                     <a href="#" class="quote-btn">Get JobCapturePro</a>
                     </div>';
-         
-         $output .= '</div>'; // Close jcp-cta-container
+
+        $output .= '</div>'; // Close jcp-cta-container
 
         // Add JavaScript to maintain proper masonry layout
         $output .= '<script>
@@ -909,7 +909,7 @@ public static function render_single_checkin($checkin, $company_info = array())
     private static function get_checkins_grid_styles($gridId = null)
     {
         $gridSelector = $gridId ? '.' . $gridId : '.jcp-checkins-grid';
-        
+
         return '<style>
             .jcp-container {
                 max-width: 1200px;
@@ -1376,9 +1376,9 @@ public static function render_single_checkin($checkin, $company_info = array())
         $imageCount = count($imageUrls);
         $showArrows = $imageCount > 1;
         $galleryId = 'gallery-' . wp_rand(); // Create unique ID for this gallery
-        
+
         $output = '<div class="jcp-checkin-image" id="' . $galleryId . '">';
-        
+
         // Add all images but only first is visible initially
         foreach ($imageUrls as $index => $imageUrl) {
             $activeClass = $index === 0 ? ' active' : '';
@@ -1386,29 +1386,29 @@ public static function render_single_checkin($checkin, $company_info = array())
                 <img src="' . esc_url($imageUrl) . '" alt="Checkin image ' . ($index + 1) . '">
             </div>';
         }
-        
+
         // Add navigation arrows if there are multiple images
         if ($showArrows) {
             $output .= '<div class="gallery-nav gallery-prev" onclick="changeImage(\'' . $galleryId . '\', \'prev\')">&#10094;</div>';
             $output .= '<div class="gallery-nav gallery-next" onclick="changeImage(\'' . $galleryId . '\', \'next\')">&#10095;</div>';
             $output .= '<div class="gallery-dots">';
-            
+
             // Add indicator dots
             for ($i = 0; $i < $imageCount; $i++) {
                 $activeClass = $i === 0 ? ' active' : '';
                 $output .= '<span class="gallery-dot' . $activeClass . '" onclick="showImage(\'' . $galleryId . '\', ' . $i . ')"></span>';
             }
-            
+
             $output .= '</div>';
         }
-        
+
         $output .= '</div>';
-        
+
         // Add JavaScript for gallery functionality if there are multiple images
         if ($showArrows) {
             $output .= self::get_gallery_script();
         }
-        
+
         return $output;
     }
 
@@ -1421,13 +1421,13 @@ public static function render_single_checkin($checkin, $company_info = array())
     {
         // Check if script has already been added to avoid duplication
         static $scriptAdded = false;
-        
+
         if ($scriptAdded) {
             return '';
         }
-        
+
         $scriptAdded = true;
-        
+
         return '<script>
             function changeImage(galleryId, direction) {
                 const gallery = document.getElementById(galleryId);
@@ -1478,7 +1478,8 @@ public static function render_single_checkin($checkin, $company_info = array())
         </script>';
     }
 
-    private static function determine_bounds($features) {
+    private static function determine_bounds($features)
+    {
         // Calculate center point of 80% of checkins
         $totalPoints = count($features);
 
@@ -1585,7 +1586,7 @@ public static function render_single_checkin($checkin, $company_info = array())
 
         return $output;
     }
-    
+
     /**
      * Generate CSS styles for the heatmap
      * 
@@ -1637,6 +1638,61 @@ public static function render_single_checkin($checkin, $company_info = array())
         </style>';
     }
 
+
+    /**
+     * Generate HTML for a Google Maps multimap directly from check-ins data
+     * 
+     * @param array $checkins Array of check-in data with full details
+     * @param string $maps_api_key Google Maps API key
+     * @return string HTML for a Google Maps multimap
+     */
+    public static function render_multimap_from_checkins_data($checkins, $maps_api_key = '')
+    {
+        if (empty($checkins)) {
+            return 'No check-in data available';
+        }
+
+        // Get the API Key from the plugin options if not provided
+        if (empty($maps_api_key)) {
+            $options = get_option('jobcapturepro_options');
+            if (is_array($options) && isset($options['jobcapturepro_field_apikey'])) {
+                $maps_api_key = trim($options['jobcapturepro_field_apikey']);
+            }
+        }
+
+        // Convert check-ins to GeoJSON features
+        $features = array();
+        foreach ($checkins as $checkin) {
+            if (!empty($checkin['location']['latitude']) && !empty($checkin['location']['longitude'])) {
+                $features[] = array(
+                    'type' => 'Feature',
+                    'geometry' => array(
+                        'type' => 'Point',
+                        'coordinates' => array($checkin['location']['longitude'], $checkin['location']['latitude'])
+                    ),
+                    'properties' => array(
+                        'id' => $checkin['id'],
+                        'title' => 'Check-in', // or use $checkin['title'] if available
+                        'description' => $checkin['description'] ?? '',
+                        'address' => $checkin['address'] ?? '',
+                        'createdAt' => $checkin['createdAt'] ?? time(),
+                        'imageUrls' => $checkin['imageUrls'] ?? array(),
+                        'assignedUser' => $checkin['assignedUser'] ?? array()
+                    )
+                );
+            }
+        }
+
+        // Create locations array in the expected format
+        $locations = array(
+            'type' => 'FeatureCollection',
+            'features' => $features
+        );
+
+        return self::render_multimap($locations, $maps_api_key);
+    }
+
+
     /**
      * Generate HTML for a Google Maps map with multiple markers
      * 
@@ -1650,12 +1706,18 @@ public static function render_single_checkin($checkin, $company_info = array())
             return '';
         }
 
+        // Check if API key is valid
+        if (empty($maps_api_key)) {
+            return '<div class="jcp-error">Google Maps API key is not configured. Please check your plugin settings.</div>';
+        }
+
         // Ensure necessary scripts are loaded
         wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
         wp_enqueue_script('markerclusterer', 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', array('google-maps'), null, array('strategy' => 'async'));
 
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
+
 
         // Determine the bounds for the map
         list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
@@ -1667,40 +1729,64 @@ public static function render_single_checkin($checkin, $company_info = array())
         // Start building HTML output
         $output = '<div id="multimap" class="jcp-multimap"></div>';
 
-        // Add CSS for modern responsive map
+        // Add overlay container for check-in cards
+        $output .= '<div id="jcp-checkin-overlay" class="jcp-checkin-overlay" style="display: none;">
+            <div class="jcp-checkin-overlay-content">
+                <button class="jcp-close-overlay" onclick="closeCheckinOverlay()">&times;</button>
+                <div id="jcp-checkin-card-content"></div>
+            </div>
+        </div>';
+
+        // Add CSS for modern responsive map and overlay
         $output .= self::get_multimap_styles();
 
-        // Generate unique markers data with properties
+        // Add check-in card styles from the grid
+        $output .= self::get_checkins_grid_styles();
+
+        // Generate unique markers data with full check-in properties
         $markersData = array();
         foreach ($features as $index => $feature) {
             // Extract relevant data for the marker
             $lat = $feature['geometry']['coordinates'][1];
             $lng = $feature['geometry']['coordinates'][0];
-            
-            // Get properties from feature if available
-            $title = !empty($feature['properties']['title']) ? 
-                esc_js($feature['properties']['title']) : 'Location ' . ($index + 1);
-            
-            $description = !empty($feature['properties']['description']) ? 
-                esc_js($feature['properties']['description']) : '';
-                
-            $address = !empty($feature['properties']['address']) ? 
-                esc_js($feature['properties']['address']) : '';
-                
-            $date = !empty($feature['properties']['createdAt']) ? 
-                date('F j, Y', $feature['properties']['createdAt']) : '';
-            
-            // Build the marker data
+
+            // Get properties from feature if available - try different property names
+            $title = !empty($feature['properties']['title']) ?
+                esc_js($feature['properties']['title']) : (!empty($feature['properties']['name']) ? esc_js($feature['properties']['name']) : 'Location ' . ($index + 1));
+
+            $description = !empty($feature['properties']['description']) ?
+                esc_js($feature['properties']['description']) : (!empty($feature['properties']['desc']) ? esc_js($feature['properties']['desc']) : '');
+
+            $address = !empty($feature['properties']['address']) ?
+                esc_js($feature['properties']['address']) : (!empty($feature['properties']['location']) ? esc_js($feature['properties']['location']) : '');
+
+            $date = !empty($feature['properties']['createdAt']) ?
+                date('F j, Y', $feature['properties']['createdAt']) : (!empty($feature['properties']['created_at']) ? date('F j, Y', $feature['properties']['created_at']) : '');
+
+            // Get full check-in data for overlay - try different property names
+            $checkin_id = !empty($feature['properties']['id']) ? $feature['properties']['id'] : (!empty($feature['properties']['checkinId']) ? $feature['properties']['checkinId'] : '');
+
+            $image_urls = !empty($feature['properties']['imageUrls']) ? json_encode($feature['properties']['imageUrls']) : (!empty($feature['properties']['images']) ? json_encode($feature['properties']['images']) : '[]');
+
+            $assigned_user = !empty($feature['properties']['assignedUser']) ? json_encode($feature['properties']['assignedUser']) : (!empty($feature['properties']['user']) ? json_encode($feature['properties']['user']) : '{}');
+
+            $created_at = !empty($feature['properties']['createdAt']) ? $feature['properties']['createdAt'] : (!empty($feature['properties']['created_at']) ? $feature['properties']['created_at'] : time());
+
+            // Build the marker data with full check-in information
             $markersData[] = "{
                 position: { lat: {$lat}, lng: {$lng} },
-                title: '{$title}',
-                description: '{$description}',
-                address: '{$address}',
-                date: '{$date}'
+                title: " . json_encode($title) . ",
+                description: " . json_encode($description) . ",
+                address: " . json_encode($address) . ",
+                date: " . json_encode($date) . ",
+                checkin_id: " . json_encode($checkin_id) . ",
+                image_urls: {$image_urls},
+                assigned_user: {$assigned_user},
+                created_at: {$created_at}
             }";
         }
 
-       
+
         $output .= '<script>
             async function initMultiMap() {
                 try {
@@ -1741,23 +1827,10 @@ public static function render_single_checkin($checkin, $company_info = array())
                         // Add marker to array for clustering
                         markers.push(marker);
 
-                        // Add info window if there\'s additional content
-                        if (markerData.description || markerData.address || markerData.date) {
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `
-                                    <div style="max-width: 200px;">
-                                        <h4>${markerData.title}</h4>
-                                        ${markerData.description ? `<p>${markerData.description}</p>` : ""}
-                                        ${markerData.address ? `<p><strong>Address:</strong> ${markerData.address}</p>` : ""}
-                                        ${markerData.date ? `<p><strong>Date:</strong> ${markerData.date}</p>` : ""}
-                                    </div>
-                                `
-                            });
-
-                            marker.addListener("click", () => {
-                                infoWindow.open(map, marker);
-                            });
-                        }
+                        // Add click listener to show check-in overlay
+                        marker.addListener("click", () => {
+                            showCheckinOverlay(markerData);
+                        });
                     });
                     
                     // After creating all markers, add clustering (only if there are multiple markers)
@@ -1765,6 +1838,17 @@ public static function render_single_checkin($checkin, $company_info = array())
                         const markerCluster = new markerClusterer.MarkerClusterer({ 
                             map: map, 
                             markers: markers 
+                        });
+                        
+                        // Add click listener to cluster to handle individual marker clicks
+                        markerCluster.addListener("click", (event) => {
+                            // Find the marker that was clicked
+                            const clickedMarker = event.marker;
+                            const markerIndex = markers.indexOf(clickedMarker);
+                            if (markerIndex !== -1) {
+                                const markerData = markersData[markerIndex];
+                                showCheckinOverlay(markerData);
+                            }
                         });
                     }
 
@@ -1779,12 +1863,214 @@ public static function render_single_checkin($checkin, $company_info = array())
             } else {
                 window.addEventListener("load", initMultiMap);
             }
+
+            // Add click-outside-to-close functionality for overlay
+            let overlayJustOpened = false;
+            
+            document.addEventListener("click", function(e) {
+                const overlay = document.getElementById("jcp-checkin-overlay");
+                const content = document.getElementById("jcp-checkin-card-content");
+                
+                if (overlay && overlay.style.display === "block") {
+                    // Skip if overlay just opened (prevent immediate closing)
+                    if (overlayJustOpened) {
+                        overlayJustOpened = false;
+                        return;
+                    }
+                    
+                    // Check if click is outside the popup content
+                    if (content && !content.contains(e.target)) {
+                        closeCheckinOverlay();
+                    }
+                }
+            });
+
+            // Function to show check-in overlay
+            function showCheckinOverlay(markerData) {
+                const overlay = document.getElementById("jcp-checkin-overlay");
+                const content = document.getElementById("jcp-checkin-card-content");
+                
+                if (!overlay || !content) {
+                    console.error("Overlay elements not found!");
+                    return;
+                }
+                
+                // Generate check-in card HTML
+                const checkinCard = generateCheckinCard(markerData);
+                content.innerHTML = checkinCard;
+                
+                // Show overlay
+                overlay.style.display = "block";
+                overlayJustOpened = true;
+            }
+
+            // Function to close check-in overlay
+            function closeCheckinOverlay() {
+                const overlay = document.getElementById("jcp-checkin-overlay");
+                overlay.style.display = "none";
+            }
+
+
+            // Function to generate check-in card HTML
+            function generateCheckinCard(markerData) {
+                const images = markerData.image_urls || [];
+                const user = markerData.assigned_user || {};
+                const date = new Date(markerData.created_at * 1000).toLocaleDateString("en-US", { 
+                    year: "numeric", 
+                    month: "long", 
+                    day: "numeric" 
+                });
+                
+                // Parse address to get city and state
+                const addressParts = markerData.address ? markerData.address.split(",") : [];
+                const city = addressParts[1] ? addressParts[1].trim() : "";
+                const state = addressParts[2] ? addressParts[2].trim() : "";
+                const stateAbbr = state.length > 2 ? state.substring(0, 2) : state;
+                const location = city && stateAbbr ? city + ", " + stateAbbr : markerData.address || "";
+
+                let cardHtml = "<div class=\\"jcp-checkin-card\\" style=\\"text-decoration: none; color: inherit; margin: 0;\\">";
+                
+                // Images gallery with navigation arrows (matching render_images_gallery)
+                if (images.length > 0) {
+                    const imageCount = images.length;
+                    const showArrows = imageCount > 1;
+                    const galleryId = "gallery-" + Math.random().toString(36).substr(2, 9);
+                    
+                    cardHtml += "<div class=\\"jcp-checkin-image\\" id=\\"" + galleryId + "\\">";
+                    
+                    // Add all images but only first is visible initially
+                    images.forEach((imageUrl, index) => {
+                        const activeClass = index === 0 ? " active" : "";
+                        cardHtml += "<div class=\\"gallery-image" + activeClass + "\\" data-index=\\"" + index + "\\">";
+                        cardHtml += "<img src=\\"" + imageUrl + "\\" alt=\\"Checkin image " + (index + 1) + "\\">";
+                        cardHtml += "</div>";
+                    });
+                    
+                    // Add navigation arrows if there are multiple images
+                    if (showArrows) {
+                        cardHtml += "<div class=\\"gallery-nav gallery-prev\\" onclick=\\"changeImage(&quot;" + galleryId + "&quot;, &quot;prev&quot;)\\">&#10094;</div>";
+                        cardHtml += "<div class=\\"gallery-nav gallery-next\\" onclick=\\"changeImage(&quot;" + galleryId + "&quot;, &quot;next&quot;)\\">&#10095;</div>";
+                        cardHtml += "<div class=\\"gallery-dots\\">";
+                        
+                        // Add indicator dots
+                        for (let i = 0; i < imageCount; i++) {
+                            const activeClass = i === 0 ? " active" : "";
+                            cardHtml += "<span class=\\"gallery-dot" + activeClass + "\\" onclick=\\"showImage(&quot;" + galleryId + "&quot;, " + i + ")\\"></span>";
+                        }
+                        
+                        cardHtml += "</div>";
+                    }
+                    
+                    cardHtml += "</div>";
+                }
+
+                // User info (matching render_checkin_card structure)
+                if (user.name) {
+                    cardHtml += "<div class=\\"jcp-checkin-user\\">";
+                    
+                    // Profile image
+                    if (user.profileImageUrl) {
+                        cardHtml += "<div class=\\"jcp-user-image\\">";
+                        cardHtml += "<img src=\\"" + user.profileImageUrl + "\\" alt=\\"User profile\\">";
+                        cardHtml += "</div>";
+                    }
+                    
+                    // User name
+                    cardHtml += "<div class=\\"jcp-user-name\\">";
+                    cardHtml += "<p>" + user.name + "</p>";
+                    cardHtml += "</div>";
+                    
+                    // Job Reviews (5 stars)
+                    cardHtml += "<div class=\\"jcp-job-reviews\\">";
+                    for (let i = 0; i < 5; i++) {
+                        cardHtml += "<span>";
+                        cardHtml += "<svg xmlns=\\"http://www.w3.org/2000/svg\\" viewBox=\\"0 0 640 640\\"><path d=\\"M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z\\"></path></svg>";
+                        cardHtml += "</span>";
+                    }
+                    cardHtml += "</div>";
+                    
+                    cardHtml += "</div>";
+                }
+
+                // Description (matching render_checkin_card structure)
+                cardHtml += "<div class=\\"jcp-checkin-description\\">";
+                cardHtml += "<p>" + (markerData.description || "").replace(/\\n/g, "<br>") + "</p>";
+                cardHtml += "</div>";
+
+                // Date (matching render_checkin_card structure)
+                cardHtml += "<div class=\\"jcp-checkin-date\\">";
+                cardHtml += "<p class=\\"date-icon\\">";
+                cardHtml += "<svg xmlns=\\"http://www.w3.org/2000/svg\\" viewBox=\\"0 0 640 640\\"><path d=\\"M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z\\"></path></svg>";
+                cardHtml += date;
+                cardHtml += "</p>";
+                cardHtml += "</div>";
+
+                // Address (matching render_checkin_card structure)
+                cardHtml += "<div class=\\"jcp-checkin-address\\">";
+                cardHtml += "<p><strong>Near</strong> " + location + "</p>";
+                cardHtml += "</div>";
+
+                cardHtml += "</div>";
+                return cardHtml;
+            }
+
+            // Gallery functionality functions (matching get_gallery_script)
+            function changeImage(galleryId, direction) {
+                const gallery = document.getElementById(galleryId);
+                if (!gallery) return;
+                
+                const images = gallery.querySelectorAll(".gallery-image");
+                const dots = gallery.querySelectorAll(".gallery-dot");
+                
+                // Find current active image
+                let currentIndex = 0;
+                for (let i = 0; i < images.length; i++) {
+                    if (images[i].classList.contains("active")) {
+                        currentIndex = i;
+                        break;
+                    }
+                }
+                
+                // Remove active class from current image and dot
+                images[currentIndex].classList.remove("active");
+                if (dots.length) dots[currentIndex].classList.remove("active");
+                
+                // Calculate new index
+                let newIndex;
+                if (direction === "next") {
+                    newIndex = (currentIndex + 1) % images.length;
+                } else {
+                    newIndex = (currentIndex - 1 + images.length) % images.length;
+                }
+                
+                // Add active class to new image and dot
+                images[newIndex].classList.add("active");
+                if (dots.length) dots[newIndex].classList.add("active");
+            }
+            
+            function showImage(galleryId, index) {
+                const gallery = document.getElementById(galleryId);
+                if (!gallery) return;
+                
+                const images = gallery.querySelectorAll(".gallery-image");
+                const dots = gallery.querySelectorAll(".gallery-dot");
+                
+                // Remove active class from all images and dots
+                for (let i = 0; i < images.length; i++) {
+                    images[i].classList.remove("active");
+                    if (dots.length) dots[i].classList.remove("active");
+                }
+                
+                // Add active class to selected image and dot
+                images[index].classList.add("active");
+                if (dots.length) dots[index].classList.add("active");
+            }
         </script>';
 
 
         return $output;
     }
-    
+
     /**
      * Generate CSS styles for the multi markers map
      * 
@@ -1803,28 +2089,115 @@ public static function render_single_checkin($checkin, $company_info = array())
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
             
-            .jcp-info-window {
-                padding: 5px;
-                max-width: 250px;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            /* Check-in overlay styles - Google Maps popup style */
+            .jcp-checkin-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: transparent;
+                display: none;
+                z-index: 10000;
+                pointer-events: none;
             }
             
-            .jcp-info-window h3 {
-                margin-top: 0;
-                margin-bottom: 8px;
-                font-size: 16px;
-                font-weight: 600;
+            .jcp-checkin-overlay-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                border-radius: 8px;
+                max-width: 400px;
+                width: 90%;
+                max-height: 80vh;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                border: 1px solid #e0e0e0;
+                pointer-events: auto;
             }
             
-            .jcp-info-window p {
-                margin: 5px 0;
-                font-size: 14px;
+            /* Google Maps popup arrow */
+            .jcp-checkin-overlay-content::before {
+                content: "";
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-top: 10px solid white;
             }
             
-            .jcp-info-window .jcp-address,
-            .jcp-info-window .jcp-date {
-                font-size: 12px;
+            .jcp-checkin-overlay-content::after {
+                content: "";
+                position: absolute;
+                bottom: -11px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 11px solid transparent;
+                border-right: 11px solid transparent;
+                border-top: 11px solid #e0e0e0;
+            }
+            
+            .jcp-close-overlay {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
                 color: #666;
+                z-index: 10001;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: background-color 0.2s ease;
+            }
+            
+            .jcp-close-overlay:hover {
+                background-color: #f0f0f0;
+                color: #333;
+            }
+            
+            /* Overlay check-in card styles */
+            .jcp-checkin-overlay .jcp-checkin-card {
+                margin: 0;
+                box-shadow: none;
+                border-radius: 12px;
+                overflow: visible;
+            }
+            
+            .jcp-checkin-overlay .jcp-checkin-image {
+                border-radius: 12px 12px 0 0;
+                margin-bottom: 0;
+            }
+            
+            .jcp-checkin-overlay .jcp-checkin-user {
+                padding: 15px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .jcp-checkin-overlay .jcp-checkin-description {
+                padding: 15px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .jcp-checkin-overlay .jcp-checkin-date,
+            .jcp-checkin-overlay .jcp-checkin-address {
+                padding: 10px 15px;
+            }
+            
+            .jcp-checkin-overlay .jcp-checkin-address {
+                border-bottom: none;
             }
 
             /* Responsive design */
@@ -1838,12 +2211,26 @@ public static function render_single_checkin($checkin, $company_info = array())
                 .jcp-multimap {
                     width: 95%;
                 }
+                
+                .jcp-checkin-overlay-content {
+                    max-width: 350px;
+                    margin: 10px;
+                }
             }
             
             @media (max-width: 480px) {
                 .jcp-multimap {
                     width: 100%;
                     height: 400px;
+                }
+                
+                .jcp-checkin-overlay {
+                    padding: 10px;
+                }
+                
+                .jcp-checkin-overlay-content {
+                    max-width: 100%;
+                    max-height: 90vh;
                 }
             }
         </style>';
@@ -1863,11 +2250,11 @@ public static function render_single_checkin($checkin, $company_info = array())
         }
 
         $output = '<div class="jcp-company-info">';
-        
+
         // Company details (now comes first)
         $output .= '<div class="jcp-company-details">
             <h2 class="jcp-company-name">' . esc_html($company_info['name']) . '</h2>';
-        
+
         // Intro text
         $output .= '<div class="jcp-company-into-text">
             <p>Sarasota’s #1 for exterior cleaning. Trusted by 200+ homeowners.</p>
@@ -1881,56 +2268,56 @@ public static function render_single_checkin($checkin, $company_info = array())
         </div>';
 
         // Address
-       // $output .= '<div class="jcp-company-address">
-         //   <p>' . nl2br(esc_html($company_info['address'])) . '</p>
+        // $output .= '<div class="jcp-company-address">
+        //   <p>' . nl2br(esc_html($company_info['address'])) . '</p>
         //</div>';
 
-        
+
         // Check if we have either phone or URL
         $has_phone = !empty($company_info['tn']);
         $has_url = !empty($company_info['url']);
-        
+
         if ($has_phone) {
             $output .= '<p> <strong> &nbsp;.&nbsp; </strong><a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['tn']) . '</a></p>';
         }
-        
+
         if ($has_url) {
             $parsed_url = parse_url($company_info['url']);
             $host = $parsed_url['host'] ?? $company_info['url'];
-            
+
             // Remove www. prefix if it exists
             $display_url = preg_replace('/^www\./i', '', $host);
-            
+
             $output .= '<p> <strong> &nbsp;.&nbsp; </strong><a href="' . esc_url($company_info['url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html($display_url) . '</a></p>';
         }
-        
+
         // Show message if no contact info
         if (!$has_phone && !$has_url) {
             $output .= '<p class="jcp-no-contact-info">Contact No. and Website information not available</p>';
         }
-        
+
         $output .= '</div></div>'; // Close jcp-company-contact and jcp-company-details
 
-         // Quote btn and text
-        
-            $output .= '<div class="jcp-company-logo">
+        // Quote btn and text
+
+        $output .= '<div class="jcp-company-logo">
                 <a href="#" class="quote-btn">Get a Quote</a>
                 <p class="powered-by">Powered by <b>JobCapturePro</b></p>
             </div>';
-        
-        
+
+
         // Logo (now comes after details)
         //if (!empty($company_info['logoUrl'])) {
         //    $output .= '<div class="jcp-company-logo">
         //        <img src="' . esc_url($company_info['logoUrl']) . '" alt="' . esc_attr($company_info['name']) . ' Logo">
         //    </div>';
         //}
-        
+
         $output .= '</div>'; // Close jcp-company-info
-        
+
         // Add CSS
         $output .= self::get_company_info_styles();
-        
+
         return $output;
     }
 
@@ -2063,5 +2450,4 @@ public static function render_single_checkin($checkin, $company_info = array())
                 
         </style>';
     }
-    
 }

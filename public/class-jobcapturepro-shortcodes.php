@@ -167,14 +167,25 @@ class JobCaptureProShortcodes
      */
     public function get_multimap($atts)
     {
-        $result = $this->fetch_api_data('map', $atts);
-        if (!$result) {
-            return 'Error fetching map data';
+        // Fetch checkins data (contains all the data we need)
+        $checkins_result = $this->fetch_api_data('checkins', $atts);
+        $map_result = $this->fetch_api_data('map', $atts);
+
+        if (!$checkins_result) {
+            return 'Error fetching checkins data';
         }
 
-        $checkin_id = $result['checkin_id'];
+        $checkin_id = $checkins_result['checkin_id'];
+        $checkins = $checkins_result['data'];
 
-        return JobCaptureProTemplates::render_map_conditionally($checkin_id, $result['data']);
+        // Get Google Maps API key from map result
+        $maps_api_key = '';
+        if ($map_result && isset($map_result['data']['googleMapsApiKey']['value'])) {
+            $maps_api_key = $map_result['data']['googleMapsApiKey']['value'];
+        }
+
+        // Use checkins data directly to create the map
+        return JobCaptureProTemplates::render_multimap_from_checkins_data($checkins, $maps_api_key);
     }
 
     /**
