@@ -1730,7 +1730,7 @@ class JobCaptureProTemplates
         $output = '<div id="multimap" class="jcp-multimap"></div>';
 
         // Add overlay container for check-in cards
-        $output .= '<div id="jcp-checkin-overlay" class="jcp-checkin-overlay" style="display: none;">
+        $output .= '<div id="jcp-checkin-overlay" style="display: none;">
             <div class="jcp-checkin-overlay-content">
                 <button class="jcp-close-overlay" onclick="closeCheckinOverlay()">&times;</button>
                 <div id="jcp-checkin-card-content"></div>
