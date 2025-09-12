@@ -18,6 +18,7 @@ class JobCaptureProShortcodes
     {
         // Check if checkinid attribute was provided, if not check URL parameter
         $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinId'])) {
             $checkin_id = sanitize_text_field($_GET['checkinId']);
@@ -25,6 +26,7 @@ class JobCaptureProShortcodes
 
         // Check if companyid attribute was provided, if not check URL parameter
         $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        
         // If no attribute provided, check for URL parameter
         if (!$company_id && isset($_GET['companyId'])) {
             $company_id = sanitize_text_field($_GET['companyId']);
@@ -38,16 +40,17 @@ class JobCaptureProShortcodes
             $apikey = trim($options['jobcapturepro_field_apikey']);
         }
         $url = $this->jcp_api_base_url . $endpoint;
-        // echo '<pre>';
-        // var_dump($url);
+
         // Add company_id and checkin_id as query parameters if provided
         $query_params = array();
+
         if ($company_id) {
             $query_params[] = "companyId=" . urlencode($company_id);
         }
         if ($checkin_id) {
             $query_params[] = "checkinId=" . urlencode($checkin_id);
         }
+
         if (!empty($query_params)) {
             $url .= "?" . implode("&", $query_params);
         }
@@ -63,7 +66,6 @@ class JobCaptureProShortcodes
         // Make the API request
         $request = wp_remote_get($url, $args);
         $body = wp_remote_retrieve_body($request);
-
 
         if (is_wp_error($request)) {
             return null;
@@ -235,8 +237,8 @@ class JobCaptureProShortcodes
     }
 
     /**
-     * Shortcode to display company information
-     */
+    * Shortcode to display company information
+    */
     public function get_company_info($atts)
     {
         // Check if companyid attribute was provided
