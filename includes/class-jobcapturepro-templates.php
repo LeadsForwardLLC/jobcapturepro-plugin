@@ -85,7 +85,7 @@ class JobCaptureProTemplates
      */
     public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id)
     {
-        
+
         $output = '<div class="jcp-combined-components">';
 
         // Render the company info section
@@ -126,15 +126,15 @@ class JobCaptureProTemplates
         </style>';
     }
 
-    /**
-     * Generate HTML for a single checkin page matching screenshot style
-     */
-    public static function render_single_checkin($checkin, $company_info = array())
-    {
-        $output = '<div class="jcp-single-checkin">';
-
-        // Add CSS styles
-        $output .= '<style>
+/**
+* Generate HTML for a single checkin page matching screenshot style
+*/
+public static function render_single_checkin($checkin, $company_info = array())
+{
+    $output = '<div class="jcp-single-checkin">';
+    
+    // Add CSS styles
+    $output .= '<style>
         .jcp-single-checkin {
             margin: 0 auto;
             padding: 20px;
