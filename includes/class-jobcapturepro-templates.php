@@ -502,13 +502,13 @@ public static function render_single_checkin($checkin, $company_info = array())
                 $output .= '<span class="star-' . $filled . '">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
             </span>';
-            }
-            $output .= '</div>';
-        } else {
-            // Fallback to 5-star rating if feature is enabled but no data
-            $show_fallback_rating = self::should_show_feature('show_star_ratings', true);
-            if ($show_fallback_rating) {
-                $output .= '<div class="jcp-job-reviews">
+        }
+        $output .= '</div>';
+    } else {
+        // Fallback to 5-star rating if feature is enabled but no data
+        $show_fallback_rating = self::should_show_feature('show_star_ratings', true);
+        if ($show_fallback_rating) {
+            $output .= '<div class="jcp-job-reviews">
                 <span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
                 </span>
@@ -623,8 +623,9 @@ public static function render_single_checkin($checkin, $company_info = array())
         $output .= '<div class="jcp-faqs">';
         $output .= '<h2 class="jcp-section-title">FAQs</h2>';
         $output .= '<ul class="jcp-list">';
-        $output .= '<li>► Do I need to be home?</li>';
-        $output .= '<li>► How long does it take?</li>';
+        $output .= '<li>"Cleaned it like new in 2 hours." – Brian M.</li>';
+        $output .= '<li>"Didn\'t even need to be home." – Linda R.</li>';
+        $output .= '<li>"No upsells. Just results." – Mark D.</li>';
         $output .= '</ul>';
         $output .= '</div>';
 
@@ -680,7 +681,7 @@ public static function render_single_checkin($checkin, $company_info = array())
             }
 
             // job Reviews
-            $output .= '<div class="jcp-job-reviews">
+                $output .= '<div class="jcp-job-reviews">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"></path></svg>
                     </span>
@@ -713,7 +714,7 @@ public static function render_single_checkin($checkin, $company_info = array())
         $output .= '<p class="date-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 64C241.7 64 256 78.3 256 96L256 128L384 128L384 96C384 78.3 398.3 64 416 64C433.7 64 448 78.3 448 96L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 96C192 78.3 206.3 64 224 64zM160 304L160 336C160 344.8 167.2 352 176 352L208 352C216.8 352 224 344.8 224 336L224 304C224 295.2 216.8 288 208 288L176 288C167.2 288 160 295.2 160 304zM288 304L288 336C288 344.8 295.2 352 304 352L336 352C344.8 352 352 344.8 352 336L352 304C352 295.2 344.8 288 336 288L304 288C295.2 288 288 295.2 288 304zM432 288C423.2 288 416 295.2 416 304L416 336C416 344.8 423.2 352 432 352L464 352C472.8 352 480 344.8 480 336L480 304C480 295.2 472.8 288 464 288L432 288zM160 432L160 464C160 472.8 167.2 480 176 480L208 480C216.8 480 224 472.8 224 464L224 432C224 423.2 216.8 416 208 416L176 416C167.2 416 160 423.2 160 432zM304 416C295.2 416 288 423.2 288 432L288 464C288 472.8 295.2 480 304 480L336 480C344.8 480 352 472.8 352 464L352 432C352 423.2 344.8 416 336 416L304 416zM416 432L416 464C416 472.8 423.2 480 432 480L464 480C472.8 480 480 472.8 480 464L480 432C480 423.2 472.8 416 464 416L432 416C423.2 416 416 423.2 416 432z"/></svg>' . esc_html(date('F j, Y', $timestamp)) . '</p>'; // Format: "Month Day, Year" (e.g., "July 23, 2025")
         $output .= '</div>';
 
-        // Address - Extract city and state only
+            // Address - Extract city and state only
         $output .= '<div class="jcp-checkin-address">';
 
         // Parse address (assuming format: "Street, City, State, ZIP, Country")
@@ -744,7 +745,7 @@ public static function render_single_checkin($checkin, $company_info = array())
     public static function render_checkins_grid($checkins, $company_info = array())
     {
         // Sort checkins by date (newest first)
-        usort($checkins, function ($a, $b) {
+        usort($checkins, function($a, $b) {
             // Compare timestamps (higher timestamp = more recent)
             return $b['createdAt'] - $a['createdAt'];
         });
@@ -769,45 +770,45 @@ public static function render_single_checkin($checkin, $company_info = array())
         $output .= '</div>'; // Close grid
         $output .= '</div>'; // Close container
 
-        // jcp stats section - only show if stats data is available or feature is enabled
-        $show_stats = self::should_show_feature('show_company_stats', !empty($company_info['stats']));
-        if ($show_stats && !empty($company_info['stats'])) {
-            $output .= '<div class="jcp-stats-container">';
+         // jcp stats section - only show if stats data is available or feature is enabled
+    $show_stats = self::should_show_feature('show_company_stats', !empty($company_info['stats']));
+    if ($show_stats && !empty($company_info['stats'])) {
+        $output .= '<div class="jcp-stats-container">';
 
-            if (!empty($company_info['stats']['jobs_this_month'])) {
+        if (!empty($company_info['stats']['jobs_this_month'])) {
                 $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">' . esc_html($company_info['stats']['jobs_this_month']) . '</div>
                 <div class="jcp-stat-label">Jobs Posted This Month</div>
             </div>';
-            }
+        }
 
-            if (!empty($company_info['stats']['average_rating'])) {
-                $output .= '<div class="jcp-stat-item">
+        if (!empty($company_info['stats']['average_rating'])) {
+            $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">' . esc_html($company_info['stats']['average_rating']) . '</div>
                 <div class="jcp-stat-label">Average Rating</div>
             </div>';
-            }
+        }
 
-            if (!empty($company_info['stats']['last_checkin'])) {
-                $output .= '<div class="jcp-stat-item">
+        if (!empty($company_info['stats']['last_checkin'])) {
+            $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">' . esc_html($company_info['stats']['last_checkin']) . '</div>
                 <div class="jcp-stat-label">Last Job Check-In</div>
             </div>';
-            }
+        }
 
-            $output .= '</div>'; // Close jcp-stats-container
-        } else {
-            // Fallback to hard-coded stats if feature is enabled but no data
-            $show_fallback_stats = self::should_show_feature('show_company_stats', true);
-            if ($show_fallback_stats) {
-                $output .= '<div class="jcp-stats-container">';
+        $output .= '</div>'; // Close jcp-stats-container
+    } else {
+        // Fallback to hard-coded stats if feature is enabled but no data
+        $show_fallback_stats = self::should_show_feature('show_company_stats', true);
+        if ($show_fallback_stats) {
+            $output .= '<div class="jcp-stats-container">';
 
-                $output .= '<div class="jcp-stat-item">
+            $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">86</div>
                 <div class="jcp-stat-label">Jobs Posted This Month</div>
             </div>';
 
-                $output .= '<div class="jcp-stat-item">
+            $output .= '<div class="jcp-stat-item">
                 <div class="jcp-stat-number">96%</div>
                 <div class="jcp-stat-label">Average 5-Star Rating</div>
             </div>';
@@ -817,22 +818,22 @@ public static function render_single_checkin($checkin, $company_info = array())
                 <div class="jcp-stat-label">Last Job Check-In</div>
             </div>';
 
-                $output .= '</div>'; // Close jcp-stats-container
-            }
+            $output .= '</div>'; // Close jcp-stats-container
         }
+    }
 
-        // jcp CTA section
+         // jcp CTA section
 
-        $output .= '<div class="jcp-cta-container">';
+         $output .= '<div class="jcp-cta-container">';
 
-        // cta Heading
-        $output .= '<div class="jcp-cta">
+         // cta Heading
+         $output .= '<div class="jcp-cta">
                     <h2>Let Your Work Speak For Itself</h2>
                     <p>Capture check-ins like these with JobCapturePro. Set it and forget it.</p>
                     <a href="#" class="quote-btn">Get JobCapturePro</a>
                     </div>';
 
-        $output .= '</div>'; // Close jcp-cta-container
+         $output .= '</div>'; // Close jcp-cta-container
 
         // Add JavaScript to maintain proper masonry layout
         $output .= '<script>
@@ -1718,7 +1719,6 @@ public static function render_single_checkin($checkin, $company_info = array())
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
-
         // Determine the bounds for the map
         list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
 
@@ -2268,7 +2268,7 @@ public static function render_single_checkin($checkin, $company_info = array())
         </div>';
 
         // Address
-        // $output .= '<div class="jcp-company-address">
+       // $output .= '<div class="jcp-company-address">
         //   <p>' . nl2br(esc_html($company_info['address'])) . '</p>
         //</div>';
 
@@ -2298,9 +2298,9 @@ public static function render_single_checkin($checkin, $company_info = array())
 
         $output .= '</div></div>'; // Close jcp-company-contact and jcp-company-details
 
-        // Quote btn and text
-
-        $output .= '<div class="jcp-company-logo">
+         // Quote btn and text
+         
+            $output .= '<div class="jcp-company-logo">
                 <a href="#" class="quote-btn">Get a Quote</a>
                 <p class="powered-by">Powered by <b>JobCapturePro</b></p>
             </div>';
