@@ -70,7 +70,7 @@ class JobCaptureProTemplates
         }
     }
 
-
+    
     /**
      * Renders combined components for job capture display
      *
