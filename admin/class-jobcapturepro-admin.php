@@ -4,8 +4,7 @@
  * This file defines admin-specific functionality of the plugin.
  */
 
-class JobCaptureProAdmin
-{
+ class JobCaptureProAdmin {
 
 	/**
 	 * The ID of this plugin.
@@ -20,8 +19,7 @@ class JobCaptureProAdmin
 	/**
 	 * Initialize the class and set its properties.
 	 */
-	public function __construct($plugin_name, $version)
-	{
+	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
@@ -30,16 +28,15 @@ class JobCaptureProAdmin
 	/**
 	 * Custom option and settings
 	 */
-	function jobcapturepro_settings_init()
-	{
+	function jobcapturepro_settings_init() {
 
 		// Register a new setting in the General Settings page.
-		register_setting('general', 'jobcapturepro_options');
+		register_setting( 'general', 'jobcapturepro_options' );
 
 		// Register a new section in the General Settings page.
 		add_settings_section(
 			'jobcapturepro_section_developers',
-			__('JobCapturePro Settings', 'jobcapturepro'),
+			__( 'JobCapturePro Settings', 'jobcapturepro' ),
 			array($this, 'jobcapturepro_section_developers_callback'),
 			'general'
 		);
@@ -47,7 +44,7 @@ class JobCaptureProAdmin
 		// Register a new field in the "jobcapturepro_section_developers" section, inside the General Settings page.
 		add_settings_field(
 			'jobcapturepro_field_apikey',
-			__('API Key', 'jobcapturepro'),
+			__( 'API Key', 'jobcapturepro' ),
 			array($this, 'jobcapturepro_field_apikey_cb'),
 			'general',
 			'jobcapturepro_section_developers',
@@ -62,25 +59,23 @@ class JobCaptureProAdmin
 	/**
 	 * JobCapturePro admin section callback function.
 	 */
-	function jobcapturepro_section_developers_callback($args)
-	{
+	function jobcapturepro_section_developers_callback( $args ) {
 		// Render the section introduction text
-?>
-		<p id="<?php echo esc_attr($args['id']); ?>">
-			<?php esc_html_e('Account settings can be found in the  ', 'jobcapturepro'); ?>
+		?>
+		<p id="<?php echo esc_attr( $args['id'] ); ?>">
+			<?php esc_html_e( 'Account settings can be found in the  ', 'jobcapturepro' ); ?>
 			<a href="https://app.jobcapturepro.com/" target="_blank">JobCapturePro App Dashboard</a>
 		</p>
-	<?php
+		<?php
 	}
 
 	/**
 	 * API Key field callback function.
 	 */
-	function jobcapturepro_field_apikey_cb($args)
-	{
+	function jobcapturepro_field_apikey_cb( $args ) {
 
 		// Get the value of the setting we've registered with register_setting()
-		$options = get_option('jobcapturepro_options');
+		$options = get_option( 'jobcapturepro_options' );
 
 		// Ensure $options is an array and has the required key
 		if (! is_array($options)) {
@@ -90,12 +85,13 @@ class JobCaptureProAdmin
 		$value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
 
 		// Render the API Key input field
-	?>
+		?>
 		<input
-			id="<?php echo esc_attr($args['label_for']); ?>"
-			name="jobcapturepro_options[<?php echo esc_attr($args['label_for']); ?>]"
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			name="jobcapturepro_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 			size="80" type="text"
 			value="<?php echo esc_attr($value); ?>" />
-<?php
+		<?php
 	}
+	
 }
