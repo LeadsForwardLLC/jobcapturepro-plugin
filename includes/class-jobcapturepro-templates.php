@@ -70,7 +70,7 @@ class JobCaptureProTemplates
         }
     }
 
-    
+
     /**
      * Renders combined components for job capture display
      *
@@ -85,7 +85,7 @@ class JobCaptureProTemplates
      */
     public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id)
     {
-
+        
         $output = '<div class="jcp-combined-components">';
 
         // Render the company info section
