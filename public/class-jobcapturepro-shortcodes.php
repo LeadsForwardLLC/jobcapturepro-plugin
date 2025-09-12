@@ -47,7 +47,7 @@ class JobCaptureProShortcodes
         if ($company_id) {
             $query_params[] = "companyId=" . urlencode($company_id);
         }
-
+        
         if ($checkin_id) {
             $query_params[] = "checkinId=" . urlencode($checkin_id);
         }
