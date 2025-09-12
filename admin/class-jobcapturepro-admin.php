@@ -4,7 +4,7 @@
  * This file defines admin-specific functionality of the plugin.
  */
 
- class JobCaptureProAdmin {
+class JobCaptureProAdmin {
 
 	/**
 	 * The ID of this plugin.
@@ -23,6 +23,7 @@
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+
 	}
 
 	/**
@@ -54,6 +55,7 @@
 				'jobcapturepro_custom_data' => 'custom',
 			)
 		);
+
 	}
 
 	/**
