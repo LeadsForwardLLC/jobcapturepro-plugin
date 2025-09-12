@@ -95,5 +95,5 @@ class JobCaptureProAdmin {
 			value="<?php echo esc_attr($value); ?>" />
 		<?php
 	}
-	
+
 }
