@@ -40,7 +40,7 @@ class JobCaptureProShortcodes
             $apikey = trim($options['jobcapturepro_field_apikey']);
         }
         $url = $this->jcp_api_base_url . $endpoint;
-
+        
         // Add company_id and checkin_id as query parameters if provided
         $query_params = array();
 
@@ -111,7 +111,7 @@ class JobCaptureProShortcodes
     {
         // Check if checkinid attribute was provided, if not check URL parameter
         $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
-        
+
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinid'])) {
             $checkin_id = sanitize_text_field($_GET['checkinid']);
