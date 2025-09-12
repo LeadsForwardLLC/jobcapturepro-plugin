@@ -18,7 +18,7 @@ class JobCaptureProShortcodes
     {
         // Check if checkinid attribute was provided, if not check URL parameter
         $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
-
+        
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinId'])) {
             $checkin_id = sanitize_text_field($_GET['checkinId']);
@@ -47,6 +47,7 @@ class JobCaptureProShortcodes
         if ($company_id) {
             $query_params[] = "companyId=" . urlencode($company_id);
         }
+
         if ($checkin_id) {
             $query_params[] = "checkinId=" . urlencode($checkin_id);
         }
@@ -110,7 +111,7 @@ class JobCaptureProShortcodes
     {
         // Check if checkinid attribute was provided, if not check URL parameter
         $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
-
+        
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinid'])) {
             $checkin_id = sanitize_text_field($_GET['checkinid']);
