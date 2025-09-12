@@ -25,7 +25,7 @@ class JobCaptureProTemplates
             'show_company_stats' => false,
             'show_company_reviews' => false
         );
-
+        
         $feature_enabled = isset($feature_toggles[$feature_name]) ? $feature_toggles[$feature_name] : false;
         return $feature_enabled && $data_exists;
     }
