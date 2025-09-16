@@ -264,8 +264,11 @@ class JobCaptureProShortcodes
                 'address' => isset($company_data['address']) ? $company_data['address'] : '',
                 'name' => isset($company_data['name']) ? $company_data['name'] : '',
                 'url' => isset($company_data['url']) ? $company_data['url'] : '',
+                'phoneNumberString' => isset($company_data['phoneNumberString']) ? $company_data['phoneNumberString'] : '',
                 'tn' => isset($company_data['tn']) ? $company_data['tn'] : '',
-                'logoUrl' => isset($company_data['logoUrl']) ? $company_data['logoUrl'] : ''
+                'logoUrl' => isset($company_data['logoUrl']) ? $company_data['logoUrl'] : '',
+                'quoteUrl' => isset($company_data['quoteUrl']) ? $company_data['quoteUrl'] : '',
+                'description' => isset($company_data['description']) ? $company_data['description'] : ''
             ];
 
             return JobCaptureProTemplates::render_company_info($company_info);
