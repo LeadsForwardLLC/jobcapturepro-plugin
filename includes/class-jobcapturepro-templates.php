@@ -89,7 +89,7 @@ class JobCaptureProTemplates
         $output = '<div class="jcp-combined-components">';
 
         // Render the company info section
-         $output .= JobCaptureProTemplates::render_company_info($company_info);
+        $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
         $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
@@ -126,315 +126,315 @@ class JobCaptureProTemplates
         </style>';
     }
 
-/**
- * Generate HTML for a single checkin page matching screenshot style
- */
-public static function render_single_checkin($checkin, $company_info = array())
-{
-    $output = '<div class="jcp-single-checkin">';
-    
-    // Add CSS styles
-    $output .= '<style>
-        .jcp-single-checkin {
-            margin: 0 auto;
-            padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-            color: #333;
-            line-height: 1.5;
-            background: #f9f9f9;
-        }
+    /**
+     * Generate HTML for a single checkin page matching screenshot style
+     */
+    public static function render_single_checkin($checkin, $company_info = array())
+    {
+        $output = '<div class="jcp-single-checkin">';
         
-        .jcp-flex-div{
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 2rem 5rem auto;
-            padding: 0 2rem;
-            align-items: start;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 3rem;
-        }
-
-        .jcp-ts-div{
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 2rem 5rem auto;
-            padding: 2rem 2rem;
-            align-items: start;
-        }
-
-        .jcp-faq-div{
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 2rem 0rem auto;
-            padding: 2rem 0;
-            align-items: start;
-            border-top: 1px solid #eee;
-            padding-bottom: 3rem;
-        }
-
-        .jcp-checkin-header{
-            margin-bottom: 20px;
-            background: #fff;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-        }
-        .jcp-content-block {
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-            background: #fff;
-        }
-        
-        .jcp-hero-img {
-            margin: 15px 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            border-bottom: 1px solid #eee;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .jcp-checkin-header h1 {
-            font-size: 24px;
-            margin: 0 0 5px 0;
-            color: #222;
-        }
-        
-        .jcp-checkin-meta {
-            display: flex;
-            gap: 15px;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-            justify-content: space-between;
-        }
-        
-        .jcp-checkin-description {
-            font-size: 15px;
-            margin: 15px 0;
-        }
-        
-        .jcp-section-title {
-            margin: 0 0 15px 0;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            color: #222;
-        }
-        
-        .jcp-review-content {
-           margin-bottom: 15px;
-            background: #fef9c3;
-            border-left: 4px solid #facc15;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            line-height: 1.5;
-        }
-        
-        .jcp-review-text {
-            font-style: italic;
-            margin: 0 0 5px 0;
-        }
-        
-        .jcp-review-author {
-            font-weight: bold;
-            text-align: right;
-            margin: 0;
-        }
-        
-        .jcp-verified-badge {
-            background: #f9f9f9;
-            background-color: #e6f4ea;
-            color: #1e7f3e;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-            border-radius: 999px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            width: 100%;
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .jcp-verified-badge svg {
-            width: 18px;
-            height: 18px;
-            fill: #1e7f3e;
-        }
-
-        .jcp-cta-link {
-            font-size: 15px;
-            margin: 15px 0 0 0;
-        }
-        
-        .jcp-cta-link strong {
-            color: #e74c3c;
-        }
-        
-        .jcp-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .jcp-list li {
-            padding: 5px 0;
-            font-size: 15px;
-        }
-        
-        .jcp-tags-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .jcp-tags-table td {
-            padding: 8px;
-            border: 1px solid #e0e0e0;
-            background: #f8f9fa;
-        }
-
-        .jcp-tag-list{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .job-tag{
-            background-color: #e9e9e9;
-            color: #000;
-            padding: 0.3rem 0.6rem;
-            font-size: 0.8rem;
-            border-radius: 999px;
-            display: inline-block;
-            margin: 6px;
-        }
-
-        .jcp-title-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-         .jcp-title-container .jcp-hero-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50px;
-        }
-
-        .jcp-job-reviews {
-            display: flex;
-            gap: 2px;
-            margin: 5px 0;
-            justify-content: end;
-        }
-
-        .jcp-job-reviews svg{
-            width: 18px;
-            height: 18px;
-            fill: #facc15;
-        }
-
-        .get-quote-btn {
-            background-color: #ff503e;
-            color: #fff;
-            padding: 0.75rem 1.25rem;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-block;
-            text-align: center;
-            transition: background-color 0.2s ease;
-            width: 100%;
-        }
-
-        .jcp-related-checkins{
-            margin-top: 2rem;
-            border-top: 1px solid #eee;
-            padding-top: 1.25rem;
-        }
-
-        .jcp-list li {
-            padding: 5px 0;
-            font-size: 0.9rem;
-            color: #333;
-        }
-
-        .jcp-list svg {
-            width: 14px;
-            height: 14px;
-            fill: #999;
-            margin-right: 5px;
-        }
-
-        .jcp-checkin-date {
-            display: flex;
-            align-items: center;
-        }
-
-         .jcp-checkin-meta span {
-           font-size: 0.95rem;
-            color: #666;
-        }
-
-        .jcp-checkin-meta svg {
-            width: 16px;
-            height: 16px;
-            fill: #999;
-            margin-right: 0.4rem;
-        }
-
-         /* Hide specific elements on single check-in page */
-        .jcp-company-details,
-        .jcp-heatmap,
-        .jcp-gallery-filters,
-        .jcp-company-info {
-            display: none !important;
-        }
-        
-        @media (max-width: 600px) {
+        // Add CSS styles
+        $output .= '<style>
             .jcp-single-checkin {
-                padding: 15px;
+                margin: 0 auto;
+                padding: 20px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                color: #333;
+                line-height: 1.5;
+                background: #f9f9f9;
             }
             
+            .jcp-flex-div {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 2rem 5rem auto;
+                padding: 0 2rem;
+                align-items: start;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 3rem;
+            }
+
+            .jcp-ts-div {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 2rem 5rem auto;
+                padding: 2rem 2rem;
+                align-items: start;
+            }
+
+            .jcp-faq-div {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 2rem 0rem auto;
+                padding: 2rem 0;
+                align-items: start;
+                border-top: 1px solid #eee;
+                padding-bottom: 3rem;
+            }
+
+            .jcp-checkin-header {
+                margin-bottom: 20px;
+                background: #fff;
+                border-radius: 16px;
+                padding: 2rem;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            }
+
             .jcp-content-block {
-                padding: 15px;
+                border-radius: 16px;
+                padding: 1.5rem;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+                background: #fff;
+            }
+            
+            .jcp-hero-img {
+                margin: 15px 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+                border-bottom: 1px solid #eee;
+                border-radius: 12px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .jcp-checkin-header h1 {
+                font-size: 24px;
+                margin: 0 0 5px 0;
+                color: #222;
             }
             
             .jcp-checkin-meta {
-                flex-direction: column;
-                gap: 5px;
+                display: flex;
+                gap: 15px;
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 15px;
+                justify-content: space-between;
+            }
+            
+            .jcp-checkin-description {
+                font-size: 15px;
+                margin: 15px 0;
+            }
+            
+            .jcp-section-title {
+                margin: 0 0 15px 0;
+                font-weight: 600;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+                color: #222;
+            }
+            
+            .jcp-review-content {
+                margin-bottom: 15px;
+                background: #fef9c3;
+                border-left: 4px solid #facc15;
+                padding: 0.75rem 1rem;
+                border-radius: 8px;
+                line-height: 1.5;
+            }
+            
+            .jcp-review-text {
+                font-style: italic;
+                margin: 0 0 5px 0;
+            }
+            
+            .jcp-review-author {
+                font-weight: bold;
+                text-align: right;
+                margin: 0;
+            }
+            
+            .jcp-verified-badge {
+                background: #f9f9f9;
+                background-color: #e6f4ea;
+                color: #1e7f3e;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+                border-radius: 999px;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                width: 100%;
+                margin-top: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .jcp-verified-badge svg {
+                width: 18px;
+                height: 18px;
+                fill: #1e7f3e;
             }
 
-            .jcp-flex-div, .jcp-ts-div, .jcp-faq-div {
-                display: contents;
-        }
+            .jcp-cta-link {
+                font-size: 15px;
+                margin: 15px 0 0 0;
+            }
+            
+            .jcp-cta-link strong {
+                color: #e74c3c;
+            }
+            
+            .jcp-list {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .jcp-list li {
+                padding: 5px 0;
+                font-size: 15px;
+            }
+            
+            .jcp-tags-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+            
+            .jcp-tags-table td {
+                padding: 8px;
+                border: 1px solid #e0e0e0;
+                background: #f8f9fa;
+            }
 
-        .jcp-section-title {
+            .jcp-tag-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .job-tag {
+                background-color: #e9e9e9;
+                color: #000;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+                border-radius: 999px;
+                display: inline-block;
+                margin: 6px;
+            }
+
+            .jcp-title-container {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .jcp-title-container .jcp-hero-img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 50px;
+            }
+
+            .jcp-job-reviews {
+                display: flex;
+                gap: 2px;
+                margin: 5px 0;
+                justify-content: end;
+            }
+
+            .jcp-job-reviews svg {
+                width: 18px;
+                height: 18px;
+                fill: #facc15;
+            }
+
+            .get-quote-btn {
+                background-color: #ff503e;
+                color: #fff;
+                padding: 0.75rem 1.25rem;
+                border-radius: 999px;
+                font-weight: 600;
+                font-size: 1rem;
+                display: inline-block;
+                text-align: center;
+                transition: background-color 0.2s ease;
+                width: 100%;
+            }
+
+            .jcp-related-checkins {
                 margin-top: 2rem;
-        }
-    }
-    </style>';
+                border-top: 1px solid #eee;
+                padding-top: 1.25rem;
+            }
+
+            .jcp-list li {
+                padding: 5px 0;
+                font-size: 0.9rem;
+                color: #333;
+            }
+
+            .jcp-list svg {
+                width: 14px;
+                height: 14px;
+                fill: #999;
+                margin-right: 5px;
+            }
+
+            .jcp-checkin-date {
+                display: flex;
+                align-items: center;
+            }
+
+            .jcp-checkin-meta span {
+                font-size: 0.95rem;
+                color: #666;
+            }
+
+            .jcp-checkin-meta svg {
+                width: 16px;
+                height: 16px;
+                fill: #999;
+                margin-right: 0.4rem;
+            }
+
+            /* Hide specific elements on single check-in page */
+            .jcp-company-details,
+            .jcp-heatmap,
+            .jcp-gallery-filters,
+            .jcp-company-info {
+                display: none !important;
+            }
+            
+            @media (max-width: 600px) {
+                .jcp-single-checkin {
+                    padding: 15px;
+                }
+                
+                .jcp-content-block {
+                    padding: 15px;
+                }
+                
+                .jcp-checkin-meta {
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .jcp-flex-div, .jcp-ts-div, .jcp-faq-div {
+                    display: contents;
+            }
+
+            .jcp-section-title {
+                    margin-top: 2rem;
+            }
+        </style>';
+        
+        // First content block (header and description)
+        $output .= '<div class="jcp-single-content-block">';
     
-    // First content block (header and description)
-    $output .= '<div class="jcp-single-content-block">';
-   
-    $output .= '<div class="jcp-flex-div">';
+        $output .= '<div class="jcp-flex-div">';
 
     $output .= '<div class="jcp-checkin-header">';
     $output .= '<div class="jcp-title-container">';
@@ -1869,21 +1869,21 @@ public static function render_single_checkin($checkin, $company_info = array())
             <h2 class="jcp-company-name">' . esc_html($company_info['name']) . '</h2>';
         
         // Intro text
-        $output .= '<div class="jcp-company-into-text">
-            <p>Sarasota’s #1 for exterior cleaning. Trusted by 200+ homeowners.</p>
+        $output .= '<div class="jcp-company-info-text">
+            <p>' . esc_html($company_info['address']) . '</p>
         </div>';
 
         $output .= '<div class="jcp-company-div-2">';
 
         // Company Reviews text
         $output .= '<div class="jcp-company-reviews-text">
-            <p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"/></svg> 4.9 (212 reviews)</p>
+            <p>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                    <path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"/>
+                </svg>
+                <span>No Reviews</span>
+            </p>
         </div>';
-
-        // Address
-       // $output .= '<div class="jcp-company-address">
-         //   <p>' . nl2br(esc_html($company_info['address'])) . '</p>
-        //</div>';
 
         
         // Check if we have either phone or URL
@@ -1891,7 +1891,7 @@ public static function render_single_checkin($checkin, $company_info = array())
         $has_url = !empty($company_info['url']);
         
         if ($has_phone) {
-            $output .= '<p> <strong> &nbsp;.&nbsp; </strong><a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['tn']) . '</a></p>';
+            $output .= '<p> <strong> &nbsp;.&nbsp; </strong><a href="tel:' . esc_attr(preg_replace('/[^0-9]/', '', $company_info['tn'])) . '">' . esc_html($company_info['phoneNumberString']) . '</a></p>';
         }
         
         if ($has_url) {
@@ -1909,14 +1909,19 @@ public static function render_single_checkin($checkin, $company_info = array())
             $output .= '<p class="jcp-no-contact-info">Contact No. and Website information not available</p>';
         }
         
-        $output .= '</div></div>'; // Close jcp-company-contact and jcp-company-details
+        $output .= '</div>'; // Close jcp-company-div-2
+
+        $output .= '<div class="jcp-company-description">
+            <p>' . esc_html($company_info['description']) . '</p>
+        </div>';
+        $output .= '</div>'; // jcp-company-details
 
          // Quote btn and text
-        
-            $output .= '<div class="jcp-company-logo">
-                <a href="#" class="quote-btn">Get a Quote</a>
-                <p class="powered-by">Powered by <b>JobCapturePro</b></p>
-            </div>';
+
+        $output .= '<div class="jcp-company-logo">
+            <a href="'. esc_url($company_info['quoteUrl']) .'" class="quote-btn">Get a Quote</a>
+            <p class="powered-by">Powered by <a href="https://jobcapturepro.com">JobCapturePro</a></p>
+        </div>';
         
         
         // Logo (now comes after details)
@@ -1952,7 +1957,11 @@ public static function render_single_checkin($checkin, $company_info = array())
                 gap: 1.5rem;
             }
 
-            .jcp-company-into-text p {
+            .jcp-company-info-text  {
+                margin-bottom: 0.6rem;
+            }
+
+            .jcp-company-info-text p {
                 margin: 0;
                 font-size: 1rem;
                 color: #444;
@@ -1968,10 +1977,11 @@ public static function render_single_checkin($checkin, $company_info = array())
 
             .jcp-company-div-2 a {
                 color: #111;
+                text-decoration: none;
             }
 
             .jcp-company-div-2 a:hover {
-                color: #e2353c;
+                text-decoration: underline;
             }
 
             .jcp-company-logo img {
@@ -2014,7 +2024,13 @@ public static function render_single_checkin($checkin, $company_info = array())
                 font-style: italic;
             }
 
-            .jcp-company-reviews-text p svg{
+            .jcp-company-reviews-text p {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .jcp-company-reviews-text p svg {
                 width : 18px;
             }
 
@@ -2022,11 +2038,14 @@ public static function render_single_checkin($checkin, $company_info = array())
                 display: flex;
             }
 
-            .jcp-company-logo{
+            .jcp-company-logo {
                 text-align: end;
             }
 
             .quote-btn {
+                display: block;
+                text-align: center;
+                text-decoration: none;
                 background-color: #ff503e;
                 color: #fff;
                 font-weight: bold;
@@ -2036,13 +2055,24 @@ public static function render_single_checkin($checkin, $company_info = array())
                 transition: background-color 0.2s ease;
             }
 
+            .quote-btn:hover {
+                background-color: #e2353c;
+            }
+
             .powered-by {
                 font-size: 0.75rem;
                 color: #888;
+                margin-top: 0.6rem;
             }
 
-            .powered-by b {
-               color: #000;
+            .powered-by a {
+                font-weight: bold;
+                text-decoration: none;
+                color: #000;
+            }
+
+            .powered-by a:hover {
+                text-decoration: underline;
             }
 
             @media (max-width: 600px) {
@@ -2059,6 +2089,16 @@ public static function render_single_checkin($checkin, $company_info = array())
                 .jcp-company-div-2{
                     display: block;
                 }
+            }
+
+            .jcp-company-description {
+                margin-top: 0.6rem;
+            }
+
+            .jcp-company-description p {
+                margin: 0;
+                font-size: 1rem;
+                color: #444;
             }
                 
         </style>';
