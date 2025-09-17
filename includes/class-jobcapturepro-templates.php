@@ -134,304 +134,302 @@ class JobCaptureProTemplates
         $output = '<div class="jcp-single-checkin">';
         
         // Add CSS styles
-        $output .= '
-            <style>
+        $output .= '<style>
+            .jcp-single-checkin {
+                margin: 0 auto;
+                padding: 20px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                color: #333;
+                line-height: 1.5;
+                background: #f9f9f9;
+            }
+            
+            .jcp-flex-div {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 2rem 5rem auto;
+                padding: 0 2rem;
+                align-items: start;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 3rem;
+            }
+
+            .jcp-ts-div {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 2rem 5rem auto;
+                padding: 2rem 2rem;
+                align-items: start;
+            }
+
+            .jcp-faq-div {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 2rem;
+                max-width: 1200px;
+                margin: 2rem 0rem auto;
+                padding: 2rem 0;
+                align-items: start;
+                border-top: 1px solid #eee;
+                padding-bottom: 3rem;
+            }
+
+            .jcp-checkin-header {
+                margin-bottom: 20px;
+                background: #fff;
+                border-radius: 16px;
+                padding: 2rem;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            }
+
+            .jcp-content-block {
+                border-radius: 16px;
+                padding: 1.5rem;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+                background: #fff;
+            }
+            
+            .jcp-hero-img {
+                margin: 15px 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+                border-bottom: 1px solid #eee;
+                border-radius: 12px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .jcp-checkin-header h1 {
+                font-size: 24px;
+                margin: 0 0 5px 0;
+                color: #222;
+            }
+            
+            .jcp-checkin-meta {
+                display: flex;
+                gap: 15px;
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 15px;
+                justify-content: space-between;
+            }
+            
+            .jcp-checkin-description {
+                font-size: 15px;
+                margin: 15px 0;
+            }
+            
+            .jcp-section-title {
+                margin: 0 0 15px 0;
+                font-weight: 600;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+                color: #222;
+            }
+            
+            .jcp-review-content {
+                margin-bottom: 15px;
+                background: #fef9c3;
+                border-left: 4px solid #facc15;
+                padding: 0.75rem 1rem;
+                border-radius: 8px;
+                line-height: 1.5;
+            }
+            
+            .jcp-review-text {
+                font-style: italic;
+                margin: 0 0 5px 0;
+            }
+            
+            .jcp-review-author {
+                font-weight: bold;
+                text-align: right;
+                margin: 0;
+            }
+            
+            .jcp-verified-badge {
+                background: #f9f9f9;
+                background-color: #e6f4ea;
+                color: #1e7f3e;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+                border-radius: 999px;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                width: 100%;
+                margin-top: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .jcp-verified-badge svg {
+                width: 18px;
+                height: 18px;
+                fill: #1e7f3e;
+            }
+
+            .jcp-cta-link {
+                font-size: 15px;
+                margin: 15px 0 0 0;
+            }
+            
+            .jcp-cta-link strong {
+                color: #e74c3c;
+            }
+            
+            .jcp-list {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .jcp-list li {
+                padding: 5px 0;
+                font-size: 15px;
+            }
+            
+            .jcp-tags-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+            
+            .jcp-tags-table td {
+                padding: 8px;
+                border: 1px solid #e0e0e0;
+                background: #f8f9fa;
+            }
+
+            .jcp-tag-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .job-tag {
+                background-color: #e9e9e9;
+                color: #000;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+                border-radius: 999px;
+                display: inline-block;
+                margin: 6px;
+            }
+
+            .jcp-title-container {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .jcp-title-container .jcp-hero-img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 50px;
+            }
+
+            .jcp-job-reviews {
+                display: flex;
+                gap: 2px;
+                margin: 5px 0;
+                justify-content: end;
+            }
+
+            .jcp-job-reviews svg {
+                width: 18px;
+                height: 18px;
+                fill: #facc15;
+            }
+
+            .get-quote-btn {
+                background-color: #ff503e;
+                color: #fff;
+                padding: 0.75rem 1.25rem;
+                border-radius: 999px;
+                font-weight: 600;
+                font-size: 1rem;
+                display: inline-block;
+                text-align: center;
+                transition: background-color 0.2s ease;
+                width: 100%;
+            }
+
+            .jcp-related-checkins {
+                margin-top: 2rem;
+                border-top: 1px solid #eee;
+                padding-top: 1.25rem;
+            }
+
+            .jcp-list li {
+                padding: 5px 0;
+                font-size: 0.9rem;
+                color: #333;
+            }
+
+            .jcp-list svg {
+                width: 14px;
+                height: 14px;
+                fill: #999;
+                margin-right: 5px;
+            }
+
+            .jcp-checkin-date {
+                display: flex;
+                align-items: center;
+            }
+
+            .jcp-checkin-meta span {
+                font-size: 0.95rem;
+                color: #666;
+            }
+
+            .jcp-checkin-meta svg {
+                width: 16px;
+                height: 16px;
+                fill: #999;
+                margin-right: 0.4rem;
+            }
+
+            /* Hide specific elements on single check-in page */
+            .jcp-company-details,
+            .jcp-heatmap,
+            .jcp-gallery-filters,
+            .jcp-company-info {
+                display: none !important;
+            }
+            
+            @media (max-width: 600px) {
                 .jcp-single-checkin {
-                    margin: 0 auto;
-                    padding: 20px;
-                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-                    color: #333;
-                    line-height: 1.5;
-                    background: #f9f9f9;
+                    padding: 15px;
                 }
                 
-                .jcp-flex-div {
-                    display: grid;
-                    grid-template-columns: 1fr 360px;
-                    gap: 2rem;
-                    max-width: 1200px;
-                    margin: 2rem 5rem auto;
-                    padding: 0 2rem;
-                    align-items: start;
-                    border-bottom: 1px solid #eee;
-                    padding-bottom: 3rem;
-                }
-
-                .jcp-ts-div {
-                    display: grid;
-                    grid-template-columns: 1fr 360px;
-                    gap: 2rem;
-                    max-width: 1200px;
-                    margin: 2rem 5rem auto;
-                    padding: 2rem 2rem;
-                    align-items: start;
-                }
-
-                .jcp-faq-div {
-                    display: grid;
-                    grid-template-columns: 1fr 360px;
-                    gap: 2rem;
-                    max-width: 1200px;
-                    margin: 2rem 0rem auto;
-                    padding: 2rem 0;
-                    align-items: start;
-                    border-top: 1px solid #eee;
-                    padding-bottom: 3rem;
-                }
-
-                .jcp-checkin-header {
-                    margin-bottom: 20px;
-                    background: #fff;
-                    border-radius: 16px;
-                    padding: 2rem;
-                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-                }
-
                 .jcp-content-block {
-                    border-radius: 16px;
-                    padding: 1.5rem;
-                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.25rem;
-                    background: #fff;
-                }
-                
-                .jcp-hero-img {
-                    margin: 15px 0;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                    width: 100%;
-                    height: auto;
-                    object-fit: cover;
-                    border-bottom: 1px solid #eee;
-                    border-radius: 12px;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .jcp-checkin-header h1 {
-                    font-size: 24px;
-                    margin: 0 0 5px 0;
-                    color: #222;
+                    padding: 15px;
                 }
                 
                 .jcp-checkin-meta {
-                    display: flex;
-                    gap: 15px;
-                    font-size: 14px;
-                    color: #666;
-                    margin-bottom: 15px;
-                    justify-content: space-between;
-                }
-                
-                .jcp-checkin-description {
-                    font-size: 15px;
-                    margin: 15px 0;
-                }
-                
-                .jcp-section-title {
-                    margin: 0 0 15px 0;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    margin-bottom: 1rem;
-                    color: #222;
-                }
-                
-                .jcp-review-content {
-                    margin-bottom: 15px;
-                    background: #fef9c3;
-                    border-left: 4px solid #facc15;
-                    padding: 0.75rem 1rem;
-                    border-radius: 8px;
-                    line-height: 1.5;
-                }
-                
-                .jcp-review-text {
-                    font-style: italic;
-                    margin: 0 0 5px 0;
-                }
-                
-                .jcp-review-author {
-                    font-weight: bold;
-                    text-align: right;
-                    margin: 0;
-                }
-                
-                .jcp-verified-badge {
-                    background: #f9f9f9;
-                    background-color: #e6f4ea;
-                    color: #1e7f3e;
-                    padding: 0.4rem 0.8rem;
-                    font-size: 0.85rem;
-                    border-radius: 999px;
-                    font-weight: 500;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 0.4rem;
-                    width: 100%;
-                    margin-top: 20px;
-                    margin-bottom: 15px;
-                }
-                
-                .jcp-verified-badge svg {
-                    width: 18px;
-                    height: 18px;
-                    fill: #1e7f3e;
+                    flex-direction: column;
+                    gap: 5px;
                 }
 
-                .jcp-cta-link {
-                    font-size: 15px;
-                    margin: 15px 0 0 0;
-                }
-                
-                .jcp-cta-link strong {
-                    color: #e74c3c;
-                }
-                
-                .jcp-list {
-                    list-style-type: none;
-                    padding: 0;
-                    margin: 0;
-                }
-                
-                .jcp-list li {
-                    padding: 5px 0;
-                    font-size: 15px;
-                }
-                
-                .jcp-tags-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 10px;
-                }
-                
-                .jcp-tags-table td {
-                    padding: 8px;
-                    border: 1px solid #e0e0e0;
-                    background: #f8f9fa;
-                }
+                .jcp-flex-div, .jcp-ts-div, .jcp-faq-div {
+                    display: contents;
+            }
 
-                .jcp-tag-list {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                }
-
-                .job-tag {
-                    background-color: #e9e9e9;
-                    color: #000;
-                    padding: 0.3rem 0.6rem;
-                    font-size: 0.8rem;
-                    border-radius: 999px;
-                    display: inline-block;
-                    margin: 6px;
-                }
-
-                .jcp-title-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 15px;
-                }
-
-                .jcp-title-container .jcp-hero-img {
-                    width: 80px;
-                    height: 80px;
-                    object-fit: cover;
-                    border-radius: 50px;
-                }
-
-                .jcp-job-reviews {
-                    display: flex;
-                    gap: 2px;
-                    margin: 5px 0;
-                    justify-content: end;
-                }
-
-                .jcp-job-reviews svg {
-                    width: 18px;
-                    height: 18px;
-                    fill: #facc15;
-                }
-
-                .get-quote-btn {
-                    background-color: #ff503e;
-                    color: #fff;
-                    padding: 0.75rem 1.25rem;
-                    border-radius: 999px;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    display: inline-block;
-                    text-align: center;
-                    transition: background-color 0.2s ease;
-                    width: 100%;
-                }
-
-                .jcp-related-checkins {
+            .jcp-section-title {
                     margin-top: 2rem;
-                    border-top: 1px solid #eee;
-                    padding-top: 1.25rem;
-                }
-
-                .jcp-list li {
-                    padding: 5px 0;
-                    font-size: 0.9rem;
-                    color: #333;
-                }
-
-                .jcp-list svg {
-                    width: 14px;
-                    height: 14px;
-                    fill: #999;
-                    margin-right: 5px;
-                }
-
-                .jcp-checkin-date {
-                    display: flex;
-                    align-items: center;
-                }
-
-                .jcp-checkin-meta span {
-                    font-size: 0.95rem;
-                    color: #666;
-                }
-
-                .jcp-checkin-meta svg {
-                    width: 16px;
-                    height: 16px;
-                    fill: #999;
-                    margin-right: 0.4rem;
-                }
-
-                /* Hide specific elements on single check-in page */
-                .jcp-company-details,
-                .jcp-heatmap,
-                .jcp-gallery-filters,
-                .jcp-company-info {
-                    display: none !important;
-                }
-                
-                @media (max-width: 600px) {
-                    .jcp-single-checkin {
-                        padding: 15px;
-                    }
-                    
-                    .jcp-content-block {
-                        padding: 15px;
-                    }
-                    
-                    .jcp-checkin-meta {
-                        flex-direction: column;
-                        gap: 5px;
-                    }
-
-                    .jcp-flex-div, .jcp-ts-div, .jcp-faq-div {
-                        display: contents;
-                }
-
-                .jcp-section-title {
-                        margin-top: 2rem;
-                }
-            </style>
-        ';
+            }
+        </style>';
         
         // First content block (header and description)
         $output .= '<div class="jcp-single-content-block">';
