@@ -1677,111 +1677,34 @@ class JobCaptureProTemplates
             $lat = $feature['geometry']['coordinates'][1];
             $lng = $feature['geometry']['coordinates'][0];
             
-            // Get properties from feature if available
-            $title = !empty($feature['properties']['title']) ? 
-                esc_js($feature['properties']['title']) : 'Location ' . ($index + 1);
-            
-            $description = !empty($feature['properties']['description']) ? 
-                esc_js($feature['properties']['description']) : '';
-                
-            $address = !empty($feature['properties']['address']) ? 
-                esc_js($feature['properties']['address']) : '';
-                
-            $date = !empty($feature['properties']['createdAt']) ? 
-                date('F j, Y', $feature['properties']['createdAt']) : '';
-            
             // Build the marker data
-            $markersData[] = "{
-                position: { lat: {$lat}, lng: {$lng} },
-                title: '{$title}',
-                description: '{$description}',
-                address: '{$address}',
-                date: '{$date}'
-            }";
+            $markersData[] = array(
+                'position' => array('lat' => $lat, 'lng' => $lng),
+            );
         }
 
+        wp_enqueue_script(
+            'jcp-multimap',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/multimap.js',
+            array('google-maps', 'markerclusterer'),
+            '1.0.0',
+            true
+        );
+
+        wp_localize_script(
+            'jcp-multimap',
+            'jcpMultimapData',
+            array(
+                'centerLat' => (float)$centerLat,
+                'centerLng' => (float)$centerLng,
+                'minLat' => (float)$minLat,
+                'minLng' => (float)$minLng,
+                'maxLat' => (float)$maxLat,
+                'maxLng' => (float)$maxLng,
+                'markersData' => $markersData,
+            )
+        );
        
-        $output .= '<script>
-            async function initMultiMap() {
-                try {
-                    // Request needed libraries.
-                    const { Map } = await google.maps.importLibrary("maps");
-                    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-                    
-                    // Create the map
-                    const map = new Map(document.getElementById("multimap"), {
-                        center: { lat: ' . $centerLat . ', lng: ' . $centerLng . ' },
-                        zoom: 10,
-                        mapId: "f4a15cb6cd4f8d61", // You should replace this with your actual Map ID
-                    });
-
-                    // Define bounds for the map
-                    const bounds = new google.maps.LatLngBounds(
-                        new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
-                        new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
-                    );
-                    
-                    // Fit the map to these bounds
-                    map.fitBounds(bounds);
-
-                    // Markers data
-                    const markersData = [' . implode(',', $markersData) . '];
-
-                    // Create markers array for clustering
-                    const markers = [];
-
-                    // Create markers
-                    markersData.forEach((markerData, index) => {
-                        const marker = new AdvancedMarkerElement({
-                            map: map,
-                            position: markerData.position,
-                            title: markerData.title
-                        });
-
-                        // Add marker to array for clustering
-                        markers.push(marker);
-
-                        // Add info window if there\'s additional content
-                        if (markerData.description || markerData.address || markerData.date) {
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `
-                                    <div style="max-width: 200px;">
-                                        <h4>${markerData.title}</h4>
-                                        ${markerData.description ? `<p>${markerData.description}</p>` : ""}
-                                        ${markerData.address ? `<p><strong>Address:</strong> ${markerData.address}</p>` : ""}
-                                        ${markerData.date ? `<p><strong>Date:</strong> ${markerData.date}</p>` : ""}
-                                    </div>
-                                `
-                            });
-
-                            marker.addListener("click", () => {
-                                infoWindow.open(map, marker);
-                            });
-                        }
-                    });
-                    
-                    // After creating all markers, add clustering (only if there are multiple markers)
-                    if (markers.length > 1) {
-                        const markerCluster = new markerClusterer.MarkerClusterer({ 
-                            map: map, 
-                            markers: markers 
-                        });
-                    }
-
-                } catch (error) {
-                    console.error("Error initializing map:", error);
-                }
-            }
-
-            // Initialize when page loads
-            if (typeof google !== "undefined" && google.maps) {
-                initMultiMap();
-            } else {
-                window.addEventListener("load", initMultiMap);
-            }
-        </script>';
-
-
         return $output;
     }
     
