@@ -435,15 +435,20 @@ class JobCaptureProTemplates
         $output .= '<div class="jcp-checkin-header">';
         $output .= '<div class="jcp-title-container">';
 
-        // Use actual checkin image or fallback
-        $hero_image = !empty($checkin['imageUrls'][0]) ? $checkin['imageUrls'][0] : 'https://procleaneverything.com/wp-content/uploads/2021/01/Nate-with-Truck-Header-Forward-1.jpeg';
-        $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
+        // Only render hero image if actual checkin image exists
+        if (!empty($checkin['imageUrls'][0])) {
+            $hero_image = $checkin['imageUrls'][0];
+            $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
+        }
         $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
         $output .= '</div>';
         // $output .= '<h1>' . esc_html($checkin['title'] ?? 'Roof Soft Wash in Venice, FL') . '</h1>';
         // Add the hero image below the title
-        $hero_image_full = !empty($checkin['imageUrls'][1]) ? $checkin['imageUrls'][1] : $hero_image;
-        $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image_full) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
+        // Only render hero image and meta if image exists
+        if (!empty($checkin['imageUrls'][0])) {
+            $hero_image_full = !empty($checkin['imageUrls'][1]) ? $checkin['imageUrls'][1] : $hero_image;
+            $output .= '<img class="jcp-hero-img" src="' . esc_url($hero_image_full) . '" alt="' . esc_attr($checkin['title'] ?? 'Job Image') . '">';
+        }
         $output .= '<div class="jcp-checkin-meta">';
 
         // Use actual data or fallbacks

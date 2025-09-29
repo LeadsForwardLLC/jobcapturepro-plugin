@@ -44,7 +44,6 @@ For more information about JobCapturePro's terms of service, visit: https://jobc
 * `[jcp_combined_components]` - Display comprehensive job and company information
 * `[jcp_company_info]` - Show business information and statistics
 * `[jcp_multimap]` - Interactive map with job location markers
-* `[jcp_heatmap]` - Heat map visualization of job density
 
 All shortcodes support `companyid` and `checkinid` parameters for targeted displays.
 
