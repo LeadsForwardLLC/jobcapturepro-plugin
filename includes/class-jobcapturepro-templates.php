@@ -398,7 +398,6 @@ class JobCaptureProTemplates
 
             /* Hide specific elements on single check-in page */
             .jcp-company-details,
-            .jcp-heatmap,
             .jcp-gallery-filters,
             .jcp-company-info {
                 display: none !important;
@@ -1512,131 +1511,6 @@ class JobCaptureProTemplates
         }
 
         return array($minLat, $maxLat, $minLng, $maxLng);
-    }
-
-    /**
-     * Generate HTML for a Google Maps heatmap
-     * 
-     * @param array $locations The location data as defined by geopoints in RFC 7946
-     * @return string HTML for a Google Maps heatmap
-     */
-    public static function render_heatmap($locations, $maps_api_key)
-    {
-        // Check for required fields
-        if (empty($locations)) {
-            return '';
-        }
-
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-
-        // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?libraries=visualization&key=' . $maps_api_key, array(), null, array('strategy' => 'async'));
-
-        // Extract features array from the GeoJSON FeatureCollection
-        $features = $locations['features'];
-
-        // Determine the bounds for the map
-        list($minLat, $maxLat, $minLng, $maxLng) = self::determine_bounds($features);
-
-        // Start building HTML output
-        $output = '<div id="heatmap" class="jcp-heatmap"></div>';
-
-        // Add filter buttons UI
-        $output .= '<div class="jcp-gallery-filters">';
-        $output .= '<button class="jcp-filter-btn active" data-filter="all">All Jobs</button>';
-        $output .= '<button class="jcp-filter-btn" data-filter="pressure-washing">Pressure Washing</button>';
-        $output .= '<button class="jcp-filter-btn" data-filter="roof-cleaning">Roof Cleaning</button>';
-        $output .= '<button class="jcp-filter-btn" data-filter="window-cleaning">Window Cleaning</button>';
-        $output .= '<button class="jcp-filter-btn" data-filter="5-star">5-Star Jobs</button>';
-        $output .= '</div>';
-
-        // Add CSS for modern responsive grid
-        $output .= self::get_heatmap_styles();
-
-        $output .= '<script>
-        function initHeatMap() {
-            const map = new google.maps.Map(document.getElementById("heatmap"), {
-                mapTypeId: "roadmap"
-            });
-            
-            // Define bounds for the map
-            const bounds = new google.maps.LatLngBounds(
-                new google.maps.LatLng(' . $minLat . ', ' . $minLng . '),
-                new google.maps.LatLng(' . $maxLat . ', ' . $maxLng . ')
-            );
-            
-            // Fit the map to these bounds
-            map.fitBounds(bounds);
-
-            const heatmapData = [' .
-            implode(',', array_map(function ($point) {
-                return 'new google.maps.LatLng(' . $point['geometry']['coordinates'][1] . ',' . $point['geometry']['coordinates'][0] . ')';
-            }, $features)) .
-            '];
-
-           
-
-            new google.maps.visualization.HeatmapLayer({
-                data: heatmapData,
-                map: map
-            });
-        }
-        window.addEventListener(\'load\', initHeatMap);
-        </script>';
-
-        return $output;
-    }
-
-    /**
-     * Generate CSS styles for the heatmap
-     * 
-     * @return string CSS styles for the heatmap
-     */
-    private static function get_heatmap_styles()
-    {
-        return '<style>
-            .jcp-heatmap {
-                height: 500px;
-                width: 80%;
-                border-radius: 12px;
-                overflow: hidden;
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 2rem;
-            }
-            .jcp-gallery-filters {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                justify-content: center;
-                padding: 3rem;
-            }
-                    
-            .jcp-filter-btn {
-                text-transform: capitalize;
-                color: #000;
-                background: #e5e5e5;
-                border: none;
-                padding: 0.6rem 1.2rem;
-                border-radius: 999px;
-                font-size: 0.95rem;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-                    
-            .jcp-filter-btn:hover {
-                background: #000;
-                color: #fff;
-            }
-                    
-            .jcp-filter-btn.active {
-                background: #000;
-                color: white;
-                border-color: #000;
-            }
-        </style>';
     }
 
     /**

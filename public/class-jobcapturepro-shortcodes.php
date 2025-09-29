@@ -144,24 +144,6 @@ class JobCaptureProShortcodes
     }
 
     /**
-     * Shortcode to display a heatmap
-     */
-    public function get_heatmap($atts)
-    {
-        $result = $this->fetch_api_data('map', $atts);
-        if (!$result) {
-            return 'Error fetching map data';
-        }
-
-        // Extract locations and maps API key from response
-        $response_data = $result['data'];
-        $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
-        $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
-
-        return JobCaptureProTemplates::render_heatmap($locations, $maps_api_key);
-    }
-
-    /**
      * Shortcode to display a map with multiple markers
      */
     public function get_multimap($atts)
