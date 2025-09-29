@@ -36,13 +36,14 @@ class JobCaptureProPlugin {
 		} else {
 			$this->version = '1.0.0';
 		}
+
 		$this->plugin_name = 'jobcapturepro';
 		$this->jcp_api_base_url = 'https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
 		$this->define_shortcodes();
-
+		$this->define_api_hooks();
 	}
 
 	/**
@@ -69,6 +70,12 @@ class JobCaptureProPlugin {
 		 * The class responsible for defining all actions for public-facing shortcodes
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jobcapturepro-shortcodes.php';
+
+		/**
+		 * The class responsible for defining the REST API
+		 */
+    	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jobcapturepro-api.php';
+
 
 		// Create an instance of the loader which will be used to register the hooks with WordPress.
 		$this->loader = new JobCaptureProLoader();
@@ -103,6 +110,13 @@ class JobCaptureProPlugin {
         $this->loader->add_shortcode( shortcode: 'jcp_company_info', component: $plugin_shortcodes, callback: 'get_company_info' );
 		$this->loader->add_shortcode( shortcode: 'jcp_combined_components', component: $plugin_shortcodes, callback: 'get_combined_components' );
     }
+
+	/**
+	 * Register all API endpoints
+	 */
+	private function define_api_hooks(): void {
+		new JobCaptureProAPI($this->get_jobcapturepro_api_base_url());
+	}
 
 
 	/**
