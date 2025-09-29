@@ -651,8 +651,8 @@ class JobCaptureProTemplates
         }
 
         // Create clickable link with checkinId parameter
-        $current_url = $_SERVER['REQUEST_URI'];
-        $checkin_url = add_query_arg('checkinId', $checkin['id'], $current_url);
+        $current_url = sanitize_text_field($_SERVER['REQUEST_URI']);
+        $checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
 
         $output = '<a href="' . esc_url($checkin_url) . '" class="jcp-checkin-card" style="text-decoration: none; color: inherit;">';
 
@@ -1382,21 +1382,21 @@ class JobCaptureProTemplates
         // Add all images but only first is visible initially
         foreach ($imageUrls as $index => $imageUrl) {
             $activeClass = $index === 0 ? ' active' : '';
-            $output .= '<div class="gallery-image' . $activeClass . '" data-index="' . $index . '">
-                <img src="' . esc_url($imageUrl) . '" alt="Checkin image ' . ($index + 1) . '">
+            $output .= '<div class="gallery-image' . $activeClass . '" data-index="' . intval($index) . '">
+                <img src="' . esc_url($imageUrl) . '" alt="' . esc_attr('Checkin image ' . ($index + 1)) . '">
             </div>';
         }
 
         // Add navigation arrows if there are multiple images
         if ($showArrows) {
-            $output .= '<div class="gallery-nav gallery-prev" onclick="changeImage(\'' . $galleryId . '\', \'prev\')">&#10094;</div>';
-            $output .= '<div class="gallery-nav gallery-next" onclick="changeImage(\'' . $galleryId . '\', \'next\')">&#10095;</div>';
+            $output .= '<div class="gallery-nav gallery-prev" onclick="changeImage(\'' . esc_js($galleryId) . '\', \'prev\')">&#10094;</div>';
+            $output .= '<div class="gallery-nav gallery-next" onclick="changeImage(\'' . esc_js($galleryId) . '\', \'next\')">&#10095;</div>';
             $output .= '<div class="gallery-dots">';
 
             // Add indicator dots
             for ($i = 0; $i < $imageCount; $i++) {
                 $activeClass = $i === 0 ? ' active' : '';
-                $output .= '<span class="gallery-dot' . $activeClass . '" onclick="showImage(\'' . $galleryId . '\', ' . $i . ')"></span>';
+                $output .= '<span class="gallery-dot' . $activeClass . '" onclick="showImage(\'' . esc_js($galleryId) . '\', ' . intval($i) . ')"></span>';
             }
 
             $output .= '</div>';
