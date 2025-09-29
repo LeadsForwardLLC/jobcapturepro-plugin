@@ -138,7 +138,7 @@ class JobCaptureProShortcodes
         }
 
         $checkin_id = $result['checkin_id'];
-        $checkins = $result['data'];
+        $checkins = $result['data']['checkins'] ?? [];
 
         return JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
     }
@@ -156,15 +156,6 @@ class JobCaptureProShortcodes
         $checkin_id = $result['checkin_id'];
         
         return JobCaptureProTemplates::render_map_conditionally($checkin_id, $result['data']);
-    }
-
-    /**
-     * Shortcode to display a map with multiple markers (deprecated - use get_map)
-     */
-    public function get_multimap($atts)
-    {
-        // Call the new method for backwards compatibility
-        return $this->get_map($atts);
     }
 
     /**
@@ -194,7 +185,7 @@ class JobCaptureProShortcodes
         }
 
         $checkin_id = $checkins_result['checkin_id'];
-        $checkins = $checkins_result['data'];
+        $checkins = $checkins_result['data']['checkins'] ?? [];
 
         // Fetch map data
         $map_result = $this->fetch_api_data('map', $atts);
