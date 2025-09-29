@@ -17,7 +17,7 @@ class JobCaptureProShortcodes
     private function fetch_api_data($endpoint, $atts)
     {
         // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        $checkin_id = isset($atts['checkinid']) ? sanitize_text_field($atts['checkinid']) : null;
         
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinId'])) {
@@ -106,7 +106,7 @@ class JobCaptureProShortcodes
     public function get_checkin($atts)
     {
         // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? $atts['checkinid'] : null;
+        $checkin_id = isset($atts['checkinid']) ? sanitize_text_field($atts['checkinid']) : null;
         
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinid'])) {
