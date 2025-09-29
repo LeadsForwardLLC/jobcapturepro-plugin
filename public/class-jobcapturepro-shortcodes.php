@@ -146,7 +146,7 @@ class JobCaptureProShortcodes
     /**
      * Shortcode to display a map with multiple markers
      */
-    public function get_multimap($atts)
+    public function get_map($atts)
     {
         $result = $this->fetch_api_data('map', $atts);
         if (!$result) {
@@ -156,6 +156,15 @@ class JobCaptureProShortcodes
         $checkin_id = $result['checkin_id'];
         
         return JobCaptureProTemplates::render_map_conditionally($checkin_id, $result['data']);
+    }
+
+    /**
+     * Shortcode to display a map with multiple markers (deprecated - use get_map)
+     */
+    public function get_multimap($atts)
+    {
+        // Call the new method for backwards compatibility
+        return $this->get_map($atts);
     }
 
     /**

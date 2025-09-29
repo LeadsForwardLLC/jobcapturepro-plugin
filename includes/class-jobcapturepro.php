@@ -102,10 +102,17 @@ class JobCaptureProPlugin {
 		// Create an instance of the shortcodes class
         $plugin_shortcodes = new JobCaptureProShortcodes( $this->get_plugin_name(), $this->get_version(), $this->get_jobcapturepro_api_base_url() );
 
-		// Register the shortcodes with the corresponding functions in the shortcodes class
+		// Register the new shortcodes with proper plugin prefix
+		$this->loader->add_shortcode( shortcode: 'jobcapturepro_checkin', component: $plugin_shortcodes, callback: 'get_checkin' );
+		$this->loader->add_shortcode( shortcode: 'jobcapturepro_checkins', component: $plugin_shortcodes, callback: 'get_all_checkins' );
+		$this->loader->add_shortcode( shortcode: 'jobcapturepro_map', component: $plugin_shortcodes, callback: 'get_map' );
+        $this->loader->add_shortcode( shortcode: 'jobcapturepro_company_info', component: $plugin_shortcodes, callback: 'get_company_info' );
+		$this->loader->add_shortcode( shortcode: 'jobcapturepro_combined', component: $plugin_shortcodes, callback: 'get_combined_components' );
+
+		// Keep old shortcodes for backwards compatibility
 		$this->loader->add_shortcode( shortcode: 'jcp_checkin', component: $plugin_shortcodes, callback: 'get_checkin' );
 		$this->loader->add_shortcode( shortcode: 'jcp_all_checkins', component: $plugin_shortcodes, callback: 'get_all_checkins' );
-		$this->loader->add_shortcode( shortcode: 'jcp_multimap', component: $plugin_shortcodes, callback: 'get_multimap' );
+		$this->loader->add_shortcode( shortcode: 'jcp_multimap', component: $plugin_shortcodes, callback: 'get_map' );
         $this->loader->add_shortcode( shortcode: 'jcp_company_info', component: $plugin_shortcodes, callback: 'get_company_info' );
 		$this->loader->add_shortcode( shortcode: 'jcp_combined_components', component: $plugin_shortcodes, callback: 'get_combined_components' );
     }

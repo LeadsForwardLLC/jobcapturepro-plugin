@@ -39,11 +39,15 @@ For more information about JobCapturePro's terms of service, visit: https://jobc
 
 **Available Shortcodes:**
 
-* `[jcp_single_checkin]` - Display a single job check-in with full details
-* `[jcp_checkins_grid]` - Show multiple check-ins in a responsive grid layout
-* `[jcp_combined_components]` - Display comprehensive job and company information
-* `[jcp_company_info]` - Show business information and statistics
-* `[jcp_multimap]` - Interactive map with job location markers
+**New Shortcodes (Recommended):**
+* `[jobcapturepro_checkin]` - Display a single job check-in with full details
+* `[jobcapturepro_checkins]` - Show multiple check-ins in a responsive grid layout
+* `[jobcapturepro_combined]` - Display comprehensive job and company information
+* `[jobcapturepro_company_info]` - Show business information and statistics
+* `[jobcapturepro_map]` - Interactive map with job location markers
+
+**Legacy Shortcodes (Backwards Compatibility):**
+* `[jcp_checkin]`, `[jcp_all_checkins]`, `[jcp_combined_components]`, `[jcp_company_info]`, `[jcp_multimap]`
 
 All shortcodes support `companyid` and `checkinid` parameters for targeted displays.
 
