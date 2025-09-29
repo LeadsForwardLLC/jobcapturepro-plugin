@@ -1,39 +1,77 @@
 <?php
-    /*
-     * Plugin Name:       JobCapturePro Plugin
-     * Description:       Use JobCapturePro to capture job leads and manage your business.
-     * Version:           1.0.0
-     * Author:            JobCapturePro
-     * Author URI:        https://www.jobcapturepro.com/
-     * License: GPLv2 or later
-     * License URI: http://www.gnu.org/licenses/gpl-2.0.html
-     */
+/**
+ * Plugin Name:       JobCapturePro
+ * Plugin URI:        https://www.jobcapturepro.com/wordpress-plugin/
+ * Description:       Display job check-ins, company information, and interactive maps from your JobCapturePro account. Showcase completed work, customer reviews, and business locations with professional shortcodes.
+ * Version:           1.0.0
+ * Requires at least: 5.0
+ * Requires PHP:      7.4
+ * Author:            JobCapturePro Team
+ * Author URI:        https://www.jobcapturepro.com/
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       jobcapturepro
+ * 
+ * The JobCapturePro WordPress plugin is free software: you can redistribute
+ * it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any later version.
+ * 
+ * JobCapturePro is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with JobCapturePro. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
+ */
 
-	// If this file is called directly, abort.
-	if ( ! defined( 'WPINC' ) ) {
-		die;
-	}
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
-	/**
-	 * Current plugin version.
-	 * Uses SemVer - https://semver.org
-	 */
-	define( 'JOBCAPTUREPROPLUGIN_VERSION', '1.0.0' );
+// Define plugin constants
+define( 'JOBCAPTUREPRO_VERSION', '1.0.0' );
+define( 'JOBCAPTUREPRO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'JOBCAPTUREPRO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'JOBCAPTUREPRO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
-	/**
-	 * The core plugin class that is used to define 
-	 * admin-specific and public-facing shortcode hooks.
-	 */
-	require plugin_dir_path( __FILE__ ) . 'includes/class-jobcapturepro.php';
+/**
+ * The code that runs during plugin activation.
+ */
+function activate_jobcapturepro() {
+	// Flush rewrite rules to ensure shortcodes work properly
+	flush_rewrite_rules();
+}
 
-	/**
-	 * Begins execution of the plugin.
-	 */
-	function run_jobcapturepro() {
+/**
+ * The code that runs during plugin deactivation.
+ */
+function deactivate_jobcapturepro() {
+	// Clean up rewrite rules
+	flush_rewrite_rules();
+}
 
-		$plugin = new JobCaptureProPlugin();
-		$plugin->run();
+register_activation_hook( __FILE__, 'activate_jobcapturepro' );
+register_deactivation_hook( __FILE__, 'deactivate_jobcapturepro' );
 
-	}
+/**
+ * The core plugin class that is used to define 
+ * admin-specific and public-facing shortcode hooks.
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-jobcapturepro.php';
 
-	run_jobcapturepro();
+/**
+ * Begins execution of the plugin.
+ * 
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ */
+function run_jobcapturepro() {
+	$plugin = new JobCaptureProPlugin();
+	$plugin->run();
+}
+
+run_jobcapturepro();
