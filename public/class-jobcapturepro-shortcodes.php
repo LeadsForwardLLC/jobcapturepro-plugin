@@ -138,7 +138,7 @@ class JobCaptureProShortcodes
         }
 
         $checkin_id = $result['checkin_id'];
-        $checkins = $result['data']['checkins'] ?? [];
+        $checkins = $result['data'] ?? [];
 
         return JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
     }
