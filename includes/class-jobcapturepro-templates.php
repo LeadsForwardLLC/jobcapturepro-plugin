@@ -102,14 +102,6 @@ class JobCaptureProTemplates
      */
     public static function render_single_checkin($checkin, $company_info = array())
     {
-        wp_enqueue_style(
-            'jcp-single-checkin-styles',
-            plugin_dir_url(dirname(__FILE__)) . '/assets/css/single-checkin.css',
-            array(),
-            '1.0.0',
-            'all'
-        );
-
         $output = '<div class="jobcapturepro-single-checkin">';
 
         // First content block (header and description)
@@ -318,6 +310,10 @@ class JobCaptureProTemplates
 
         $output .= '</div>'; // close jobcapturepro-single-checkin
 
+        // Enqueue styles
+        self::enqueue_single_checkin_styles();
+        self::enqueue_checkins_grid_styles();
+
         return $output;
     }
 
@@ -440,9 +436,6 @@ class JobCaptureProTemplates
 
         // Unique ID for this grid
         $gridId = 'jobcapturepro-grid-' . wp_rand();
-
-        // Add CSS for modern responsive grid
-        $output .= self::get_checkins_grid_styles($gridId);
 
         // Grid container with data attribute to store the column count
         $output .= '<div class="jobcapturepro-checkins-grid ' . $gridId . '" data-column-count="3">';
@@ -583,6 +576,11 @@ class JobCaptureProTemplates
             });
         </script>';
 
+
+        // Enqueue styles and add dynamic selectors styles
+        self::enqueue_checkins_grid_styles();
+        $output .= self::get_dynamic_selectors_checkins_grid_styles($gridId);
+
         return $output;
     }
 
@@ -592,289 +590,17 @@ class JobCaptureProTemplates
      * @param string $gridId The unique ID for the grid
      * @return string CSS styles for the checkins grid
      */
-    private static function get_checkins_grid_styles($gridId = null)
+    private static function get_dynamic_selectors_checkins_grid_styles($gridId = null)
     {
         $gridSelector = $gridId ? '.' . $gridId : '.jobcapturepro-checkins-grid';
 
         return '<style>
-            .jobcapturepro-container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 20px;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-            }
-            
             ' . $gridSelector . ' {
                 /* Keep masonry-style layout with CSS columns */
                 column-count: 3;
                 column-gap: 20px;
                 width: 100%;
             }
-
-            .jobcapturepro-checkins-grid {
-                gap: 2rem;
-                padding: 0rem 0rem 2rem 0rem;
-                margin: 0 auto;
-            }
-                        
-            .jobcapturepro-checkin-card {
-                break-inside: avoid;
-                margin-bottom: 2rem;
-                background: #fff;
-                border-radius: 12px;
-                box-shadow: rgba(0, 0, 0, 0.11) 0px 1px 10px 0px;
-                overflow: hidden;
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-                display: block;
-            }
-
-            .jobcapturepro-checkin-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-            
-            /* User info styles */
-            .jobcapturepro-checkin-user {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 15px;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            
-            .jobcapturepro-user-image {
-                flex: 0 0 40px;
-                height: 40px;
-                border-radius: 50%;
-                overflow: hidden;
-            }
-            
-            .jobcapturepro-user-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                display: block;
-            }
-            
-            .jobcapturepro-user-name {
-                flex-grow: 1;
-                text-align: left;
-                margin-left: 0.75rem;
-            }
-            
-            .jobcapturepro-user-name p {
-                margin: 0;
-                font-size: 1.05em;
-                font-weight: 600;
-                color: #333;
-            }
-            
-            /* Image gallery styles */
-            .jobcapturepro-checkin-image {
-                position: relative;
-                width: 100%;
-                height: 215px;
-                overflow: hidden;
-                border-radius: 12px;
-                margin-bottom: 1.5rem;
-            }
-            
-            .gallery-image {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-                display: none;
-            }
-            
-            .gallery-image.active {
-                opacity: 1;
-                display: block;
-            }
-            
-            .gallery-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                display: block;
-            }
-            
-            .gallery-nav {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 40px;
-                height: 40px;
-                background-color: rgba(255, 255, 255, 0.5);
-                color: rgba(0, 0, 0, 0.6);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                font-size: 18px;
-                font-weight: bold;
-                z-index: 2;
-                transition: background-color 0.3s ease, color 0.3s ease;
-            }
-            
-            .gallery-nav:hover {
-                background-color: rgba(255, 255, 255, 0.8);
-                color: rgba(0, 0, 0, 0.8);
-            }
-            
-            .gallery-prev {
-                left: 10px;
-            }
-            
-            .gallery-next {
-                right: 10px;
-            }
-            
-            .gallery-dots {
-                position: absolute;
-                bottom: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                display: flex;
-                gap: 8px;
-                z-index: 2;
-            }
-            
-            .gallery-dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background-color: rgba(255, 255, 255, 0.5);
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-            
-            .gallery-dot.active,
-            .gallery-dot:hover {
-                background-color: rgba(255, 255, 255, 0.9);
-            }
-            
-            .jobcapturepro-checkin-description,
-            .jobcapturepro-checkin-date,
-            .jobcapturepro-checkin-address {
-                padding: 10px 15px;
-            }
-            
-            .jobcapturepro-checkin-date {
-                font-size: 0.9em;
-                color: #666;
-                float: left;
-            }
-
-            .date-icon{
-                display: flex;
-                align-items: center;
-            }
-                        
-            .jobcapturepro-checkin-address {
-                font-size: 0.85em;
-                /* background-color: #f8f8f8; */
-                /* border-top: 1px solid #eee; */
-                text-align: right;
-            }
-            
-            .jobcapturepro-checkin-description {
-                border-bottom: 1px solid #f0f0f0;
-            }
-
-            /*.jobcapturepro-checkin-date, .jobcapturepro-checkin-address {
-                padding: 0 15px;
-            }*/
-
-            .jobcapturepro-job-reviews {
-                display: flex;
-                gap: 2px; /* Adjust the space between stars */
-                margin: 5px 0; /* Add some vertical spacing */
-            }
-
-            .jobcapturepro-job-reviews svg {
-                width: 18px; /* Adjust star size */
-                height: 18px;
-                fill: #facc15; /* Star color */
-            }
-
-            .date-icon svg{
-                width: 16px;
-                margin-right: 0.4rem;
-                fill: #999;
-            }
-
-            .jobcapturepro-stats-section {
-                background-color: #fff;
-                padding: 30px 20px;
-                margin: 30px 0;
-                text-align: center;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-            .jobcapturepro-stats-container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                max-width: 1000px;
-                margin: 0 auto;
-                gap: 0rem;
-                background: #fff;
-                padding: 2rem 5rem;
-        }
-        
-        .jobcapturepro-stat-item {
-            flex: 1;
-            min-width: 200px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .jobcapturepro-stat-number {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 5px;
-            line-height: 1;
-        }
-        
-       .jobcapturepro-stat-label {
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: #555;
-        }
-
-        .jobcapturepro-cta-container{
-            background-color: #111;
-            color: #fff;
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-
-         .jobcapturepro-cta-container h2 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        @media (max-width: 768px) {
-            .jobcapturepro-stats-container {
-                flex-direction: column;
-                gap: 25px;
-            }
-            
-            .jobcapturepro-stat-item {
-                min-width: 100%;
-            }
-            
-            .jobcapturepro-stat-number {
-                font-size: 2rem;
-            }
-        }
 
             /* Responsive design */
             @media (max-width: 1024px) {
@@ -894,120 +620,6 @@ class JobCaptureProTemplates
                     column-count: 1;
                 }
             }
-
-         .jobcapturepro-single-checkin {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .jobcapturepro-checkin-header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #222;
-        }
-        
-        .jobcapturepro-checkin-meta {
-            display: flex;
-            gap: 15px;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        .jobcapturepro-checkin-description {
-            margin: 0px 0;
-            font-size: 16px;
-        }
-        
-        .jobcapturepro-divider {
-            height: 1px;
-            background-color: #eee;
-            margin: 30px 0;
-        }
-        
-        .jobcapturepro-checkin-review h2,
-        .jobcapturepro-related-checkins h2,
-        .jobcapturepro-testimonials h2,
-        .jobcapturepro-faqs h2,
-        .jobcapturepro-service-tags h2 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #222;
-        }
-        
-        .jobcapturepro-review-content {
-            background: #f8f8f8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .jobcapturepro-review-text {
-            font-style: italic;
-            margin-bottom: 5px;
-        }
-        
-        .jobcapturepro-review-author {
-            font-weight: bold;
-            text-align: right;
-        }
-        
-        .jobcapturepro-verified-badge {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        
-        .jobcapturepro-cta-link {
-            font-size: 16px;
-            margin: 15px 0;
-        }
-        
-        .jobcapturepro-cta-link strong {
-            color: #e74c3c;
-        }
-        
-        .jobcapturepro-related-list,
-        .jobcapturepro-testimonial-list,
-        .jobcapturepro-faq-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        
-        .jobcapturepro-related-list li,
-        .jobcapturepro-testimonial-list li,
-        .jobcapturepro-faq-list li {
-            padding: 8px 0;
-            font-size: 15px;
-        }
-        
-        .jobcapturepro-tags-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .jobcapturepro-tags-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
-        }
-        
-        @media (max-width: 600px) {
-            .jobcapturepro-single-checkin {
-                padding: 15px;
-            }
-            
-            .jobcapturepro-checkin-header h1 {
-                font-size: 24px;
-            }
-            
-            .jobcapturepro-checkin-meta {
-                flex-direction: column;
-                gap: 5px;
-            }
-        }
         </style>';
     }
 
@@ -1229,9 +841,6 @@ class JobCaptureProTemplates
         // Start building HTML output
         $output = '<div id="jobcapturepro-map" class="jobcapturepro-map"></div>';
 
-        // Add CSS for modern responsive map
-        $output .= self::get_map_styles();
-
         // Generate unique markers data with properties
         $markersData = array();
         foreach ($features as $index => $feature) {
@@ -1277,71 +886,11 @@ class JobCaptureProTemplates
             )
         );
 
+        // Enqueue styles for the map
+        self::enqueue_map_styles();
+        $output .= self::get_dynamic_selectors_checkins_grid_styles();
+
         return $output;
-    }
-
-    /**
-     * Generate CSS styles for the multi markers map
-     * 
-     * @return string CSS styles for the multi markers map
-     */
-    private static function get_map_styles()
-    {
-        return '<style>
-            .jobcapturepro-map {
-                height: 500px;
-                width: 100%;
-                border-radius: 12px;
-                overflow: hidden;
-                margin-left: auto;
-                margin-right: auto;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            
-            .jobcapturepro-info-window {
-                padding: 5px;
-                max-width: 250px;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-            }
-            
-            .jobcapturepro-info-window h3 {
-                margin-top: 0;
-                margin-bottom: 8px;
-                font-size: 16px;
-                font-weight: 600;
-            }
-            
-            .jobcapturepro-info-window p {
-                margin: 5px 0;
-                font-size: 14px;
-            }
-            
-            .jobcapturepro-info-window .jobcapturepro-address,
-            .jobcapturepro-info-window .jobcapturepro-date {
-                font-size: 12px;
-                color: #666;
-            }
-
-            /* Responsive design */
-            @media (max-width: 1024px) {
-                .jobcapturepro-map {
-                    width: 90%;
-                }
-            }
-            
-            @media (max-width: 768px) {
-                .jobcapturepro-map {
-                    width: 95%;
-                }
-            }
-            
-            @media (max-width: 480px) {
-                .jobcapturepro-map {
-                    width: 100%;
-                    height: 400px;
-                }
-            }
-        </style>';
     }
 
     /**
@@ -1435,9 +984,25 @@ class JobCaptureProTemplates
     }
 
     /**
-     * Generate CSS styles for the company info section
+     * Enqueue styles for the map
      * 
-     * @return string CSS styles for the company info section
+     * @return void
+     */
+    private static function enqueue_map_styles()
+    {
+        wp_enqueue_style(
+            'jobcapturepro-map',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/css/map.css',
+            array(),
+            '1.0.0',
+            'all'
+        );
+    }
+
+    /**
+     * Enqueue styles for company info
+     * 
+     * @return void
      */
     private static function enqueue_company_info_styles()
     {
@@ -1449,5 +1014,33 @@ class JobCaptureProTemplates
             'all'
         );
     }
-}
 
+    /**
+     * Enqueue styles for single checkin
+     * 
+     * @return void
+     */
+    private static function enqueue_single_checkin_styles()
+    {
+        wp_enqueue_style(
+            'jcp-single-checkin',
+            plugin_dir_url(dirname(__FILE__)) . '/assets/css/single-checkin.css',
+            array(),
+            '1.0.0',
+            'all'
+        );
+    }
+
+    /**
+     * Enqueue checkins grid styles
+     */
+    private static function enqueue_checkins_grid_styles() {
+        wp_enqueue_style(
+            'jcp-checkins-grid',
+            plugin_dir_url(dirname(__FILE__)) . '/assets/css/checkins-grid.css',
+            array(),
+            '1.0.0',
+            'all'
+        );
+    }
+}
