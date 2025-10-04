@@ -5,7 +5,6 @@
  */
 class JobCaptureProTemplates
 {
-
     /**
      * Helper function to check if a feature should be displayed
      * Features are controlled at the plugin code level, not via UI
