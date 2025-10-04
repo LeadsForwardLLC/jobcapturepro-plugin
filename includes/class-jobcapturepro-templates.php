@@ -703,76 +703,10 @@ class JobCaptureProTemplates
 
         // Add JavaScript for gallery functionality if there are multiple images
         if ($showArrows) {
-            $output .= self::get_gallery_script();
+            self::enqueue_gallery_script();
         }
 
         return $output;
-    }
-
-    /**
-     * Generate JavaScript for image gallery functionality
-     * 
-     * @return string JavaScript for gallery functionality
-     */
-    private static function get_gallery_script()
-    {
-        // Check if script has already been added to avoid duplication
-        static $scriptAdded = false;
-
-        if ($scriptAdded) {
-            return '';
-        }
-
-        $scriptAdded = true;
-
-        return '<script>
-            function jobcaptureproChangeImage(galleryId, direction) {
-                const gallery = document.getElementById(galleryId);
-                const images = gallery.querySelectorAll(".gallery-image");
-                const dots = gallery.querySelectorAll(".gallery-dot");
-                
-                // Find current active image
-                let currentIndex = 0;
-                for (let i = 0; i < images.length; i++) {
-                    if (images[i].classList.contains("active")) {
-                        currentIndex = i;
-                        break;
-                    }
-                }
-                
-                // Remove active class from current image and dot
-                images[currentIndex].classList.remove("active");
-                if (dots.length) dots[currentIndex].classList.remove("active");
-                
-                // Calculate new index
-                let newIndex;
-                if (direction === "next") {
-                    newIndex = (currentIndex + 1) % images.length;
-                } else {
-                    newIndex = (currentIndex - 1 + images.length) % images.length;
-                }
-                
-                // Add active class to new image and dot
-                images[newIndex].classList.add("active");
-                if (dots.length) dots[newIndex].classList.add("active");
-            }
-            
-            function jobcaptureproShowImage(galleryId, index) {
-                const gallery = document.getElementById(galleryId);
-                const images = gallery.querySelectorAll(".gallery-image");
-                const dots = gallery.querySelectorAll(".gallery-dot");
-                
-                // Remove active class from all images and dots
-                for (let i = 0; i < images.length; i++) {
-                    images[i].classList.remove("active");
-                    if (dots.length) dots[i].classList.remove("active");
-                }
-                
-                // Add active class to selected image and dot
-                images[index].classList.add("active");
-                if (dots.length) dots[index].classList.add("active");
-            }
-        </script>';
     }
 
     private static function determine_bounds($features)
@@ -1033,13 +967,39 @@ class JobCaptureProTemplates
     /**
      * Enqueue checkins grid styles
      */
-    private static function enqueue_checkins_grid_styles() {
+    private static function enqueue_checkins_grid_styles()
+    {
         wp_enqueue_style(
             'jcp-checkins-grid',
             plugin_dir_url(dirname(__FILE__)) . '/assets/css/checkins-grid.css',
             array(),
             '1.0.0',
             'all'
+        );
+    }
+
+
+    /**
+     * Enqueue JavaScript for image gallery functionality
+     * 
+     */
+    private static function enqueue_gallery_script()
+    {
+        // Check if script has already been added to avoid duplication
+        static $scriptAdded = false;
+
+        if ($scriptAdded) {
+            return;
+        }
+
+        $scriptAdded = true;
+
+        wp_enqueue_script(
+            'jobcapturepro-gallery',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/gallery.js',
+            array(),
+            '1.0.0',
+            true
         );
     }
 }
