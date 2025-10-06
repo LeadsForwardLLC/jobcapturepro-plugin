@@ -146,152 +146,18 @@ class JobCaptureProTemplates
      */
     public static function render_checkins_grid($checkins, $company_info = array())
     {
-        // Sort checkins by date (newest first)
-        usort($checkins, function ($a, $b) {
-            // Compare timestamps (higher timestamp = more recent)
-            return strtotime($b['createdAt']) - strtotime($a['createdAt']);
-        });
 
-        // Container with CSS Grid for responsive layout
-        $output = '<div class="jobcapturepro-container">';
+        // Generate unique ID for this grid instance
+        $gridId = 'jobcapturepro-checkins-grid-' . uniqid();
 
-        // Unique ID for this grid
-        $gridId = 'jobcapturepro-grid-' . wp_rand();
-
-        // Grid container with data attribute to store the column count
-        $output .= '<div class="jobcapturepro-checkins-grid ' . $gridId . '" data-column-count="3">';
-
-        // Add each checkin to the grid in date-sorted order
-        foreach ($checkins as $checkin) {
-            $output .= self::render_checkin_card($checkin);
-        }
-
-        $output .= '</div>'; // Close grid
-        $output .= '</div>'; // Close container
-
-        // jcp stats section - only show if stats data is available or feature is enabled
-        $show_stats = self::should_show_feature('show_company_stats', !empty($company_info['stats']));
-        if ($show_stats && !empty($company_info['stats'])) {
-            $output .= '<div class="jobcapturepro-stats-container">';
-
-            if (!empty($company_info['stats']['jobs_this_month'])) {
-                $output .= '<div class="jobcapturepro-stat-item">
-                <div class="jobcapturepro-stat-number">' . esc_html($company_info['stats']['jobs_this_month']) . '</div>
-                <div class="jobcapturepro-stat-label">Jobs Posted This Month</div>
-            </div>';
-            }
-
-            if (!empty($company_info['stats']['average_rating'])) {
-                $output .= '<div class="jobcapturepro-stat-item">
-                <div class="jobcapturepro-stat-number">' . esc_html($company_info['stats']['average_rating']) . '</div>
-                <div class="jobcapturepro-stat-label">Average Rating</div>
-            </div>';
-            }
-
-            if (!empty($company_info['stats']['last_checkin'])) {
-                $output .= '<div class="jobcapturepro-stat-item">
-                <div class="jobcapturepro-stat-number">' . esc_html($company_info['stats']['last_checkin']) . '</div>
-                <div class="jobcapturepro-stat-label">Last Job Check-In</div>
-            </div>';
-            }
-
-            $output .= '</div>'; // Close jobcapturepro-stats-container
-        } else {
-            // Fallback to hard-coded stats if feature is enabled but no data
-            $show_fallback_stats = self::should_show_feature('show_company_stats', true);
-            if ($show_fallback_stats) {
-                $output .= '<div class="jobcapturepro-stats-container">';
-
-                $output .= '<div class="jobcapturepro-stat-item">
-                <div class="jobcapturepro-stat-number">86</div>
-                <div class="jobcapturepro-stat-label">Jobs Posted This Month</div>
-            </div>';
-
-                $output .= '<div class="jobcapturepro-stat-item">
-                <div class="jobcapturepro-stat-number">96%</div>
-                <div class="jobcapturepro-stat-label">Average 5-Star Rating</div>
-            </div>';
-
-                $output .= '<div class="jobcapturepro-stat-item">
-                <div class="jobcapturepro-stat-number">12 mins ago</div>
-                <div class="jobcapturepro-stat-label">Last Job Check-In</div>
-            </div>';
-
-                $output .= '</div>'; // Close jobcapturepro-stats-container
-            }
-        }
-
-        // jcp CTA section
-
-        $output .= '<div class="jobcapturepro-cta-container">';
-
-        // cta Heading
-        $output .= '<div class="jobcapturepro-cta">
-                    <h2>Let Your Work Speak For Itself</h2>
-                    <p>Capture check-ins like these with JobCapturePro. Set it and forget it.</p>
-                    <a href="#" class="quote-btn">Get JobCapturePro</a>
-                    </div>';
-
-        $output .= '</div>'; // Close jobcapturepro-cta-container
-
-        // Add JavaScript to maintain proper masonry layout
-        $output .= '<script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const grid = document.querySelector(".' . $gridId . '");
-                if (!grid) return;
-                
-                // Function to detect column count from CSS
-                function getColumnCount() {
-                    const style = window.getComputedStyle(grid);
-                    const columnCount = style.getPropertyValue("column-count");
-                    return parseInt(columnCount) || 4; // Default to 4 if not set
-                }
-                
-                // Force items to be added in correct order for visual masonry
-                function rearrangeItems() {
-                    const items = Array.from(grid.children);
-                    
-                    // First remove all items
-                    items.forEach(item => grid.removeChild(item));
-                    
-                    // Calculate column count
-                    const columnCount = getColumnCount();
-
-                    // Update grid attribute with current column count
-                    grid.setAttribute("data-column-count", columnCount);
-                    
-                    // Only keep items that fit evenly into columns
-                    // This ensures the masonry layout works correctly
-                    const itemsToKeep = Math.floor(items.length / columnCount) * columnCount;
-                    const finalItems = items; //.slice(0, itemsToKeep); // TODO: just need a better algo for sorting the masonry grid
-
-                    // Create "virtual" columns - these will help us rearrange items properly
-                    const columns = Array.from({length: columnCount}, () => []);
-                    
-                    // Organize items by column (this ensures ordered reading left-to-right)
-                    items.forEach((item, index) => {
-                        const columnIndex = index % columnCount;
-                        columns[columnIndex].push(item);
-                    });
-                    
-                    // Add back to grid in column-first order
-                    columns.forEach(column => {
-                        column.forEach(item => {
-                            grid.appendChild(item);
-                        });
-                    });
-                }
-                
-                // Run on load
-                rearrangeItems();
-                
-                // Also run when window is resized (column count may change)
-                let previousColumnCount = getColumnCount();
-                window.addEventListener("resize", function() {
-                    const newColumnCount = getColumnCount();
-                    if (newColumnCount !== previousColumnCount) {
-                        previousColumnCount = newColumnCount;
-                        rearrangeItems();
+        $output = Template::render_template('checkins-grid', [
+            'checkins' => $checkins,
+            'company_info' => $company_info,
+            'gridId' => $gridId,
+            'show_company_stats' => self::should_show_feature('show_company_stats', !empty($company_info['stats'])),
+            'show_company_stats_fallback' => self::should_show_feature('show_company_stats', true),
+            'render_checkin_card_html' => function($checkin) {
+                return self::render_checkin_card($checkin);
                     }
                 });
             });
