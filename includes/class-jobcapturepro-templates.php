@@ -150,6 +150,9 @@ class JobCaptureProTemplates
         // Generate unique ID for this grid instance
         $gridId = 'jobcapturepro-checkins-grid-' . uniqid();
 
+        // Enqueue styles
+        self::enqueue_checkins_grid_styles();
+
         $output = Template::render_template('checkins-grid', [
             'checkins' => $checkins,
             'company_info' => $company_info,
@@ -161,10 +164,13 @@ class JobCaptureProTemplates
                     }
         ]);
 
-        // Enqueue styles and add dynamic selectors styles
-        self::enqueue_checkins_grid_styles();
+        // Add dynamic selectors styles
         $output .= self::get_dynamic_selectors_checkins_grid_styles($gridId);
 
+        // Enqueue grid script
+        self::enqueue_checkins_grid_script($gridId);
+
+        // 
         return $output;
     }
 
@@ -521,7 +527,7 @@ class JobCaptureProTemplates
     /**
      * Enqueue the masonry grid JavaScript
      */
-    private static function enqueue_grid_script($gridId)
+    private static function enqueue_checkins_grid_script($gridId)
     {
         wp_enqueue_script(
             'jcp-checkins-grid',
