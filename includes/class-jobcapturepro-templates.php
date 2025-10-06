@@ -159,10 +159,7 @@ class JobCaptureProTemplates
             'render_checkin_card_html' => function($checkin) {
                 return self::render_checkin_card($checkin);
                     }
-                });
-            });
-        </script>';
-
+        ]);
 
         // Enqueue styles and add dynamic selectors styles
         self::enqueue_checkins_grid_styles();
@@ -519,5 +516,24 @@ class JobCaptureProTemplates
             '1.0.0',
             true
         );
+    }
+
+    /**
+     * Enqueue the masonry grid JavaScript
+     */
+    private static function enqueue_grid_script($gridId)
+    {
+        wp_enqueue_script(
+            'jcp-checkins-grid',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins-grid.js',
+            array(),
+            '1.0.0',
+            true
+        );
+
+        // Pass grid ID to JavaScript
+        wp_localize_script('jcp-checkins-grid', 'jcpGridData', array(
+            'gridId' => $gridId
+        ));
     }
 }
