@@ -3,6 +3,19 @@
 $current_url = sanitize_text_field($_SERVER['REQUEST_URI']);
 $checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
 
+// Parse address (assuming format: "Street, City, State, ZIP, Country")
+$address_parts = explode(',', $checkin['address']);
+
+// Get city (2nd last part) and state (last part before country/ZIP)
+$city = trim($address_parts[1] ?? ''); // City
+$state = trim($address_parts[2] ?? ''); // State (full name)
+
+// Shorten state abbreviation if needed (e.g., "California" → "CA")
+$state_abbr = strlen($state) > 2 ? substr($state, 0, 2) : $state;
+
+// Process date
+$timestamp = strtotime($checkin['createdAt']);
+
 ?>
 
 <a href="<?php echo esc_url($checkin_url); ?>" class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">

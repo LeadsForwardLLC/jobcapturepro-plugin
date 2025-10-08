@@ -161,30 +161,9 @@ class JobCaptureProTemplates
             return;
         }
 
-        // Create clickable link with checkinId parameter
-        $current_url = sanitize_text_field($_SERVER['REQUEST_URI']);
-        $checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
-
-        // Process date
-        $timestamp = strtotime($checkin['createdAt']);
-
-        // Parse address (assuming format: "Street, City, State, ZIP, Country")
-        $address_parts = explode(',', $checkin['address']);
-
-        // Get city (2nd last part) and state (last part before country/ZIP)
-        $city = trim($address_parts[1] ?? ''); // City
-        $state = trim($address_parts[2] ?? ''); // State (full name)
-
-        // Shorten state abbreviation if needed (e.g., "California" → "CA")
-        $state_abbr = strlen($state) > 2 ? substr($state, 0, 2) : $state;
-
         //
         return Template::render_template('checkin-card', [
             'checkin' => $checkin,
-            'checkin_url' => $checkin_url,
-            'timestamp' => $timestamp,
-            'city' => $city,
-            'state_abbr' => $state_abbr,
         ]);
     }
 
@@ -209,7 +188,6 @@ class JobCaptureProTemplates
         // Enqueue scripts
         self::enqueue_checkins_grid_script($gridId);
         self::enqueue_gallery_script();
-
 
         // Sort checkins by date (newest first)
         usort($checkins, function ($a, $b) {
