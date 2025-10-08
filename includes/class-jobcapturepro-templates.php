@@ -455,7 +455,11 @@ class JobCaptureProTemplates
         self::enqueue_map_styles();
         $output .= self::get_dynamic_selectors_checkins_grid_styles();
 
+
         // Enqueue the gallery script
+        self::enqueue_gallery_script();
+
+        //
         return $output;
     }
 

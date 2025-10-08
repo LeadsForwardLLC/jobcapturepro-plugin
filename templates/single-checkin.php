@@ -1,9 +1,6 @@
 <div class="jobcapturepro-single-checkin">
-    <!-- First content block (header and description) -->
     <div class="jobcapturepro-single-content-block">
-        <!-- jobcapturepro-flex-div -->
         <div class="jobcapturepro-flex-div">
-            <!-- close first content block -->
             <div class="jobcapturepro-checkin-header">
                 <div class="jobcapturepro-title-container">
                     <?php if (!empty($checkin['imageUrls'][0])): ?>
@@ -34,11 +31,8 @@
                     <p><?php echo esc_html($description); ?></p>
                 </div>
             </div>
-            <!-- close first content block -->
 
-            <!-- Second content block (all other sections) -->
             <div class="jobcapturepro-content-block">
-                <!-- Review section -->
                 <?php if ($show_reviews && !empty($checkin['customer_review'])): ?>
                     <div class="jobcapturepro-checkin-review">
                         <h2 class="jobcapturepro-section-title">Review</h2>
@@ -57,7 +51,6 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- Star ratings -->
                 <?php if ($show_ratings && !empty($checkin['rating'])): ?>
                     <div class="jobcapturepro-job-reviews">
                         <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -99,7 +92,6 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- Verified badge -->
                 <?php if ($show_verified || $show_verified_fallback): ?>
                     <div class="jobcapturepro-verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                             <path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm84.4-299.3l-80 128c-4.2 6.7-11.4 10.9-19.3 11.3s-15.5-3.2-20.2-9.6l-48-64c-8-10.6-5.8-25.6 4.8-33.6s25.6-5.8 33.6 4.8l27 36 61.4-98.3c7-11.2 21.8-14.7 33.1-7.6s14.7 21.8 7.6 33.1z" />
@@ -108,7 +100,6 @@
 
                 <a href="#" class="get-quote-btn">Get a Quote Like This</a>
 
-                <!-- Related check-ins -->
                 <?php if ($show_related): ?>
                     <div class="jobcapturepro-related-checkins">
                         <h2 class="jobcapturepro-section-title">Related Check-ins</h2>
@@ -137,13 +128,9 @@
                     </div>
                 <?php endif; ?>
             </div>
-            <!-- close second content block -->
         </div>
-        <!-- close jobcapturepro-flex-div -->
 
-        <!-- Testimonials & Services div -->
         <div class="jobcapturepro-ts-div">
-            <!-- Testimonials -->
             <?php if ($show_testimonials): ?>
                 <div class="jobcapturepro-testimonials">
                     <h2 class="jobcapturepro-section-title">What Homeowners Say</h2>
@@ -164,7 +151,6 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Service tags -->
             <?php if ($show_service_tags): ?>
                 <div class="jobcapturepro-service-tags">
                     <h2 class="jobcapturepro-section-title">Service Tags</h2>
@@ -186,9 +172,7 @@
                 </div>
             <?php endif; ?>
         </div>
-        <!-- close Testimonials & Services div -->
 
-        <!-- FAQ div -->
         <div class="jobcapturepro-faq-div">
             <div class="jobcapturepro-faqs">
                 <h2 class="jobcapturepro-section-title">FAQs</h2>
@@ -198,6 +182,5 @@
                 </ul>
             </div>
         </div>
-        <!-- close FAQ div -->
     </div>
 </div>
