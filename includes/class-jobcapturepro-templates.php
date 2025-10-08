@@ -101,20 +101,49 @@ class JobCaptureProTemplates
      */
     public static function render_single_checkin($checkin, $company_info = array())
     {
+        // Process data variables
+        $checkin_date = isset($checkin['createdAt']) ? date('F j, Y', strtotime($checkin['createdAt'])) : 'July 6, 2025';
+        $tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
+        $location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
+        $description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
+
+        // Feature flags (these need to be passed from the class)
+        $show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
+        $show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
+        $show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
+
+        // Rating processing
+        if (!empty($checkin['rating'])) {
+            $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
+        }
+
         // Enqueue styles
         self::enqueue_single_checkin_styles();
         self::enqueue_checkins_grid_styles();
 
         // 
         return Template::render_template('single-checkin', [
+            // Main data
             'checkin' => $checkin,
             'company_info' => $company_info,
+
+            // Processed data variables
+            'checkin_date' => $checkin_date,
+            'tech_name' => $tech_name,
+            'location' => $location,
+            'description' => $description,
+            'rating' => $rating, // processed rating (1-5)
+
+            // Feature flags
+            'show_related' => $show_related,
+            'show_testimonials' => $show_testimonials,
+            'show_service_tags' => $show_service_tags,
             'show_reviews' => self::should_show_feature('show_customer_reviews', !empty($checkin['customer_review'])),
             'show_fallback_review' => self::should_show_feature('show_customer_reviews', true),
             'show_ratings' => self::should_show_feature('show_star_ratings', !empty($checkin['rating'])),
             'show_fallback_rating' => self::should_show_feature('show_star_ratings', true),
             'show_verified' => self::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']),
-            'show_verified_fallback' => self::should_show_feature('show_verified_badges', true)
+            'show_verified_fallback' => self::should_show_feature('show_verified_badges', true),
         ]);
     }
 
@@ -127,13 +156,35 @@ class JobCaptureProTemplates
      */
     public static function render_checkin_card($checkin)
     {
-        $gallery_html = !empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])
-            ? self::render_images_gallery($checkin['imageUrls'])
-            : '';
+        // Check for required fields - return empty if missing
+        if (empty($checkin['description']) || empty($checkin['address']) || empty($checkin['createdAt'])) {
+            return;
+        }
 
+        // Create clickable link with checkinId parameter
+        $current_url = sanitize_text_field($_SERVER['REQUEST_URI']);
+        $checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
+
+        // Process date
+        $timestamp = strtotime($checkin['createdAt']);
+
+        // Parse address (assuming format: "Street, City, State, ZIP, Country")
+        $address_parts = explode(',', $checkin['address']);
+
+        // Get city (2nd last part) and state (last part before country/ZIP)
+        $city = trim($address_parts[1] ?? ''); // City
+        $state = trim($address_parts[2] ?? ''); // State (full name)
+
+        // Shorten state abbreviation if needed (e.g., "California" → "CA")
+        $state_abbr = strlen($state) > 2 ? substr($state, 0, 2) : $state;
+
+        //
         return Template::render_template('checkin-card', [
             'checkin' => $checkin,
-            'gallery_html' => $gallery_html
+            'checkin_url' => $checkin_url,
+            'timestamp' => $timestamp,
+            'city' => $city,
+            'state_abbr' => $state_abbr,
         ]);
     }
 
@@ -146,32 +197,37 @@ class JobCaptureProTemplates
      */
     public static function render_checkins_grid($checkins, $company_info = array())
     {
-
         // Generate unique ID for this grid instance
         $gridId = 'jobcapturepro-checkins-grid-' . uniqid();
 
         // Enqueue styles
         self::enqueue_checkins_grid_styles();
 
-        $output = Template::render_template('checkins-grid', [
+        // Add dynamic selectors styles
+        $checkins_grid_html = self::get_dynamic_selectors_checkins_grid_styles($gridId);
+
+        // Enqueue scripts
+        self::enqueue_checkins_grid_script($gridId);
+        self::enqueue_gallery_script();
+
+
+        // Sort checkins by date (newest first)
+        usort($checkins, function ($a, $b) {
+            // Compare timestamps (higher timestamp = more recent)
+            return strtotime($b['createdAt']) - strtotime($a['createdAt']);
+        });
+
+        // Render checkins grid
+        $checkins_grid_html .= Template::render_template('checkins-grid', [
             'checkins' => $checkins,
             'company_info' => $company_info,
             'gridId' => $gridId,
             'show_company_stats' => self::should_show_feature('show_company_stats', !empty($company_info['stats'])),
             'show_company_stats_fallback' => self::should_show_feature('show_company_stats', true),
-            'render_checkin_card_html' => function($checkin) {
-                return self::render_checkin_card($checkin);
-                    }
         ]);
 
-        // Add dynamic selectors styles
-        $output .= self::get_dynamic_selectors_checkins_grid_styles($gridId);
-
-        // Enqueue grid script
-        self::enqueue_checkins_grid_script($gridId);
-
-        // 
-        return $output;
+        //
+        return $checkins_grid_html;
     }
 
     /**
@@ -257,49 +313,34 @@ class JobCaptureProTemplates
      */
     private static function render_images_gallery($imageUrls)
     {
-        if (empty($imageUrls)) {
+        if (empty($imageUrls) || !is_array($imageUrls)) {
             return '';
         }
 
         $imageCount = count($imageUrls);
         $showArrows = $imageCount > 1;
-        $galleryId = 'gallery-' . wp_rand(); // Create unique ID for this gallery
+        $galleryId = 'gallery-' . wp_rand();
 
-        $output = '<div class="jobcapturepro-checkin-image" id="' . $galleryId . '">';
 
-        // Add all images but only first is visible initially
-        foreach ($imageUrls as $index => $imageUrl) {
-            $activeClass = $index === 0 ? ' active' : '';
-            $output .= '<div class="gallery-image' . $activeClass . '" data-index="' . intval($index) . '">
-                <img src="' . esc_url($imageUrl) . '" alt="' . esc_attr('Checkin image ' . ($index + 1)) . '">
-            </div>';
-        }
-
-        // Add navigation arrows if there are multiple images
         if ($showArrows) {
-            $output .= '<div class="gallery-nav gallery-prev" onclick="jobcaptureproChangeImage(\'' . esc_js($galleryId) . '\', \'prev\')">&#10094;</div>';
-            $output .= '<div class="gallery-nav gallery-next" onclick="jobcaptureproChangeImage(\'' . esc_js($galleryId) . '\', \'next\')">&#10095;</div>';
-            $output .= '<div class="gallery-dots">';
-
-            // Add indicator dots
-            for ($i = 0; $i < $imageCount; $i++) {
-                $activeClass = $i === 0 ? ' active' : '';
-                $output .= '<span class="gallery-dot' . $activeClass . '" onclick="jobcaptureproShowImage(\'' . esc_js($galleryId) . '\', ' . intval($i) . ')"></span>';
-            }
-
-            $output .= '</div>';
-        }
-
-        $output .= '</div>';
-
-        // Add JavaScript for gallery functionality if there are multiple images
-        if ($showArrows) {
+            // Enqueue gallery script only if there are multiple images
             self::enqueue_gallery_script();
         }
 
-        return $output;
+        return Template::render_template('image-gallery', [
+            'imageUrls' => $imageUrls,
+            'imageCount' => $imageCount,
+            'showArrows' => $showArrows,
+            'galleryId' => $galleryId
+        ]);
     }
 
+    /**
+     * Determine map bounds based on checkin locations
+     * 
+     * @param array $features Array of GeoJSON features
+     * @return array Array with minLat, maxLat, minLng, maxLng
+     */
     private static function determine_bounds($features)
     {
         // Calculate center point of 80% of checkins
@@ -414,6 +455,7 @@ class JobCaptureProTemplates
         self::enqueue_map_styles();
         $output .= self::get_dynamic_selectors_checkins_grid_styles();
 
+        // Enqueue the gallery script
         return $output;
     }
 

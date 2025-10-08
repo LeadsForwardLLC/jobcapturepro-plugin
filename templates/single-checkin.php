@@ -1,25 +1,9 @@
-<?php
-// Process data variables
-$checkin_date = isset($checkin['createdAt']) ? date('F j, Y', strtotime($checkin['createdAt'])) : 'July 6, 2025';
-$tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
-$location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
-$description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
-
-// Feature flags (these need to be passed from the class)
-$show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
-$show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
-$show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
-
-// Rating processing
-if (!empty($checkin['rating'])) {
-    $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
-}
-?>
-
 <div class="jobcapturepro-single-checkin">
     <!-- First content block (header and description) -->
     <div class="jobcapturepro-single-content-block">
+        <!-- jobcapturepro-flex-div -->
         <div class="jobcapturepro-flex-div">
+            <!-- close first content block -->
             <div class="jobcapturepro-checkin-header">
                 <div class="jobcapturepro-title-container">
                     <?php if (!empty($checkin['imageUrls'][0])): ?>
@@ -49,7 +33,8 @@ if (!empty($checkin['rating'])) {
                 <div class="jobcapturepro-checkin-description">
                     <p><?php echo esc_html($description); ?></p>
                 </div>
-            </div> <!-- close first content block -->
+            </div>
+            <!-- close first content block -->
 
             <!-- Second content block (all other sections) -->
             <div class="jobcapturepro-content-block">
@@ -151,8 +136,10 @@ if (!empty($checkin['rating'])) {
                         </ul>
                     </div>
                 <?php endif; ?>
-            </div> <!-- close second content block -->
-        </div> <!-- close jobcapturepro-flex-div -->
+            </div>
+            <!-- close second content block -->
+        </div>
+        <!-- close jobcapturepro-flex-div -->
 
         <!-- Testimonials & Services div -->
         <div class="jobcapturepro-ts-div">
@@ -198,7 +185,8 @@ if (!empty($checkin['rating'])) {
                     </div>
                 </div>
             <?php endif; ?>
-        </div> <!-- close Testimonials & Services div -->
+        </div>
+        <!-- close Testimonials & Services div -->
 
         <!-- FAQ div -->
         <div class="jobcapturepro-faq-div">
@@ -209,6 +197,7 @@ if (!empty($checkin['rating'])) {
                     <li>► How long does it take?</li>
                 </ul>
             </div>
-        </div> <!-- close FAQ div -->
-    </div> <!-- close jobcapturepro-single-content-block -->
-</div> <!-- close jobcapturepro-single-checkin -->
+        </div>
+        <!-- close FAQ div -->
+    </div>
+</div>
