@@ -13,7 +13,7 @@ class JobCaptureProTemplates
      * @param bool $data_exists Whether the required data exists
      * @return bool Whether the feature should be displayed
      */
-    private static function should_show_feature($feature_name, $data_exists = false)
+    public static function should_show_feature($feature_name, $data_exists = false)
     {
         // Feature toggles controlled at plugin code level
         // Set to false by default since backend features are not yet implemented
@@ -101,49 +101,15 @@ class JobCaptureProTemplates
      */
     public static function render_single_checkin($checkin, $company_info = array())
     {
-        // Process data variables
-        $checkin_date = isset($checkin['createdAt']) ? date('F j, Y', strtotime($checkin['createdAt'])) : 'July 6, 2025';
-        $tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
-        $location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
-        $description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
-
-        // Feature flags (these need to be passed from the class)
-        $show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
-        $show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
-        $show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
-
-        // Rating processing
-        if (!empty($checkin['rating'])) {
-            $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
-        }
-
         // Enqueue styles
         self::enqueue_single_checkin_styles();
         self::enqueue_checkins_grid_styles();
 
         // 
         return Template::render_template('single-checkin', [
-            // Main data
             'checkin' => $checkin,
             'company_info' => $company_info,
-
-            // Processed data variables
-            'checkin_date' => $checkin_date,
-            'tech_name' => $tech_name,
-            'location' => $location,
-            'description' => $description,
-            'rating' => $rating, // processed rating (1-5)
-
-            // Feature flags
-            'show_related' => $show_related,
-            'show_testimonials' => $show_testimonials,
-            'show_service_tags' => $show_service_tags,
-            'show_reviews' => self::should_show_feature('show_customer_reviews', !empty($checkin['customer_review'])),
-            'show_fallback_review' => self::should_show_feature('show_customer_reviews', true),
-            'show_ratings' => self::should_show_feature('show_star_ratings', !empty($checkin['rating'])),
-            'show_fallback_rating' => self::should_show_feature('show_star_ratings', true),
-            'show_verified' => self::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']),
-            'show_verified_fallback' => self::should_show_feature('show_verified_badges', true),
+            'jcp_templates_class' => self::class,
         ]);
     }
 

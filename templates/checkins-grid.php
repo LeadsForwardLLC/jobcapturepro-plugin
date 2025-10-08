@@ -1,3 +1,8 @@
+<?php
+$show_company_stats = JobCaptureProTemplates::should_show_feature('show_company_stats', !empty($company_info['stats']));
+$show_company_stats_fallback = JobCaptureProTemplates::should_show_feature('show_company_stats', true);
+?>
+
 <div class="jobcapturepro-container">
     <div class="jobcapturepro-checkins-grid <?php echo $gridId; ?>" data-column-count="3">
         <?php foreach ($checkins as $checkin): ?>

@@ -1,3 +1,29 @@
+<?php
+// Rating processing
+if (!empty($checkin['rating'])) {
+    $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range
+}
+
+// Process data variables
+$checkin_date = isset($checkin['createdAt']) ? date('F j, Y', strtotime($checkin['createdAt'])) : 'July 6, 2025';
+$tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
+$location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
+$description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
+
+// Feature flags (these need to be passed from the class)
+$show_related = !empty($checkin['related_checkins']) && is_array($checkin['related_checkins']);
+$show_testimonials = !empty($company_info['testimonials']) && is_array($company_info['testimonials']);
+$show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
+
+// Set feature flag variables using the static method directly
+$show_reviews = JobCaptureProTemplates::should_show_feature('show_customer_reviews', !empty($checkin['customer_review']));
+$show_fallback_review = JobCaptureProTemplates::should_show_feature('show_customer_reviews', true);
+$show_ratings = JobCaptureProTemplates::should_show_feature('show_star_ratings', !empty($checkin['rating']));
+$show_fallback_rating = JobCaptureProTemplates::should_show_feature('show_star_ratings', true);
+$show_verified = JobCaptureProTemplates::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']);
+$show_verified_fallback = JobCaptureProTemplates::should_show_feature('show_verified_badges', true);
+?>
+
 <div class="jobcapturepro-single-checkin">
     <div class="jobcapturepro-single-content-block">
         <div class="jobcapturepro-flex-div">
