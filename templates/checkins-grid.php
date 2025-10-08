@@ -58,10 +58,4 @@ $show_company_stats_fallback = $should_show_feature('show_company_stats', true);
     </div>
 <?php endif; ?>
 
-<div class="jobcapturepro-cta-container">
-    <div class="jobcapturepro-cta">
-        <h2>Let Your Work Speak For Itself</h2>
-        <p>Capture check-ins like these with JobCapturePro. Set it and forget it.</p>
-        <a href="#" class="quote-btn">Get JobCapturePro</a>
-    </div>
-</div>
+<?php echo Template::render_template('cta-section'); ?>
