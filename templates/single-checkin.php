@@ -16,12 +16,12 @@ $show_testimonials = !empty($company_info['testimonials']) && is_array($company_
 $show_service_tags = !empty($checkin['service_tags']) && is_array($checkin['service_tags']);
 
 // Set feature flag variables using the static method directly
-$show_reviews = JobCaptureProTemplates::should_show_feature('show_customer_reviews', !empty($checkin['customer_review']));
-$show_fallback_review = JobCaptureProTemplates::should_show_feature('show_customer_reviews', true);
-$show_ratings = JobCaptureProTemplates::should_show_feature('show_star_ratings', !empty($checkin['rating']));
-$show_fallback_rating = JobCaptureProTemplates::should_show_feature('show_star_ratings', true);
-$show_verified = JobCaptureProTemplates::should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']);
-$show_verified_fallback = JobCaptureProTemplates::should_show_feature('show_verified_badges', true);
+$show_reviews = $should_show_feature('show_customer_reviews', !empty($checkin['customer_review']));
+$show_fallback_review = $should_show_feature('show_customer_reviews', true);
+$show_ratings = $should_show_feature('show_star_ratings', !empty($checkin['rating']));
+$show_fallback_rating = $should_show_feature('show_star_ratings', true);
+$show_verified = $should_show_feature('show_verified_badges', !empty($checkin['is_verified']) && $checkin['is_verified']);
+$show_verified_fallback = $should_show_feature('show_verified_badges', true);
 ?>
 
 <div class="jobcapturepro-single-checkin">

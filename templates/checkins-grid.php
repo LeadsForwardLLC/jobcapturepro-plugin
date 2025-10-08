@@ -1,6 +1,6 @@
 <?php
-$show_company_stats = JobCaptureProTemplates::should_show_feature('show_company_stats', !empty($company_info['stats']));
-$show_company_stats_fallback = JobCaptureProTemplates::should_show_feature('show_company_stats', true);
+$show_company_stats = $should_show_feature('show_company_stats', !empty($company_info['stats']));
+$show_company_stats_fallback = $should_show_feature('show_company_stats', true);
 ?>
 
 <div class="jobcapturepro-container">

@@ -13,7 +13,7 @@ class JobCaptureProTemplates
      * @param bool $data_exists Whether the required data exists
      * @return bool Whether the feature should be displayed
      */
-    public static function should_show_feature($feature_name, $data_exists = false)
+    private static function should_show_feature($feature_name, $data_exists = false)
     {
         // Feature toggles controlled at plugin code level
         // Set to false by default since backend features are not yet implemented
@@ -109,7 +109,9 @@ class JobCaptureProTemplates
         return Template::render_template('single-checkin', [
             'checkin' => $checkin,
             'company_info' => $company_info,
-            'jcp_templates_class' => self::class,
+            'should_show_feature' => function ($feature_name, $data_exists = false) {
+                return self::should_show_feature($feature_name, $data_exists);
+            }
         ]);
     }
 
@@ -166,8 +168,9 @@ class JobCaptureProTemplates
             'checkins' => $checkins,
             'company_info' => $company_info,
             'gridId' => $gridId,
-            'show_company_stats' => self::should_show_feature('show_company_stats', !empty($company_info['stats'])),
-            'show_company_stats_fallback' => self::should_show_feature('show_company_stats', true),
+            'should_show_feature' => function ($feature_name, $data_exists = false) {
+                return self::should_show_feature($feature_name, $data_exists);
+            }
         ]);
 
         //
