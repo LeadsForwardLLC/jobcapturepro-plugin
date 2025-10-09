@@ -46,6 +46,7 @@ class JobCaptureProPlugin
 		$this->define_admin_hooks();
 		$this->define_shortcodes();
 		$this->define_api_hooks();
+		$this->register_public_hooks();
 	}
 
 	/**
@@ -172,5 +173,30 @@ class JobCaptureProPlugin
 	public function get_jobcapturepro_api_base_url()
 	{
 		return $this->jcp_api_base_url;
+	}
+
+	public function register_public_hooks(): void
+	{
+		$this->loader->add_action(hook: 'wp_enqueue_scripts', component: $this, callback: 'enqueue_assets');
+	}
+
+	/**
+	 * Enqueue frontend CSS and JS
+	 */
+	public function enqueue_assets()
+	{
+		// Only enqueue on pages that might use shortcodes
+		if (is_admin()) {
+			return;
+		}
+
+		// Enqueue Tailwind CSS globally for frontend
+		wp_enqueue_style(
+			'jobcapturepro-tailwind',
+			plugin_dir_url(__FILE__) . '../assets/css/tailwind.css',
+			array(),
+			$this->version,
+			'all'
+		);
 	}
 }
