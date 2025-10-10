@@ -15,15 +15,61 @@ class JobCaptureProAPI
     }
 
     /**
-     * Register single proxy endpoint
+     * Get API key from WordPress options
+     */
+    private function get_api_key()
+    {
+        $options = get_option('jobcapturepro_options');
+        return trim($options['jobcapturepro_field_apikey']);
+    }
+
+    /**
+     * Get standard request arguments for API calls
+     */
+    private function get_request_args($apikey)
+    {
+        return array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+    }
+
+    /**
+     * Make API request and handle response
+     */
+    private function make_api_request($url, $error_context = 'data')
+    {
+        $apikey = $this->get_api_key();
+        $args = $this->get_request_args($apikey);
+
+        $response = wp_remote_get($url, $args);
+
+        if (is_wp_error($response)) {
+            return new WP_Error('api_error', "Failed to fetch {$error_context} data", array('status' => 500));
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!$data) {
+            return new WP_Error('no_data', "No {$error_context} found", array('status' => 404));
+        }
+
+        return rest_ensure_response($data);
+    }
+
+    /**
+     * Register API routes
      */
     public function register_routes()
     {
-        // Single proxy endpoint for checkin data
+        // Register single checkin route
         register_rest_route($this->namespace, '/checkin/(?P<id>[a-zA-Z0-9-]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_checkin_proxy'),
-            'permission_callback' => '__return_true', // Public access
+            'permission_callback' => '__return_true',
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -32,47 +78,51 @@ class JobCaptureProAPI
                 )
             )
         ));
+
+        // Register checkins route
+        register_rest_router($this->namespace, '/checkins', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_checkins'),
+            'permission_callback' => '__return_true',
+            'args' => array(
+                'page' => array(
+                    'required' => false,
+                    'type' => 'integer',
+                    'default' => 1,
+                    'sanitize_callback' => 'absint'
+                ),
+            )
+        ));
     }
 
     /**
-     * Proxy endpoint - WordPress hits real API and returns data
+     * Single checkin endpoint
      */
-    public function get_checkin_proxy($request)
+    public function get_checkin($request)
     {
+        // Get Checkin ID
         $checkin_id = $request->get_param('id');
-
-        // Get API key from WordPress options
-        $options = get_option('jobcapturepro_options');
-        $apikey = trim($options['jobcapturepro_field_apikey']);
 
         // Build URL to real API
         $url = $this->jcp_api_base_url . "checkins/" . $checkin_id;
 
-        // Make request to real API
-        $args = array(
-            'timeout' => 15,
-            'headers' => array(
-                'API_KEY' => $apikey
-            )
-        );
+        // Make the request
+        return $this->make_api_request($url, 'checkin');
+    }
 
-        $response = wp_remote_get($url, $args);
+    /**
+     * All checkins endpoint
+     */
+    public function get_checkins($request)
+    {
+        // Get page number
+        $page = $request->get_param('page') ?: 1;
 
-        if (is_wp_error($response)) {
-            return new WP_Error('api_error', 'Failed to fetch checkin data', array('status' => 500));
-        }
+        // Build URL to real API
+        $url = $this->jcp_api_base_url . "checkins?page=" . $page;
 
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-
-        if (!$data) {
-            return new WP_Error('no_data', 'No checkin found', array('status' => 404));
-        }
-
-        // Return the data with CORS headers
-        $response = rest_ensure_response($data);
-
-        return $response;
+        // Make the request
+        return $this->make_api_request($url, 'checkins');
     }
 
     /**
