@@ -5,7 +5,7 @@ $show_company_stats_fallback = $should_show_feature('show_company_stats', true);
 
 <!-- Checkins Grid -->
 <div class="jobcapturepro-container">
-    <div class="jobcapturepro-checkins-grid <?php echo $gridId; ?>" data-column-count="3">
+    <div id="checkins-grid" class="jobcapturepro-checkins-grid <?php echo $gridId; ?>" data-column-count="3">
         <?php foreach ($checkins as $checkin): ?>
             <?php
             echo Template::render_template('checkin-card', [
