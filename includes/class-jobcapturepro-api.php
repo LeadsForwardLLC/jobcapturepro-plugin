@@ -80,7 +80,7 @@ class JobCaptureProAPI
         ));
 
         // Register checkins route
-        register_rest_router($this->namespace, '/checkins', array(
+        register_rest_route($this->namespace, '/checkins', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_checkins'),
             'permission_callback' => '__return_true',
