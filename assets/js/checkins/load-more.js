@@ -1,20 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Current page tracker
+    let currentPage = 1;
+
     // Elements 
     const loadMoreBtn = document.getElementById("load-more-checkins-btn");
     const checkinsGrid = document.getElementById("checkins-grid");
 
-    // Base API URL
-    const baseApiUrl = '/wp-json/jobcapturepro/v1/';
-
+    // Return early if elements not found
     if (!loadMoreBtn || !checkinsGrid) return;
 
+    // Event listener for Load More button
     loadMoreBtn.addEventListener("click", loadNextCheckinsPage);
 
     function loadNextCheckinsPage() {
-        fetch(`${baseApiUrl}checkins?page=2`)
+        // Base API URL
+        const baseApiUrl = '/wp-json/jobcapturepro/v1/';
+
+        // Fetch next page of check-ins
+        fetch(`${baseApiUrl}checkins?page=${currentPage + 1}`)
             .then(response => response.json())
             .then(data => {
                 const checkins = data.checkins;
+
+                // If no more pages, hide the button
+                if (data.hasNext) {
+                    currentPage++;
+                } else {
+                    loadMoreBtn.classList.remove('block');
+                    loadMoreBtn.classList.add('hidden');
+                }
+
                 if (checkins && checkins.length > 0) {
                     // Append new check-ins to the grid
                     checkinsGrid.insertAdjacentHTML('beforeend', renderCheckins(checkins));
@@ -24,8 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.rearrangeItems();
                     }
                 } else {
-                    loadMoreBtn.disabled = true;
-                    loadMoreBtn.textContent = "No more check-ins";
+                    loadMoreBtn.classList.add('hidden');
                 }
             })
             .catch(error => {
@@ -33,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    //
+    // Render a single check-in card
     function renderCheckinCard(checkin) {
         // Create clickable link with checkinId parameter
         const currentUrl = window.location.href;
@@ -171,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
     }
 
+    // Render image gallery
     function renderImageGallery({ imageUrls, imageCount, showArrows, galleryId }) {
         // Helper function to escape HTML
         const escapeHtml = (text) => {
