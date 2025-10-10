@@ -16,7 +16,7 @@ $show_company_stats_fallback = $should_show_feature('show_company_stats', true);
     </div>
 
     <div class="flex justify-center">
-        <button class="px-4 py-2 border text-base text-white font-semibold rounded-md bg-accent cursor-pointer hover:bg-accent/80">Load More</button>
+        <button id="load-more-checkins-btn" class="cta-btn">Load More</button>
     </div>
 </div>
 

@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+    --color-accent: #ff503e;
+}
+
+.cta-btn {
+    @apply block text-center no-underline bg-accent text-white font-bold px-6 py-3 text-base rounded-full transition-colors duration-200 ease-in-out hover:bg-red-600 cursor-pointer;
+}
