@@ -522,9 +522,10 @@ class JobCaptureProTemplates
      */
     private static function enqueue_checkins_grid_script($gridId)
     {
+        // Enqueue masonry grid script
         wp_enqueue_script(
             'jcp-checkins-grid',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins-grid.js',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins/masonry-grid.js',
             array(),
             '1.0.0',
             true
@@ -534,5 +535,14 @@ class JobCaptureProTemplates
         wp_localize_script('jcp-checkins-grid', 'jcpGridData', array(
             'gridId' => $gridId
         ));
+
+        // Enqueue load more script
+        wp_enqueue_script(
+            'jcp-checkins-load-more',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins/load-more.js',
+            array(),
+            '1.0.0',
+            true
+        );
     }
 }
