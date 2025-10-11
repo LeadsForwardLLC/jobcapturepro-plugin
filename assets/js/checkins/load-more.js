@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // Base API URL
         const baseApiUrl = '/wp-json/jobcapturepro/v1/';
 
+        // Change button to loading state
+        changeButtonState('loading');
+
         // Fetch next page of check-ins
         fetch(`${baseApiUrl}checkins?page=${currentPage + 1}`)
             .then(response => response.json())
@@ -37,7 +40,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // If no more pages, hide the button
                 if (data.hasNext) {
+                    // Increment current page
                     currentPage++;
+
+                    // Return button to normal state
+                    changeButtonState('normal');
                 } else {
                     loadMoreBtn.classList.remove('block');
                     loadMoreBtn.classList.add('hidden');
@@ -239,5 +246,38 @@ document.addEventListener("DOMContentLoaded", function () {
     // Usage with array of checkins:
     function renderCheckins(checkinsArray) {
         return checkinsArray.map(checkin => renderCheckinCard(checkin)).join('');
+    }
+
+    // Button state management
+    function changeButtonState(state = 'normal') {
+        // Button spinner SVG element
+        const buttonSpinner = loadMoreBtn.children[1];
+
+        switch (state) {
+            case 'loading':
+                // Enable/disable button
+                loadMoreBtn.disabled = true;
+
+                // Show spinner
+                buttonSpinner.classList.remove('hidden');
+
+                // Loading state styles
+                loadMoreBtn.classList.remove('bg-accent', 'text-white', 'hover:bg-red-600', 'cursor-pointer', 'opacity-100');
+                loadMoreBtn.classList.add('bg-gray-500', 'text-gray-200', 'cursor-not-allowed', 'opacity-60');
+                break;
+            case 'normal':
+                // Enable/disable button
+                loadMoreBtn.disabled = false;
+
+                // Hide spinner
+                buttonSpinner.classList.add('hidden');
+
+                // Normal state styles
+                loadMoreBtn.classList.remove('bg-gray-400', 'text-gray-200', 'cursor-not-allowed', 'opacity-60');
+                loadMoreBtn.classList.add('bg-accent', 'text-white', 'hover:bg-red-600', 'cursor-pointer', 'opacity-100');
+                break;
+            default:
+                break;
+        }
     }
 });
