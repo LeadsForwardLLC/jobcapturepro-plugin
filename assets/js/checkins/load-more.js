@@ -22,14 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 const checkins = data.checkins;
 
-                // If no more pages, hide the button
-                if (data.hasNext) {
-                    currentPage++;
-                } else {
-                    loadMoreBtn.classList.remove('block');
-                    loadMoreBtn.classList.add('hidden');
-                }
-
+                // Append new check-ins if available
                 if (checkins && checkins.length > 0) {
                     // Append new check-ins to the grid
                     checkinsGrid.insertAdjacentHTML('beforeend', renderCheckins(checkins));
@@ -39,6 +32,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.rearrangeItems();
                     }
                 } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+
+                // If no more pages, hide the button
+                if (data.hasNext) {
+                    currentPage++;
+                } else {
+                    loadMoreBtn.classList.remove('block');
                     loadMoreBtn.classList.add('hidden');
                 }
             })

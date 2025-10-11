@@ -47,7 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    window.rearrangeItems = rearrangeItems; // Expose for external use
+    // Expose for external use
+    window.rearrangeItems = rearrangeItems;
 
     // Run on load
     rearrangeItems();
