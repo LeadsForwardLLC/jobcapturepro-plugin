@@ -68,7 +68,7 @@ class JobCaptureProAPI
         // Register single checkin route
         register_rest_route($this->namespace, '/checkin/(?P<id>[a-zA-Z0-9-]+)', array(
             'methods' => 'GET',
-            'callback' => array($this, 'get_checkin_proxy'),
+            'callback' => array($this, 'get_checkin'),
             'permission_callback' => '__return_true',
             'args' => array(
                 'id' => array(
