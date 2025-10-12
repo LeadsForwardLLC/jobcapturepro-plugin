@@ -55,7 +55,7 @@ class JobCaptureProTemplates
      * @param array $response_data The API response data containing locations and maps API key
      * @return string HTML output for the map
      */
-    public static function render_map_conditionally($checkin_id, $response_data)
+    public static function render_map_conditionally($response_data)
     {
         // Extract locations and maps API key from response
         $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
@@ -86,7 +86,7 @@ class JobCaptureProTemplates
         $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
-        $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
+        $output .= JobCaptureProTemplates::render_map_conditionally($map_data);
 
         // Render checkins with conditional logic
         $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins, $company_info);
@@ -401,7 +401,6 @@ class JobCaptureProTemplates
         // Enqueue styles for the map
         self::enqueue_map_styles();
         $output .= self::get_dynamic_selectors_checkins_grid_styles();
-
 
         // Enqueue the gallery script
         self::enqueue_gallery_script();
