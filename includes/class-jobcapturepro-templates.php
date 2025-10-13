@@ -53,6 +53,56 @@ class JobCaptureProTemplates
     }
 
     /**
+     * Validate template data structure
+     * 
+     * @param mixed $data The data to validate
+     * @param array $required_fields Required fields for the data
+     * @param string $context Context for error logging
+     * @return bool True if valid, false otherwise
+     */
+    public static function validate_template_data($data, $required_fields = array(), $context = 'template')
+    {
+        if (!is_array($data)) {
+            error_log("JobCapturePro Template Error: Invalid data type for {$context}, expected array, got " . gettype($data));
+            return false;
+        }
+
+        foreach ($required_fields as $field) {
+            if (!isset($data[$field])) {
+                error_log("JobCapturePro Template Error: Missing required field '{$field}' in {$context}");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Render fallback content when template rendering fails
+     * 
+     * @param string $error_message The error message
+     * @param string $context The context where the error occurred
+     * @return string HTML fallback content
+     */
+    public static function render_template_fallback($error_message, $context = '')
+    {
+        if (defined('WP_DEBUG') && WP_DEBUG && current_user_can('manage_options')) {
+            return sprintf(
+                '<div class="jobcapturepro-template-error" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9;">
+                    <strong>Template Error:</strong> %s
+                    %s
+                </div>',
+                esc_html($error_message),
+                !empty($context) ? '<br><small>Context: ' . esc_html($context) . '</small>' : ''
+            );
+        }
+
+        return '<div class="jobcapturepro-unavailable">' . 
+               esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') . 
+               '</div>';
+    }
+
+    /**
      * Helper function to check if a feature should be displayed
      * Features are controlled at the plugin code level, not via UI
      * 

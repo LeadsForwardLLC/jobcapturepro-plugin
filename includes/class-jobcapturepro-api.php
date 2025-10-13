@@ -134,13 +134,95 @@ class JobCaptureProAPI
         $response = wp_remote_get($url, $args);
 
         if (is_wp_error($response)) {
-            return new WP_Error('api_error', 'Failed to fetch checkin data', array('status' => 500));
+            $error_message = $response->get_error_message();
+            error_log("JobCapturePro REST API Error: {$error_message} | URL: {$url}");
+            return new WP_Error(
+                'api_connection_error', 
+                'Unable to connect to the data service. Please try again later.',
+                array('status' => 503)
+            );
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $response_message = wp_remote_retrieve_response_message($response);
+        
+        if ($response_code !== 200) {
+            error_log("JobCapturePro REST API HTTP Error: {$response_code} {$response_message} | URL: {$url}");
+            
+            switch ($response_code) {
+                case 401:
+                case 403:
+                    return new WP_Error(
+                        'api_authentication_error',
+                        'Authentication failed. Please check API configuration.',
+                        array('status' => 401)
+                    );
+                case 404:
+                    return new WP_Error(
+                        'checkin_not_found',
+                        'The requested checkin was not found.',
+                        array('status' => 404)
+                    );
+                case 429:
+                    return new WP_Error(
+                        'api_rate_limit',
+                        'Too many requests. Please try again later.',
+                        array('status' => 429)
+                    );
+                case 500:
+                case 502:
+                case 503:
+                case 504:
+                    return new WP_Error(
+                        'api_server_error',
+                        'The data service is temporarily unavailable. Please try again later.',
+                        array('status' => 503)
+                    );
+                default:
+                    return new WP_Error(
+                        'api_http_error',
+                        'Unable to retrieve data at this time. Please try again later.',
+                        array('status' => 500)
+                    );
+            }
         }
 
         $body = wp_remote_retrieve_body($response);
+        
+        if (empty($body)) {
+            error_log("JobCapturePro REST API Error: Empty response body | URL: {$url}");
+            return new WP_Error(
+                'api_empty_response',
+                'No data received from the service.',
+                array('status' => 500)
+            );
+        }
+
         $data = json_decode($body, true);
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $json_error = json_last_error_msg();
+            error_log("JobCapturePro REST API Error: Invalid JSON - {$json_error} | URL: {$url}");
+            return new WP_Error(
+                'api_invalid_json',
+                'Invalid data received from the service.',
+                array('status' => 500)
+            );
+        }
+
+        // Check for API-specific error responses
+        if (isset($data['error'])) {
+            $api_error = is_string($data['error']) ? $data['error'] : 'Unknown API error';
+            error_log("JobCapturePro REST API Error: {$api_error} | URL: {$url}");
+            return new WP_Error(
+                'api_error_response',
+                'The data service returned an error. Please try again later.',
+                array('status' => 500)
+            );
+        }
+
         if (!$data) {
+            error_log("JobCapturePro REST API Error: No data in response | URL: {$url}");
             return new WP_Error('no_data', 'No checkin found', array('status' => 404));
         }
 
