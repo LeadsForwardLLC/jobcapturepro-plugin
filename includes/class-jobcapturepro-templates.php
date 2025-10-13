@@ -1,7 +1,20 @@
 <?php
+/**
+ * Template functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * This file defines the template generation functionality for the plugin.
+ *
+ * @since 1.0.0
  */
 class JobCaptureProTemplates
 {

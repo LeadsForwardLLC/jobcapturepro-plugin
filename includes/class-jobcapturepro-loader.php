@@ -1,7 +1,20 @@
 <?php
+/**
+ * Loader functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Register all actions and filters for the plugin.
+ *
+ * @since 1.0.0
  */
 class JobCaptureProLoader {
 	/**

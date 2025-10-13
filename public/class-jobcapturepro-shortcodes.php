@@ -1,7 +1,20 @@
 <?php
+/**
+ * Shortcode functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * This file defines the shortcode behavior for the plugin.
+ *
+ * @since 1.0.0
  */
 
 class JobCaptureProShortcodes

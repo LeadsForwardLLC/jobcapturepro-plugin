@@ -1,7 +1,20 @@
 <?php
+/**
+ * Admin functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * This file defines admin-specific functionality of the plugin.
+ *
+ * @since 1.0.0
  */
 
 class JobCaptureProAdmin {

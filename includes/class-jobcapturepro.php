@@ -1,7 +1,20 @@
 <?php
+/**
+ * Core plugin class for JobCapturePro.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * This file defines the core plugin class
+ *
+ * @since 1.0.0
  */
 
 class JobCaptureProPlugin
@@ -33,8 +46,8 @@ class JobCaptureProPlugin
 	 */
 	public function __construct()
 	{
-		if (defined('JOBCAPTUREPROPLUGIN_VERSION')) {
-			$this->version = JOBCAPTUREPROPLUGIN_VERSION;
+		if (defined('JOBCAPTUREPRO_VERSION')) {
+			$this->version = JOBCAPTUREPRO_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}

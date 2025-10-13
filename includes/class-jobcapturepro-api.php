@@ -1,7 +1,20 @@
 <?php
+/**
+ * REST API functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Simple proxy API for JobCapturePro plugin
+ *
+ * @since 1.0.0
  */
 class JobCaptureProAPI
 {

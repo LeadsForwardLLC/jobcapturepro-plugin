@@ -5,25 +5,29 @@
  * Description:       Display job check-ins, company information, and interactive maps from your JobCapturePro account. Showcase completed work, customer reviews, and business locations with professional shortcodes.
  * Version:           1.0.0
  * Requires at least: 5.0
+ * Tested up to:      6.6
  * Requires PHP:      7.4
  * Author:            JobCapturePro Team
  * Author URI:        https://www.jobcapturepro.com/
- * License:           GPL v2 or later
+ * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       jobcapturepro
  * 
- * The JobCapturePro WordPress plugin is free software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 2 of the License,
- * or any later version.
+ * @package JobCapturePro
+ * @since   1.0.0
  * 
- * JobCapturePro is distributed in the hope that it will be useful,
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with JobCapturePro. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
+ * along with this program. If not, see
+ * https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 // If this file is called directly, abort.

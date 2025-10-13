@@ -1,5 +1,21 @@
 <?php
+/**
+ * Template loader functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Template loader class
+ *
+ * @since 1.0.0
+ */
 class Template {
     /**
      * Locate a template file
