@@ -141,7 +141,7 @@ class JobCaptureProTemplates
             return JobCaptureProTemplates::render_single_checkin($checkins[0], $company_info);
         } else {
             // Otherwise render as a grid of multiple checkins
-            return JobCaptureProTemplates::render_checkins_grid($checkins['checkins'], $company_info);
+            return JobCaptureProTemplates::render_checkins_grid($checkins, $company_info);
         }
     }
 
@@ -253,12 +253,6 @@ class JobCaptureProTemplates
         // Enqueue scripts
         self::enqueue_checkins_grid_script($gridId);
         self::enqueue_gallery_script();
-
-        // Sort checkins by date (newest first)
-        usort($checkins, function ($a, $b) {
-            // Compare timestamps (higher timestamp = more recent)
-            return strtotime($b['createdAt']) - strtotime($a['createdAt']);
-        });
 
         // Render checkins grid
         $checkins_grid_html .= Template::render_template('checkins-grid', [
