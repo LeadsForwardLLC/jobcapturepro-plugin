@@ -1,8 +1,8 @@
-<div class="jobcapturepro-checkin-image" id="<?php echo $galleryId; ?>">
+<div class="jobcapturepro-checkin-image" id="<?php echo esc_attr($galleryId); ?>">
     <!-- Add all images but only first is visible initially -->
     <?php foreach ($imageUrls as $index => $imageUrl): ?>
         <?php $activeClass = $index === 0 ? ' active' : ''; ?>
-        <div class="gallery-image<?php echo $activeClass; ?>" data-index="<?php echo intval($index); ?>">
+        <div class="gallery-image<?php echo esc_attr($activeClass); ?>" data-index="<?php echo intval($index); ?>">
             <img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr('Checkin image ' . ($index + 1)); ?>">
         </div>
     <?php endforeach; ?>
@@ -15,7 +15,7 @@
             <!-- Add indicator dots -->
             <?php for ($i = 0; $i < $imageCount; $i++): ?>
                 <?php $activeClass = $i === 0 ? ' active' : ''; ?>
-                <span class="gallery-dot<?php echo $activeClass; ?>" onclick="jobcaptureproShowImage('<?php echo esc_js($galleryId); ?>', <?php echo intval($i); ?>)"></span>
+                <span class="gallery-dot<?php echo esc_attr($activeClass); ?>" onclick="jobcaptureproShowImage('<?php echo esc_js($galleryId); ?>', <?php echo intval($i); ?>)"></span>
             <?php endfor; ?>
         </div>
     <?php endif; ?>

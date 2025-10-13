@@ -16,62 +16,108 @@ class JobCaptureProShortcodes
      */
     private function fetch_api_data($endpoint, $atts)
     {
+        // Sanitize and validate shortcode attributes
+        $atts = shortcode_atts( array(
+            'checkinid' => '',
+            'companyid' => '',
+        ), $atts, 'jobcapturepro' );
+
         // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? sanitize_text_field($atts['checkinid']) : null;
+        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter( $atts['checkinid'], 'checkin' );
         
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinId'])) {
-            $checkin_id = sanitize_text_field($_GET['checkinId']);
+            $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
+                sanitize_text_field(wp_unslash($_GET['checkinId'])),
+                'checkin'
+            );
         }
 
         // Check if companyid attribute was provided, if not check URL parameter
-        $company_id = isset($atts['companyid']) ? sanitize_text_field($atts['companyid']) : null;
+        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
         
         // If no attribute provided, check for URL parameter
         if (!$company_id && isset($_GET['companyId'])) {
-            $company_id = sanitize_text_field($_GET['companyId']);
+            $company_id = JobCaptureProAdmin::sanitize_id_parameter(
+                sanitize_text_field(wp_unslash($_GET['companyId'])),
+                'company'
+            );
         }
 
-        // Get the API Key from the plugin options
-        $options = get_option('jobcapturepro_options');
-        $apikey = trim($options['jobcapturepro_field_apikey']);
+        // Get the API Key using the enhanced sanitization method
+        $apikey = JobCaptureProAdmin::get_sanitized_api_key();
+        
+        if (!$apikey) {
+            error_log('JobCapturePro: Invalid or missing API key');
+            return null;
+        }
+
+        // Sanitize the endpoint parameter
+        $endpoint = sanitize_text_field($endpoint);
+        if (empty($endpoint)) {
+            error_log( 'JobCapturePro: Invalid endpoint provided' );
+            return null;
+        }
+
         $url = $this->jcp_api_base_url . $endpoint;
 
         // Add company_id and checkin_id as query parameters if provided
         $query_params = array();
-        
+
         if ($company_id) {
             $query_params[] = "companyId=" . urlencode($company_id);
         }
-        
+
         if ($checkin_id) {
             $query_params[] = "checkinId=" . urlencode($checkin_id);
         }
-        
+
         if (!empty($query_params)) {
             $url .= "?" . implode("&", $query_params);
+        }
+
+        // Validate the final URL
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            error_log('JobCapturePro: Invalid API URL constructed: ' . $url);
+            return null;
         }
 
         // Set the API request headers
         $args = array(
             'timeout' => 15,
             'headers' => array(
-                'API_KEY' => $apikey
-            )
+                'API_KEY' => $apikey,
+                'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . JOBCAPTUREPRO_VERSION
+            ),
+            'sslverify' => true
         );
 
         // Make the API request
         $request = wp_remote_get($url, $args);
-        $body = wp_remote_retrieve_body($request);
-        
+
         if (is_wp_error($request)) {
+            error_log('JobCapturePro API Error: ' . $request->get_error_message());
+            return null;
+        }
+
+        $response_code = wp_remote_retrieve_response_code($request);
+        if ($response_code !== 200) {
+            error_log('JobCapturePro API HTTP Error: ' . $response_code);
+            return null;
+        }
+
+        $body = wp_remote_retrieve_body($request);
+        $data = json_decode($body, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log('JobCapturePro: Invalid JSON response from API');
             return null;
         }
 
         return array(
             'checkin_id' => $checkin_id,
             'company_id' => $company_id,
-            'data' => json_decode($body, true)
+            'data' => $data
         );
     }
 
@@ -105,16 +151,24 @@ class JobCaptureProShortcodes
      */
     public function get_checkin($atts)
     {
+        // Sanitize and validate shortcode attributes
+        $atts = shortcode_atts( array(
+            'checkinid' => '',
+        ), $atts, 'jobcapturepro_checkin' );
+
         // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = isset($atts['checkinid']) ? sanitize_text_field($atts['checkinid']) : null;
+        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter( $atts['checkinid'], 'checkin' );
         
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinid'])) {
-            $checkin_id = sanitize_text_field($_GET['checkinid']);
+            $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
+                sanitize_text_field(wp_unslash($_GET['checkinid'])),
+                'checkin'
+            );
         }
 
         if (!$checkin_id) {
-            return 'No checkin ID provided';
+            return '<div class="jobcapturepro-error">' . esc_html__('No valid checkin ID provided.', 'jobcapturepro') . '</div>';
         }
 
         // Fetch specific checkin using the direct endpoint
@@ -168,10 +222,12 @@ class JobCaptureProShortcodes
 
         if ($company_id) {
             // Fetch specific company information using the direct endpoint)
-            $company_info = $this->fetch_api_data("companies/" . $company_id, array())['data'];
+            $company_result = $this->fetch_api_data("companies/" . $company_id, array());
+            $company_info = $company_result ? $company_result['data'] : null;
         } else {
             // If no company ID provided, fetch default company info
-            $company_info = $this->fetch_api_data('companies', $atts)['data'];
+            $company_result = $this->fetch_api_data('companies', $atts);
+            $company_info = $company_result ? $company_result['data'] : null;
         }
 
         if (!$company_info) {

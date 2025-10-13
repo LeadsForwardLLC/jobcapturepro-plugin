@@ -6,6 +6,40 @@
 class JobCaptureProTemplates
 {
     /**
+     * Helper function to safely sanitize template variables
+     * 
+     * @param mixed $data The data to sanitize
+     * @param string $context The context for sanitization (html, attr, url, js, etc.)
+     * @return mixed Sanitized data
+     */
+    public static function sanitize_template_data($data, $context = 'html')
+    {
+        if (is_null($data)) {
+            return '';
+        }
+
+        if (is_array($data)) {
+            return array_map(function($item) use ($context) {
+                return self::sanitize_template_data($item, $context);
+            }, $data);
+        }
+
+        switch ($context) {
+            case 'attr':
+                return esc_attr($data);
+            case 'url':
+                return esc_url($data);
+            case 'js':
+                return esc_js($data);
+            case 'textarea':
+                return esc_textarea($data);
+            case 'html':
+            default:
+                return esc_html($data);
+        }
+    }
+
+    /**
      * Helper function to check if a feature should be displayed
      * Features are controlled at the plugin code level, not via UI
      * 
