@@ -1,10 +1,22 @@
 <?php
+/**
+ * Loader functionality for JobCapturePro plugin.
+ *
+ * @package JobCapturePro
+ * @since   1.0.0
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Register all actions and filters for the plugin.
+ *
+ * @since 1.0.0
  */
 class JobCaptureProLoader {
-
 	/**
 	 * The array of actions registered with WordPress.
 	 */
@@ -24,11 +36,9 @@ class JobCaptureProLoader {
 	 * Initialize the collections used to maintain the actions and filters.
 	 */
 	public function __construct() {
-
 		$this->actions = array();
 		$this->filters = array();
 		$this->shortcodes = array();
-
 	}
 
 	/**
@@ -56,7 +66,6 @@ class JobCaptureProLoader {
 	 * A utility function that is used to register the actions and hooks into a single collection.
 	 */
 	private function add( $hooks, $hook, $component, $callback, $priority, $accepted_args ) {
-
 		$hooks[] = array(
 			'hook'          => $hook,
 			'component'     => $component,
@@ -66,14 +75,12 @@ class JobCaptureProLoader {
 		);
 
 		return $hooks;
-
 	}
 
 	/**
 	 * Register the filters and actions with WordPress.
 	 */
 	public function run() {
-
 		// Register the actions 
 		foreach ( $this->filters as $hook ) {
 			add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
@@ -88,7 +95,5 @@ class JobCaptureProLoader {
 		foreach ( $this->shortcodes as $shortcode ) {
 			add_shortcode( $shortcode['hook'], array( $shortcode['component'], $shortcode['callback'] ) );
 		}
-
 	}
-
 }
