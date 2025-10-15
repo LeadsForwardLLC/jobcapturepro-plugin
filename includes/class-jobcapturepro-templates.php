@@ -44,7 +44,7 @@ class JobCaptureProTemplates
             return JobCaptureProTemplates::render_single_checkin($checkins[0], $company_info);
         } else {
             // Otherwise render as a grid of multiple checkins
-            return JobCaptureProTemplates::render_checkins_grid($checkins['checkins'], $company_info);
+            return JobCaptureProTemplates::render_checkins_grid($checkins, $company_info);
         }
     }
 
