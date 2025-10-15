@@ -1,5 +1,9 @@
 
-function jobcaptureproChangeImage(galleryId, direction) {
+function jobcaptureproChangeImage(event, galleryId, direction) {
+    // Prevent redirection when the user only wants to change the image
+    event.preventDefault();
+
+    // Get gallery elements
     const gallery = document.getElementById(galleryId);
     const images = gallery.querySelectorAll(".gallery-image");
     const dots = gallery.querySelectorAll(".gallery-dot");
@@ -30,7 +34,11 @@ function jobcaptureproChangeImage(galleryId, direction) {
     if (dots.length) dots[newIndex].classList.add("active");
 }
 
-function jobcaptureproShowImage(galleryId, index) {
+function jobcaptureproShowImage(event, galleryId, index) {
+    // Prevent redirection when the user only wants to see an image
+    event.preventDefault();
+
+    // Get gallery elements
     const gallery = document.getElementById(galleryId);
     const images = gallery.querySelectorAll(".gallery-image");
     const dots = gallery.querySelectorAll(".gallery-dot");

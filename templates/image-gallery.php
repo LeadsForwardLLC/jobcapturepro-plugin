@@ -9,13 +9,13 @@
 
     <!-- Add navigation arrows if there are multiple images -->
     <?php if ($showArrows): ?>
-        <div class="gallery-nav gallery-prev" onclick="jobcaptureproChangeImage('<?php echo esc_js($galleryId); ?>', 'prev')">&#10094;</div>
-        <div class="gallery-nav gallery-next" onclick="jobcaptureproChangeImage('<?php echo esc_js($galleryId); ?>', 'next')">&#10095;</div>
+        <div class="gallery-nav gallery-prev" onclick="jobcaptureproChangeImage(event, '<?php echo esc_js($galleryId); ?>', 'prev')">&#10094;</div>
+        <div class="gallery-nav gallery-next" onclick="jobcaptureproChangeImage(event, '<?php echo esc_js($galleryId); ?>', 'next')">&#10095;</div>
         <div class="gallery-dots">
             <!-- Add indicator dots -->
             <?php for ($i = 0; $i < $imageCount; $i++): ?>
                 <?php $activeClass = $i === 0 ? ' active' : ''; ?>
-                <span class="gallery-dot<?php echo esc_attr($activeClass); ?>" onclick="jobcaptureproShowImage('<?php echo esc_js($galleryId); ?>', <?php echo intval($i); ?>)"></span>
+                <span class="gallery-dot<?php echo esc_attr($activeClass); ?>" onclick="jobcaptureproShowImage(event, '<?php echo esc_js($galleryId); ?>', <?php echo intval($i); ?>)"></span>
             <?php endfor; ?>
         </div>
     <?php endif; ?>

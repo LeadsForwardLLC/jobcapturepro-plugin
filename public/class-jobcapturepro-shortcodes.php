@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shortcode functionality for JobCapturePro plugin.
  *
@@ -7,8 +8,8 @@
  */
 
 // Prevent direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (! defined('ABSPATH')) {
+    exit;
 }
 
 /**
@@ -58,15 +59,15 @@ class JobCaptureProShortcodes
     private function log_api_error($message, $context = '', $data = array())
     {
         $log_message = 'JobCapturePro API Error: ' . $message;
-        
+
         if (!empty($context)) {
             $log_message .= ' | Context: ' . $context;
         }
-        
+
         if (!empty($data)) {
             $log_message .= ' | Data: ' . wp_json_encode($data);
         }
-        
+
         error_log($log_message);
     }
 
@@ -80,14 +81,14 @@ class JobCaptureProShortcodes
     private function fetch_api_data($endpoint, $atts)
     {
         // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts( array(
+        $atts = shortcode_atts(array(
             'checkinid' => '',
             'companyid' => '',
-        ), $atts, 'jobcapturepro' );
+        ), $atts, 'jobcapturepro');
 
         // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter( $atts['checkinid'], 'checkin' );
-        
+        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
+
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinId'])) {
             $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
@@ -98,7 +99,7 @@ class JobCaptureProShortcodes
 
         // Check if companyid attribute was provided, if not check URL parameter
         $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
-        
+
         // If no attribute provided, check for URL parameter
         if (!$company_id && isset($_GET['companyId'])) {
             $company_id = JobCaptureProAdmin::sanitize_id_parameter(
@@ -109,7 +110,7 @@ class JobCaptureProShortcodes
 
         // Get the API Key using the enhanced sanitization method
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
-        
+
         if (!$apikey) {
             error_log('JobCapturePro: Invalid or missing API key');
             return null;
@@ -118,7 +119,7 @@ class JobCaptureProShortcodes
         // Sanitize the endpoint parameter
         $endpoint = sanitize_text_field($endpoint);
         if (empty($endpoint)) {
-            error_log( 'JobCapturePro: Invalid endpoint provided' );
+            error_log('JobCapturePro: Invalid endpoint provided');
             return null;
         }
 
@@ -169,7 +170,7 @@ class JobCaptureProShortcodes
 
         $response_code = wp_remote_retrieve_response_code($request);
         $response_message = wp_remote_retrieve_response_message($request);
-        
+
         if ($response_code !== 200) {
             $this->log_api_error(
                 "HTTP {$response_code}: {$response_message}",
@@ -185,7 +186,7 @@ class JobCaptureProShortcodes
         }
 
         $body = wp_remote_retrieve_body($request);
-        
+
         if (empty($body)) {
             $this->log_api_error(
                 'Empty response body received from API',
@@ -258,13 +259,13 @@ class JobCaptureProShortcodes
     public function get_checkin($atts)
     {
         // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts( array(
+        $atts = shortcode_atts(array(
             'checkinid' => '',
-        ), $atts, 'jobcapturepro_checkin' );
+        ), $atts, 'jobcapturepro_checkin');
 
         // Check if checkinid attribute was provided, if not check URL parameter
-        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter( $atts['checkinid'], 'checkin' );
-        
+        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
+
         // If no attribute provided, check for URL parameter
         if (!$checkin_id && isset($_GET['checkinid'])) {
             $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
@@ -337,7 +338,7 @@ class JobCaptureProShortcodes
 
         $checkin_id = $result['checkin_id'];
         $map_data = $result['data'];
-        
+
         // Validate map data structure
         if (!is_array($map_data)) {
             $this->log_api_error(
@@ -350,7 +351,7 @@ class JobCaptureProShortcodes
                 'invalid_map_structure'
             );
         }
-        
+
         return JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
     }
 
@@ -420,7 +421,7 @@ class JobCaptureProShortcodes
 
         // Extract and validate map data
         $map_data = $map_result['data'];
-        
+
         if (!is_array($map_data)) {
             $this->log_api_error(
                 'Invalid map data structure in combined components',
@@ -442,8 +443,8 @@ class JobCaptureProShortcodes
     }
 
     /**
-    * Shortcode to display company information
-    */
+     * Shortcode to display company information
+     */
     public function get_company_info($atts)
     {
         // Sanitize and validate shortcode attributes
@@ -463,7 +464,7 @@ class JobCaptureProShortcodes
 
         // Get the API Key using enhanced sanitization
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
-        
+
         if (!$apikey) {
             return $this->render_error_message(
                 __('Plugin configuration error. Please contact the site administrator.', 'jobcapturepro'),
@@ -521,14 +522,14 @@ class JobCaptureProShortcodes
                     'status_code' => $response_code
                 )
             );
-            
+
             if ($response_code === 404) {
                 return $this->render_error_message(
                     __('Company information not found.', 'jobcapturepro'),
                     'company_not_found'
                 );
             }
-            
+
             return $this->render_error_message(
                 __('Unable to load company information at this time. Please try again later.', 'jobcapturepro'),
                 'api_http_error'

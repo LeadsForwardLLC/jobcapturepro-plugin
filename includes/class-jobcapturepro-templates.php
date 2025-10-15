@@ -152,7 +152,7 @@ class JobCaptureProTemplates
      * @param array $response_data The API response data containing locations and maps API key
      * @return string HTML output for the map
      */
-    public static function render_map_conditionally($checkin_id, $response_data)
+    public static function render_map_conditionally($response_data)
     {
         // Extract locations and maps API key from response
         $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
@@ -183,7 +183,7 @@ class JobCaptureProTemplates
         $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
-        $output .= JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
+        $output .= JobCaptureProTemplates::render_map_conditionally($map_data);
 
         // Render checkins with conditional logic
         $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins, $company_info);
@@ -493,7 +493,6 @@ class JobCaptureProTemplates
         self::enqueue_map_styles();
         $output .= self::get_dynamic_selectors_checkins_grid_styles();
 
-
         // Enqueue the gallery script
         self::enqueue_gallery_script();
 
@@ -613,9 +612,10 @@ class JobCaptureProTemplates
      */
     private static function enqueue_checkins_grid_script($gridId)
     {
+        // Enqueue masonry grid script
         wp_enqueue_script(
             'jcp-checkins-grid',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins-grid.js',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins/masonry-grid.js',
             array(),
             '1.0.0',
             true
@@ -625,5 +625,14 @@ class JobCaptureProTemplates
         wp_localize_script('jcp-checkins-grid', 'jcpGridData', array(
             'gridId' => $gridId
         ));
+
+        // Enqueue load more script
+        wp_enqueue_script(
+            'jcp-checkins-load-more',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins/load-more.js',
+            array(),
+            '1.0.0',
+            true
+        );
     }
 }
