@@ -328,16 +328,35 @@ class JobCaptureProShortcodes
      */
     public function get_map($atts)
     {
-        $result = $this->fetch_api_data('map', $atts);
-        if (!$result) {
+        // Sanitize and validate shortcode attributes
+        $atts = shortcode_atts(array(
+            'companyid' => '',
+        ), $atts);
+
+        // Check if companyid attribute was provided
+        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
+
+        if ($company_id) {
+            // Fetch specific company information using the direct endpoint
+            $company_result = $this->fetch_api_data("companies/" . $company_id, array());
+            $company_info = $company_result ? $company_result['data'] : null;
+        } else {
+            // If no company ID provided, fetch default company info
+            $company_result = $this->fetch_api_data('companies', $atts);
+            $company_info = $company_result ? $company_result['data'] : null;
+        }
+
+        // Fetch map data
+        $map_result = $this->fetch_api_data('map', $atts);
+
+        if (!$map_result) {
             return $this->render_error_message(
                 __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
                 'map_fetch_failed'
             );
         }
 
-        $checkin_id = $result['checkin_id'];
-        $map_data = $result['data'];
+        $map_data = $map_result['data'];
 
         // Validate map data structure
         if (!is_array($map_data)) {
@@ -352,7 +371,7 @@ class JobCaptureProShortcodes
             );
         }
 
-        return JobCaptureProTemplates::render_map_conditionally($checkin_id, $map_data);
+        return JobCaptureProTemplates::render_map_conditionally($map_data, $company_info);
     }
 
     /**

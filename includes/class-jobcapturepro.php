@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Core plugin class for JobCapturePro.
  *
@@ -7,7 +8,7 @@
  */
 
 // Prevent direct access.
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 

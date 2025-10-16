@@ -30,12 +30,20 @@ async function initJobCaptureProMap() {
         // Create markers array for clustering
         const markers = [];
 
+        // Company custom marker image
+        let customMarkerImg = null;
+        if (jobcaptureproMapData.companyInfo && jobcaptureproMapData.companyInfo.customMarker) {
+            customMarkerImg = document.createElement('img');
+            customMarkerImg.src = jobcaptureproMapData.companyInfo.customMarker;
+        }
+
         // Create markers
         markersData.forEach((markerData, index) => {
             const marker = new AdvancedMarkerElement({
                 map: map,
                 position: markerData.position,
                 id: markerData.id,
+                ...(customMarkerImg && { content: customMarkerImg.cloneNode(true) })
             });
 
             // Add marker to array for clustering
