@@ -494,8 +494,9 @@ class JobCaptureProTemplates
             )
         );
 
-        // Enqueue styles for the map
+        // Enqueue styles for the map & checkins cards inside the map
         self::enqueue_map_styles();
+        self::enqueue_checkins_grid_styles();
         $output .= self::get_dynamic_selectors_checkins_grid_styles();
 
         // Enqueue the gallery script
