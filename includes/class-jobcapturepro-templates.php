@@ -153,11 +153,11 @@ class JobCaptureProTemplates
      * @param array $response_data The API response data containing locations and maps API key
      * @return string HTML output for the map
      */
-    public static function render_map_conditionally($response_data, $company_info = array())
+    public static function render_map_conditionally($map_data, $company_info = array())
     {
         // Extract locations and maps API key from response
-        $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
-        $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
+        $locations = isset($map_data['locations']) ? $map_data['locations'] : [];
+        $maps_api_key = isset($map_data['googleMapsApiKey']['value']) ? $map_data['googleMapsApiKey']['value'] : '';
 
         // Render the map
         return JobCaptureProTemplates::render_map($locations, $maps_api_key, $company_info);
