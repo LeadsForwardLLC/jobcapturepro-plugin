@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template functionality for JobCapturePro plugin.
  *
@@ -7,8 +8,8 @@
  */
 
 // Prevent direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (! defined('ABSPATH')) {
+    exit;
 }
 
 /**
@@ -32,7 +33,7 @@ class JobCaptureProTemplates
         }
 
         if (is_array($data)) {
-            return array_map(function($item) use ($context) {
+            return array_map(function ($item) use ($context) {
                 return self::sanitize_template_data($item, $context);
             }, $data);
         }
@@ -97,9 +98,9 @@ class JobCaptureProTemplates
             );
         }
 
-        return '<div class="jobcapturepro-unavailable">' . 
-               esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') . 
-               '</div>';
+        return '<div class="jobcapturepro-unavailable">' .
+            esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') .
+            '</div>';
     }
 
     /**
@@ -152,14 +153,14 @@ class JobCaptureProTemplates
      * @param array $response_data The API response data containing locations and maps API key
      * @return string HTML output for the map
      */
-    public static function render_map_conditionally($response_data)
+    public static function render_map_conditionally($response_data, $company_info = array())
     {
         // Extract locations and maps API key from response
         $locations = isset($response_data['locations']) ? $response_data['locations'] : [];
         $maps_api_key = isset($response_data['googleMapsApiKey']['value']) ? $response_data['googleMapsApiKey']['value'] : '';
 
         // Render the map
-        return JobCaptureProTemplates::render_map($locations, $maps_api_key);
+        return JobCaptureProTemplates::render_map($locations, $maps_api_key, $company_info);
     }
 
 
@@ -183,7 +184,7 @@ class JobCaptureProTemplates
         $output .= JobCaptureProTemplates::render_company_info($company_info);
 
         // Render map with conditional logic
-        $output .= JobCaptureProTemplates::render_map_conditionally($map_data);
+        $output .= JobCaptureProTemplates::render_map_conditionally($map_data, $company_info);
 
         // Render checkins with conditional logic
         $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins, $company_info);
@@ -420,7 +421,7 @@ class JobCaptureProTemplates
      * @param array $locations The location data as defined by geopoints in RFC 7946
      * @return string HTML for a Google Maps map with multiple markers
      */
-    public static function render_map($locations, $maps_api_key)
+    public static function render_map($locations, $maps_api_key, $company_info = array())
     {
         // Check for required fields
         if (empty($locations)) {
@@ -476,7 +477,11 @@ class JobCaptureProTemplates
             'jobcapturepro-map',
             'jobcaptureproMapData',
             array(
+                //
                 'wpPluginApiBaseUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
+
+                // Company information
+                'companyInfo' => $company_info,
 
                 //
                 'centerLat' => (float)$centerLat,
