@@ -13,6 +13,7 @@ async function initJobCaptureProMap() {
             center: { lat: parseFloat(jobcaptureproMapData.centerLat), lng: parseFloat(jobcaptureproMapData.centerLng) },
             zoom: 10,
             mapId: "f4a15cb6cd4f8d61",
+            gestureHandling: 'greedy',
         });
 
         // Define bounds for the map
