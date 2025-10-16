@@ -1,4 +1,5 @@
 <?php
+
 /**
  * REST API functionality for JobCapturePro plugin.
  *
@@ -7,8 +8,8 @@
  */
 
 // Prevent direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (! defined('ABSPATH')) {
+    exit;
 }
 
 /**
@@ -28,14 +29,66 @@ class JobCaptureProAPI
     }
 
     /**
-     * Register single proxy endpoint
+     * Get API key from WordPress options
+     */
+    private function get_api_key()
+    {
+        // Get API key using enhanced sanitization
+        $apikey = JobCaptureProAdmin::get_sanitized_api_key();
+
+        if (!$apikey) {
+            return new WP_Error('missing_api_key', 'API key not configured or invalid', array('status' => 500));
+        }
+
+        return $apikey;
+    }
+
+    /**
+     * Get standard request arguments for API calls
+     */
+    private function get_request_args($apikey)
+    {
+        return array(
+            'timeout' => 15,
+            'headers' => array(
+                'API_KEY' => $apikey
+            )
+        );
+    }
+
+    /**
+     * Make API request and handle response
+     */
+    private function make_api_request($url, $error_context = 'data')
+    {
+        $apikey = $this->get_api_key();
+        $args = $this->get_request_args($apikey);
+
+        $response = wp_remote_get($url, $args);
+
+        if (is_wp_error($response)) {
+            return new WP_Error('api_error', "Failed to fetch {$error_context} data", array('status' => 500));
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!$data) {
+            return new WP_Error('no_data', "No {$error_context} found", array('status' => 404));
+        }
+
+        return rest_ensure_response($data);
+    }
+
+    /**
+     * Register API routes
      */
     public function register_routes()
     {
-        // Single proxy endpoint for checkin data
+        // Register single checkin route
         register_rest_route($this->namespace, '/checkin/(?P<id>[a-zA-Z0-9\-_]+)', array(
             'methods' => 'GET',
-            'callback' => array($this, 'get_checkin_proxy'),
+            'callback' => array($this, 'get_checkin'),
             'permission_callback' => array($this, 'check_permissions'),
             'args' => array(
                 'id' => array(
@@ -45,6 +98,21 @@ class JobCaptureProAPI
                     'validate_callback' => array($this, 'validate_checkin_id'),
                     'description' => 'The checkin ID to retrieve'
                 )
+            )
+        ));
+
+        // Register checkins route
+        register_rest_route($this->namespace, '/checkins', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_checkins'),
+            'permission_callback' => '__return_true',
+            'args' => array(
+                'page' => array(
+                    'required' => false,
+                    'type' => 'integer',
+                    'default' => 1,
+                    'sanitize_callback' => 'absint'
+                ),
             )
         ));
     }
@@ -73,11 +141,11 @@ class JobCaptureProAPI
     public function sanitize_checkin_id($value, $request, $param)
     {
         $sanitized_id = JobCaptureProAdmin::sanitize_id_parameter($value, 'checkin');
-        
+
         if ($sanitized_id === null) {
             return new WP_Error('invalid_checkin_id', 'Invalid checkin ID format', array('status' => 400));
         }
-        
+
         return $sanitized_id;
     }
 
@@ -107,15 +175,16 @@ class JobCaptureProAPI
     }
 
     /**
-     * Proxy endpoint - WordPress hits real API and returns data
+     * Single checkin endpoint
      */
-    public function get_checkin_proxy($request)
+    public function get_checkin($request)
     {
+        // Get Checkin ID
         $checkin_id = $request->get_param('id');
 
         // Get API key using enhanced sanitization
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
-        
+
         if (!$apikey) {
             return new WP_Error('missing_api_key', 'API key not configured or invalid', array('status' => 500));
         }
@@ -123,113 +192,23 @@ class JobCaptureProAPI
         // Build URL to real API - the checkin_id is already sanitized by the sanitize callback
         $url = $this->jcp_api_base_url . "checkins/" . urlencode($checkin_id);
 
-        // Make request to real API
-        $args = array(
-            'timeout' => 15,
-            'headers' => array(
-                'API_KEY' => $apikey
-            )
-        );
+        // Make the request
+        return $this->make_api_request($url, 'checkin');
+    }
 
-        $response = wp_remote_get($url, $args);
+    /**
+     * All checkins endpoint
+     */
+    public function get_checkins($request)
+    {
+        // Get page number
+        $page = $request->get_param('page') ?: 1;
 
-        if (is_wp_error($response)) {
-            $error_message = $response->get_error_message();
-            error_log("JobCapturePro REST API Error: {$error_message} | URL: {$url}");
-            return new WP_Error(
-                'api_connection_error', 
-                'Unable to connect to the data service. Please try again later.',
-                array('status' => 503)
-            );
-        }
+        // Build URL to real API
+        $url = $this->jcp_api_base_url . "checkins?page=" . $page;
 
-        $response_code = wp_remote_retrieve_response_code($response);
-        $response_message = wp_remote_retrieve_response_message($response);
-        
-        if ($response_code !== 200) {
-            error_log("JobCapturePro REST API HTTP Error: {$response_code} {$response_message} | URL: {$url}");
-            
-            switch ($response_code) {
-                case 401:
-                case 403:
-                    return new WP_Error(
-                        'api_authentication_error',
-                        'Authentication failed. Please check API configuration.',
-                        array('status' => 401)
-                    );
-                case 404:
-                    return new WP_Error(
-                        'checkin_not_found',
-                        'The requested checkin was not found.',
-                        array('status' => 404)
-                    );
-                case 429:
-                    return new WP_Error(
-                        'api_rate_limit',
-                        'Too many requests. Please try again later.',
-                        array('status' => 429)
-                    );
-                case 500:
-                case 502:
-                case 503:
-                case 504:
-                    return new WP_Error(
-                        'api_server_error',
-                        'The data service is temporarily unavailable. Please try again later.',
-                        array('status' => 503)
-                    );
-                default:
-                    return new WP_Error(
-                        'api_http_error',
-                        'Unable to retrieve data at this time. Please try again later.',
-                        array('status' => 500)
-                    );
-            }
-        }
-
-        $body = wp_remote_retrieve_body($response);
-        
-        if (empty($body)) {
-            error_log("JobCapturePro REST API Error: Empty response body | URL: {$url}");
-            return new WP_Error(
-                'api_empty_response',
-                'No data received from the service.',
-                array('status' => 500)
-            );
-        }
-
-        $data = json_decode($body, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $json_error = json_last_error_msg();
-            error_log("JobCapturePro REST API Error: Invalid JSON - {$json_error} | URL: {$url}");
-            return new WP_Error(
-                'api_invalid_json',
-                'Invalid data received from the service.',
-                array('status' => 500)
-            );
-        }
-
-        // Check for API-specific error responses
-        if (isset($data['error'])) {
-            $api_error = is_string($data['error']) ? $data['error'] : 'Unknown API error';
-            error_log("JobCapturePro REST API Error: {$api_error} | URL: {$url}");
-            return new WP_Error(
-                'api_error_response',
-                'The data service returned an error. Please try again later.',
-                array('status' => 500)
-            );
-        }
-
-        if (!$data) {
-            error_log("JobCapturePro REST API Error: No data in response | URL: {$url}");
-            return new WP_Error('no_data', 'No checkin found', array('status' => 404));
-        }
-
-        // Return the data with CORS headers
-        $response = rest_ensure_response($data);
-
-        return $response;
+        // Make the request
+        return $this->make_api_request($url, 'checkins');
     }
 
     /**
