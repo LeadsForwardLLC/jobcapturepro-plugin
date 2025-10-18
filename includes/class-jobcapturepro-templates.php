@@ -428,10 +428,6 @@ class JobCaptureProTemplates
             return '';
         }
 
-        // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
-        wp_enqueue_script('markerclusterer', 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', array('google-maps'), null, array('strategy' => 'async'));
-
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
@@ -468,7 +464,15 @@ class JobCaptureProTemplates
         wp_enqueue_script(
             'jobcapturepro-map',
             plugin_dir_url(dirname(__FILE__)) . 'assets/js/map.js',
-            array('google-maps', 'markerclusterer'),
+            array(),
+            '1.0.0',
+            true
+        );
+
+        wp_enqueue_script(
+            'jobcapturepro-markerclusterer',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/markerclusterer.min.js',
+            array('jobcapturepro-map'),
             '1.0.0',
             true
         );
@@ -477,7 +481,10 @@ class JobCaptureProTemplates
             'jobcapturepro-map',
             'jobcaptureproMapData',
             array(
-                //
+                // 
+                'googleMapsApiKey' => esc_js($maps_api_key),
+
+                // 
                 'wpPluginApiBaseUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
 
                 // Company information
