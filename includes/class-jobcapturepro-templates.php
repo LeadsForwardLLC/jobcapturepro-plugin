@@ -99,7 +99,7 @@ class JobCaptureProTemplates
         }
 
         return '<div class="jobcapturepro-unavailable">' .
-            esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') .
+            esc_html__('Content is temporarily unavailable. Please try again later.', 'job-capture-pro') .
             '</div>';
     }
 
@@ -255,15 +255,19 @@ class JobCaptureProTemplates
         self::enqueue_checkins_grid_script($gridId);
         self::enqueue_gallery_script();
 
-        // Render checkins grid
         $checkins_grid_html .= Template::render_template('checkins-grid', [
             'checkins' => $checkins,
             'company_info' => $company_info,
             'gridId' => $gridId,
-            'should_show_feature' => function ($feature_name, $data_exists = false) {
-                return self::should_show_feature($feature_name, $data_exists);
-            }
         ]);
+        
+        if(self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
+            $checkins_grid_html .= Template::render_template('company-stats', [
+                'company_info' => $company_info,
+            ]);
+        } 
+
+        $checkins_grid_html .= Template::render_template('cta-section');
 
         //
         return $checkins_grid_html;
@@ -428,10 +432,6 @@ class JobCaptureProTemplates
             return '';
         }
 
-        // Ensure necessary scripts are loaded
-        wp_enqueue_script('google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $maps_api_key . '&libraries=marker', array(), null, array('strategy' => 'async'));
-        wp_enqueue_script('markerclusterer', 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', array('google-maps'), null, array('strategy' => 'async'));
-
         // Extract features array from the GeoJSON FeatureCollection
         $features = $locations['features'];
 
@@ -468,7 +468,15 @@ class JobCaptureProTemplates
         wp_enqueue_script(
             'jobcapturepro-map',
             plugin_dir_url(dirname(__FILE__)) . 'assets/js/map.js',
-            array('google-maps', 'markerclusterer'),
+            array(),
+            '1.0.0',
+            true
+        );
+
+        wp_enqueue_script(
+            'jobcapturepro-markerclusterer',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/js/markerclusterer.min.js',
+            array('jobcapturepro-map'),
             '1.0.0',
             true
         );
@@ -477,7 +485,10 @@ class JobCaptureProTemplates
             'jobcapturepro-map',
             'jobcaptureproMapData',
             array(
-                //
+                // 
+                'googleMapsApiKey' => esc_js($maps_api_key),
+
+                // 
                 'wpPluginApiBaseUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
 
                 // Company information

@@ -4,7 +4,7 @@ $has_phone = !empty($company_info['tn']);
 $has_url = !empty($company_info['url']);
 
 if ($has_url) {
-    $parsed_url = parse_url($company_info['url']);
+    $parsed_url = wp_parse_url($company_info['url']);
     $host = $parsed_url['host'] ?? $company_info['url'];
     // Remove www. prefix if it exists
     $display_url = preg_replace('/^www\./i', '', $host);
