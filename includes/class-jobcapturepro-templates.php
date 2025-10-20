@@ -255,15 +255,19 @@ class JobCaptureProTemplates
         self::enqueue_checkins_grid_script($gridId);
         self::enqueue_gallery_script();
 
-        // Render checkins grid
         $checkins_grid_html .= Template::render_template('checkins-grid', [
             'checkins' => $checkins,
             'company_info' => $company_info,
             'gridId' => $gridId,
-            'should_show_feature' => function ($feature_name, $data_exists = false) {
-                return self::should_show_feature($feature_name, $data_exists);
-            }
         ]);
+        
+        if(self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
+            $checkins_grid_html .= Template::render_template('company-stats', [
+                'company_info' => $company_info,
+            ]);
+        } 
+
+        $checkins_grid_html .= Template::render_template('cta-section');
 
         //
         return $checkins_grid_html;
