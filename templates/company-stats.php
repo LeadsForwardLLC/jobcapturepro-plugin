@@ -20,22 +20,3 @@
         </div>
     <?php endif; ?>
 </div>
-
-<?php /* elseif ($show_company_stats_fallback): */ ?>
-    <!-- <div class="jobcapturepro-stats-container">
-        <div class="jobcapturepro-stat-item">
-            <div class="jobcapturepro-stat-number">86</div>
-            <div class="jobcapturepro-stat-label">Jobs Posted This Month</div>
-        </div>
-
-        <div class="jobcapturepro-stat-item">
-            <div class="jobcapturepro-stat-number">96%</div>
-            <div class="jobcapturepro-stat-label">Average 5-Star Rating</div>
-        </div>
-
-        <div class="jobcapturepro-stat-item">
-            <div class="jobcapturepro-stat-number">12 mins ago</div>
-            <div class="jobcapturepro-stat-label">Last Job Check-In</div>
-        </div>
-    </div> -->
-<?php /* endif; */ ?>
