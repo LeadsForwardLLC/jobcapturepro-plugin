@@ -99,7 +99,7 @@ class JobCaptureProTemplates
         }
 
         return '<div class="jobcapturepro-unavailable">' .
-            esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') .
+            esc_html__('Content is temporarily unavailable. Please try again later.', 'job-capture-pro') .
             '</div>';
     }
 
