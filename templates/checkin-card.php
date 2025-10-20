@@ -1,6 +1,6 @@
 <?php
 // Create clickable link with checkinId parameter
-$current_url = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '/';
+$current_url = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
 $checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
 
 // Parse address (assuming format: "Street, City, State, ZIP, Country")
