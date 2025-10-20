@@ -5,7 +5,7 @@ if (!empty($checkin['rating'])) {
 }
 
 // Process data variables
-$checkin_date = isset($checkin['createdAt']) ? date('F j, Y', strtotime($checkin['createdAt'])) : 'July 6, 2025';
+$checkin_date = isset($checkin['createdAt']) ? gmdate('F j, Y', strtotime($checkin['createdAt'])) : 'July 6, 2025';
 $tech_name = isset($checkin['assignedUser']['name']) ? $checkin['assignedUser']['name'] : 'Chris (Tech)';
 $location = isset($checkin['address']) ? $checkin['address'] : 'Venice, FL';
 $description = isset($checkin['description']) ? $checkin['description'] : 'Roof soft-washed to remove algae and restore curb appeal. This 2-story home was cleaned using a low-pressure rinse method safe for shingles and gutters. Job completed in under 2 hours.';
