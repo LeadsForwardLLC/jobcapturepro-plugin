@@ -76,7 +76,7 @@ async function initJobCaptureProMap() {
                 currentInfoWindow = infoWindow;
 
                 // Fetch content and display it in the info window
-                fetch(`${jobcaptureproMapData.wpPluginApiBaseUrl}/checkin/${markerData.id}`)
+                fetch(`${jobcaptureproMapData.baseApiUrl}/checkin/${markerData.id}`)
                     .then(response => response.json())
                     .then(data => {
                         const addressParts = data.address.split(',');
