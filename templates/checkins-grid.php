@@ -1,5 +1,5 @@
 <!-- Checkins Grid -->
-<div class="jobcapturepro-container">
+<div class="jobcapturepro-container mt-8 mx-auto">
     <div id="checkins-grid" class="jobcapturepro-checkins-grid <?php echo esc_attr($gridId); ?>" data-column-count="3">
         <?php foreach ($checkins as $checkin): ?>
             <?php echo Template::render_template('checkin-card', [
