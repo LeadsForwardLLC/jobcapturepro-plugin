@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Current page tracker
     let currentPage = 1;
 
-    // Elements 
+    // Elements
     const loadMoreBtn = document.getElementById("load-more-checkins-btn");
     const checkinsGrid = document.getElementById("checkins-grid");
 
@@ -12,15 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listener for Load More button
     loadMoreBtn.addEventListener("click", loadNextCheckinsPage);
 
+    // Load next page of check-ins
     function loadNextCheckinsPage() {
-        // Base API URL
-        const baseApiUrl = '/wp-json/jobcapturepro/v1/';
-
         // Change button to loading state
         changeButtonState('loading');
 
         // Fetch next page of check-ins
-        fetch(`${baseApiUrl}checkins?page=${currentPage + 1}`)
+        fetch(`${jcpLoadMoreData.baseApiUrl}/checkins?page=${currentPage + 1}&companyId=${jcpLoadMoreData.companyId}`)
             .then(response => response.json())
             .then(data => {
                 const checkins = data.checkins;
