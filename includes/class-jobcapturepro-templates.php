@@ -252,7 +252,7 @@ class JobCaptureProTemplates
         $checkins_grid_html = self::get_dynamic_selectors_checkins_grid_styles($gridId);
 
         // Enqueue scripts
-        self::enqueue_checkins_grid_script($gridId);
+        self::enqueue_checkins_grid_script($gridId, $company_info);
         self::enqueue_gallery_script();
 
         $checkins_grid_html .= Template::render_template('checkins-grid', [
@@ -489,7 +489,7 @@ class JobCaptureProTemplates
                 'googleMapsApiKey' => esc_js($maps_api_key),
 
                 // 
-                'wpPluginApiBaseUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
+                'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
 
                 // Company information
                 'companyInfo' => $company_info,
@@ -627,7 +627,7 @@ class JobCaptureProTemplates
     /**
      * Enqueue the masonry grid JavaScript
      */
-    private static function enqueue_checkins_grid_script($gridId)
+    private static function enqueue_checkins_grid_script($gridId, $company_info)
     {
         // Enqueue masonry grid script
         wp_enqueue_script(
@@ -643,6 +643,7 @@ class JobCaptureProTemplates
             'gridId' => $gridId
         ));
 
+
         // Enqueue load more script
         wp_enqueue_script(
             'jcp-checkins-load-more',
@@ -651,5 +652,11 @@ class JobCaptureProTemplates
             '1.0.0',
             true
         );
+
+        // Pass company id to the load more script 
+        wp_localize_script('jcp-checkins-load-more', 'jcpLoadMoreData', array(
+            'companyId' => $company_info['id'] ?? '',
+            'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
+        ));
     }
 }
