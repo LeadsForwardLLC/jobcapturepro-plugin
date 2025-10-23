@@ -96,11 +96,11 @@ async function initJobCaptureProMap() {
                                         `).join('')}
                                         
                                         ${data.imageUrls.length > 1 ? `
-                                            <div class="gallery-nav gallery-prev" onclick="jobcaptureproChangeImage('gallery-${data.id}', 'prev')">❮</div>
-                                            <div class="gallery-nav gallery-next" onclick="jobcaptureproChangeImage('gallery-${data.id}', 'next')">❯</div>
+                                            <div class="gallery-nav gallery-prev" onclick="jobcaptureproChangeImage(event, 'gallery-${data.id}', 'prev')">❮</div>
+                                            <div class="gallery-nav gallery-next" onclick="jobcaptureproChangeImage(event, 'gallery-${data.id}', 'next')">❯</div>
                                             <div class="gallery-dots">
                                                 ${data.imageUrls.map((_, index) => `
-                                                    <span class="gallery-dot ${index === 0 ? 'active' : ''}" onclick="jobcaptureproShowImage('gallery-${data.id}', ${index})"></span>
+                                                    <span class="gallery-dot ${index === 0 ? 'active' : ''}" onclick="jobcaptureproShowImage(event, 'gallery-${data.id}', ${index})"></span>
                                                 `).join('')}
                                             </div>
                                         ` : ''}
