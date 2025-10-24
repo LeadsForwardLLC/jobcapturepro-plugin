@@ -18,7 +18,7 @@ $timestamp = strtotime($checkin['createdAt']);
 
 ?>
 
-<a href="<?php echo esc_url_raw($checkin_url); ?>" class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">
+<div class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">
     <!-- Images (if available) -->
     <?php if (!empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])): ?>
         <?php echo Template::render_template('image-gallery', [
@@ -94,4 +94,4 @@ $timestamp = strtotime($checkin['createdAt']);
     <div class="jobcapturepro-checkin-address">
         <p><strong>Near</strong> <?php echo esc_html($city . ', ' . $state_abbr); ?></p>
     </div>
-</a>
+</div>
