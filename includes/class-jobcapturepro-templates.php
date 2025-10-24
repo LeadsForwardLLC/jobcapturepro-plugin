@@ -267,8 +267,6 @@ class JobCaptureProTemplates
             ]);
         } 
 
-        $checkins_grid_html .= Template::render_template('cta-section');
-
         //
         return $checkins_grid_html;
     }
