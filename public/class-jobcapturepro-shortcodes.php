@@ -84,6 +84,7 @@ class JobCaptureProShortcodes
         $atts = shortcode_atts(array(
             'checkinid' => '',
             'companyid' => '',
+            'city' => '',
         ), $atts, 'jobcapturepro');
 
         // Check if checkinid attribute was provided, if not check URL parameter
@@ -296,6 +297,12 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
+        // Sanitize and validate shortcode attributes
+        $atts = shortcode_atts(array(
+            'companyid' => '',
+            'city' => '',
+        ), $atts);
+
         $result = $this->fetch_api_data('checkins', $atts);
         if (!$result) {
             return $this->render_error_message(
@@ -320,6 +327,11 @@ class JobCaptureProShortcodes
             );
         }
 
+        // Filter checkins by city if city attribute is provided
+        if (!empty($atts['city'])) {
+            $checkins = $this->filter_checkins_by_city($checkins, $atts['city']);
+        }
+
         return JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
     }
 
@@ -331,6 +343,7 @@ class JobCaptureProShortcodes
         // Sanitize and validate shortcode attributes
         $atts = shortcode_atts(array(
             'companyid' => '',
+            'city' => '',
         ), $atts);
 
         // Check if companyid attribute was provided
@@ -371,6 +384,11 @@ class JobCaptureProShortcodes
             );
         }
 
+        // Filter map locations by city if city attribute is provided
+        if (!empty($atts['city']) && isset($map_data['locations'])) {
+            $map_data['locations'] = $this->filter_map_locations_by_city($map_data['locations'], $atts['city']);
+        }
+
         return JobCaptureProTemplates::render_map_conditionally($map_data, $company_info);
     }
 
@@ -382,6 +400,7 @@ class JobCaptureProShortcodes
         // Sanitize and validate shortcode attributes
         $atts = shortcode_atts(array(
             'companyid' => '',
+            'city' => '',
         ), $atts, 'jobcapturepro_combined');
 
         // Check if companyid attribute was provided
@@ -427,6 +446,11 @@ class JobCaptureProShortcodes
                 __('Invalid checkins data received. Please try again later.', 'job-capture-pro'),
                 'invalid_combined_checkins_structure'
             );
+        }
+
+        // Filter checkins by city if city attribute is provided
+        if (!empty($atts['city'])) {
+            $checkins = $this->filter_checkins_by_city($checkins, $atts['city']);
         }
 
         // Fetch map data
@@ -612,5 +636,85 @@ class JobCaptureProShortcodes
         );
 
         return JobCaptureProTemplates::render_company_info($company_info);
+    }
+
+    /**
+     * Filter checkins by city (temporary frontend solution until backend filtering is fixed)
+     * 
+     * @param array $checkins Array of checkin data
+     * @param string $city City to filter by (case-insensitive)
+     * @return array Filtered checkins array
+     */
+    private function filter_checkins_by_city($checkins, $city)
+    {
+        if (empty($city) || !is_array($checkins)) {
+            return $checkins;
+        }
+
+        $filtered_checkins = array();
+        $target_city = strtolower(trim($city));
+
+        foreach ($checkins as $checkin) {
+            // Check if checkin has address information
+            if (!isset($checkin['address']) || empty($checkin['address'])) {
+                continue;
+            }
+
+            // Parse the address similar to how it's done in checkin-card.php
+            // Assuming format: "Street, City, State, ZIP, Country"
+            $address_parts = array_map('trim', explode(',', $checkin['address']));
+            
+            if (count($address_parts) >= 2) {
+                // Get city (2nd part in the address)
+                $checkin_city = strtolower(trim($address_parts[1] ?? ''));
+                
+                // Check if the city matches (case-insensitive)
+                if ($checkin_city === $target_city) {
+                    $filtered_checkins[] = $checkin;
+                }
+            }
+        }
+
+        return $filtered_checkins;
+    }
+
+    /**
+     * Filter map locations by city (temporary frontend solution until backend filtering is fixed)
+     * 
+     * @param array $locations Array of location data from map API
+     * @param string $city City to filter by (case-insensitive)
+     * @return array Filtered locations array
+     */
+    private function filter_map_locations_by_city($locations, $city)
+    {
+        if (empty($city) || !is_array($locations)) {
+            return $locations;
+        }
+
+        $filtered_locations = array();
+        $target_city = strtolower(trim($city));
+
+        foreach ($locations as $location) {
+            // Check if location has address information
+            if (!isset($location['address']) || empty($location['address'])) {
+                continue;
+            }
+
+            // Parse the address similar to how it's done in checkin-card.php
+            // Assuming format: "Street, City, State, ZIP, Country"
+            $address_parts = array_map('trim', explode(',', $location['address']));
+            
+            if (count($address_parts) >= 2) {
+                // Get city (2nd part in the address)
+                $location_city = strtolower(trim($address_parts[1] ?? ''));
+                
+                // Check if the city matches (case-insensitive)
+                if ($location_city === $target_city) {
+                    $filtered_locations[] = $location;
+                }
+            }
+        }
+
+        return $filtered_locations;
     }
 }
