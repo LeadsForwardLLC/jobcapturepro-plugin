@@ -152,7 +152,7 @@ class JobCaptureProShortcodes
             'timeout' => 15,
             'headers' => array(
                 'API_KEY' => $apikey,
-                'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . JOBCAPTUREPRO_VERSION
+                'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . $this->version
             ),
             'sslverify' => true
         );
@@ -532,7 +532,7 @@ class JobCaptureProShortcodes
             'timeout' => 15,
             'headers' => array(
                 'API_KEY' => $apikey,
-                'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . JOBCAPTUREPRO_VERSION
+                'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . $this->version
             ),
             'sslverify' => true
         );
