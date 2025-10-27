@@ -477,6 +477,11 @@ class JobCaptureProShortcodes
             );
         }
 
+        // Filter map locations by city if city attribute is provided
+        if (!empty($atts['city']) && isset($map_data['locations'])) {
+            $map_data['locations'] = $this->filter_map_locations_by_city($map_data['locations'], $atts['city']);
+        }
+
         return JobCaptureProTemplates::render_combined_components(
             $company_info,
             $map_data,
