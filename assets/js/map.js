@@ -39,9 +39,9 @@ async function initJobCaptureProMap() {
 
         // Company custom marker image
         let customMarkerImg = null;
-        if (jobcaptureproMapData.companyInfo && jobcaptureproMapData.companyInfo.customMarker) {
+        if (jobcaptureproMapData.companyInfo && jobcaptureproMapData.companyInfo[0].customMarker) {
             customMarkerImg = document.createElement('img');
-            customMarkerImg.src = jobcaptureproMapData.companyInfo.customMarker;
+            customMarkerImg.src = jobcaptureproMapData.companyInfo[0].customMarker;
         }
 
         // Create markers
