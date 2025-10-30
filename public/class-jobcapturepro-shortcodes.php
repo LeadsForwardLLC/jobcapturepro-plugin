@@ -150,7 +150,7 @@ class JobCaptureProShortcodes
         $args = array(
             'timeout' => 15,
             'headers' => array(
-                'API_KEY' => $apikey,
+                'Authorization' => "Bearer $apikey",
                 'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . JOBCAPTUREPRO_VERSION
             ),
             'sslverify' => true
@@ -507,7 +507,7 @@ class JobCaptureProShortcodes
         $args = array(
             'timeout' => 15,
             'headers' => array(
-                'API_KEY' => $apikey,
+                'Authorization' => "Bearer $apikey",
                 'User-Agent' => 'JobCapturePro-WordPress-Plugin/' . JOBCAPTUREPRO_VERSION
             ),
             'sslverify' => true
