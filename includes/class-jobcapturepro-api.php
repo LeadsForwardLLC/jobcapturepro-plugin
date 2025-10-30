@@ -51,7 +51,7 @@ class JobCaptureProAPI
         return array(
             'timeout' => 15,
             'headers' => array(
-                'API_KEY' => $apikey
+                'Authorization' => "Bearer $apikey"
             )
         );
     }
