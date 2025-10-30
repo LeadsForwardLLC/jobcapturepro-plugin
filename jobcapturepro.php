@@ -3,7 +3,7 @@
  * Plugin Name:       JobCapturePro
  * Plugin URI:        https://www.jobcapturepro.com/wordpress-plugin/
  * Description:       Display job check-ins, company information, and interactive maps from your JobCapturePro account. Showcase completed work, customer reviews, and business locations with professional shortcodes.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 5.0
  * Tested up to:      6.6
  * Requires PHP:      7.4

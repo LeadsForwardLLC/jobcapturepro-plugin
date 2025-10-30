@@ -4,7 +4,7 @@ Tags: service business, field service, job tracking
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,13 @@ All communication with the JobCapturePro API uses secure HTTPS connections. Your
 
 == Changelog ==
 
+= 1.0.2 =
+* Access tokens used in place of API keys
+* General bug fixes & improvements
+
+= 1.0.1 =
+* General bug fixes & improvements
+
 = 1.0.0 =
 * Initial release
 * Job check-ins display functionality
@@ -91,6 +98,9 @@ All communication with the JobCapturePro API uses secure HTTPS connections. Your
 
 = 1.0.0 =
 Initial release of JobCapturePro WordPress plugin. Connect your website to your JobCapturePro service account to display job information and interactive maps.
+
+= 1.0.2 =
+API keys have been replaced with access tokens. Please update plugin settings to use an access token.
 
 == Third-Party Services ==
 
