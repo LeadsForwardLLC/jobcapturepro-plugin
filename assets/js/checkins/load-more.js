@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 buttonSpinner.classList.add('hidden');
 
                 // Normal state styles
-                loadMoreBtn.classList.remove('bg-gray-400', 'text-gray-200', 'cursor-not-allowed', 'opacity-60');
+                loadMoreBtn.classList.remove('bg-gray-500', 'text-gray-200', 'cursor-not-allowed', 'opacity-60');
                 loadMoreBtn.classList.add('bg-accent', 'text-white', 'hover:bg-red-600', 'cursor-pointer', 'opacity-100');
                 break;
             default:
