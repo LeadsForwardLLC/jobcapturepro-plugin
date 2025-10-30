@@ -39,7 +39,7 @@ async function initJobCaptureProMap() {
 
         // Company custom marker image
         let customMarkerImg = null;
-        if (jobcaptureproMapData.companyInfo && jobcaptureproMapData.companyInfo[0].customMarker) {
+        if (jobcaptureproMapData.companyInfo && jobcaptureproMapData.companyInfo[0] && jobcaptureproMapData.companyInfo[0].customMarker) {
             customMarkerImg = document.createElement('img');
             customMarkerImg.src = jobcaptureproMapData.companyInfo[0].customMarker;
         }
@@ -62,13 +62,13 @@ async function initJobCaptureProMap() {
                     <div class="jobcapturepro-info-window pt-0 !max-w-[350px] animate-pulse">
                         <!-- Image Gallery Skeleton -->
                         <div class="jobcapturepro-checkin-image !h-[160px] !mb-2 relative">
-                            <div class="gallery-image active w-full h-full bg-gray-300 rounded-t-lg animate-pulse"></div>
+                            <div class="w-full h-full bg-gray-300 rounded-t-lg animate-pulse"></div>
                             <div class="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-400 rounded"></div>
                             <div class="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-400 rounded"></div>
                             <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                <span class="gallery-dot w-2 h-2 bg-gray-400 rounded-full"></span>
-                                <span class="gallery-dot w-2 h-2 bg-gray-400 rounded-full"></span>
-                                <span class="gallery-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
                             </div>
                         </div>
                         
