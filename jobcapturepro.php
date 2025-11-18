@@ -1,8 +1,10 @@
 <?php
+
 /**
  * Plugin Name:       JobCapturePro
  * Plugin URI:        https://www.jobcapturepro.com/wordpress-plugin/
  * Description:       Display job check-ins, company information, and interactive maps from your JobCapturePro account. Showcase completed work, customer reviews, and business locations with professional shortcodes.
+ * Text Domain:       jobcapturepro
  * Version:           1.0.1
  * Requires at least: 5.0
  * Tested up to:      6.6
@@ -31,20 +33,21 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
 	die;
 }
 
 // Define plugin constants
-define( 'JOBCAPTUREPRO_VERSION', '1.0.1' );
-define( 'JOBCAPTUREPRO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'JOBCAPTUREPRO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'JOBCAPTUREPRO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define('JOBCAPTUREPRO_VERSION', '1.0.1');
+define('JOBCAPTUREPRO_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('JOBCAPTUREPRO_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('JOBCAPTUREPRO_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
 /**
  * The code that runs during plugin activation.
  */
-function activate_jobcapturepro() {
+function activate_jobcapturepro()
+{
 	// Flush rewrite rules to ensure shortcodes work properly
 	flush_rewrite_rules();
 }
@@ -52,19 +55,20 @@ function activate_jobcapturepro() {
 /**
  * The code that runs during plugin deactivation.
  */
-function deactivate_jobcapturepro() {
+function deactivate_jobcapturepro()
+{
 	// Clean up rewrite rules
 	flush_rewrite_rules();
 }
 
-register_activation_hook( __FILE__, 'activate_jobcapturepro' );
-register_deactivation_hook( __FILE__, 'deactivate_jobcapturepro' );
+register_activation_hook(__FILE__, 'activate_jobcapturepro');
+register_deactivation_hook(__FILE__, 'deactivate_jobcapturepro');
 
 /**
  * The core plugin class that is used to define 
  * admin-specific and public-facing shortcode hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-jobcapturepro.php';
+require plugin_dir_path(__FILE__) . 'includes/class-jobcapturepro.php';
 
 /**
  * Begins execution of the plugin.
@@ -73,7 +77,8 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-jobcapturepro.php';
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  */
-function run_jobcapturepro() {
+function run_jobcapturepro()
+{
 	$plugin = new JobCaptureProPlugin();
 	$plugin->run();
 }
