@@ -59,7 +59,7 @@ class JobCaptureProAdmin
 		// Register a new section in the General Settings page.
 		add_settings_section(
 			'jobcapturepro_section_developers',
-			esc_html(__('JobCapturePro Settings', 'job-capture-pro')),
+			esc_html(__('JobCapturePro Settings', 'jobcapturepro')),
 			array($this, 'jobcapturepro_section_developers_callback'),
 			'general'
 		);
@@ -67,7 +67,7 @@ class JobCaptureProAdmin
 		// Register a new field in the "jobcapturepro_section_developers" section, inside the General Settings page.
 		add_settings_field(
 			'jobcapturepro_field_apikey',
-			esc_html(__('API Key', 'job-capture-pro')),
+			esc_html(__('API Key', 'jobcapturepro')),
 			array($this, 'jobcapturepro_field_apikey_cb'),
 			'general',
 			'jobcapturepro_section_developers',
@@ -86,13 +86,13 @@ class JobCaptureProAdmin
 	{
 		// Check if user has permission to manage options
 		if (! current_user_can('manage_options')) {
-			wp_die(esc_html(__('You do not have sufficient permissions to access this page.', 'job-capture-pro')));
+			wp_die(esc_html(__('You do not have sufficient permissions to access this page.', 'jobcapturepro')));
 		}
 
 		// Render the section introduction text
 ?>
 		<p id="<?php echo esc_attr($args['id']); ?>">
-			<?php esc_html_e('Account settings can be found in the  ', 'job-capture-pro'); ?>
+			<?php esc_html_e('Account settings can be found in the  ', 'jobcapturepro'); ?>
 			<a href="https://app.jobcapturepro.com/" target="_blank">JobCapturePro App Dashboard</a>
 		</p>
 	<?php
@@ -106,7 +106,7 @@ class JobCaptureProAdmin
 
 		// Check if user has permission to manage options
 		if (! current_user_can('manage_options')) {
-			echo '<p>' . esc_html(__('You do not have sufficient permissions to modify this setting.', 'job-capture-pro')) . '</p>';
+			echo '<p>' . esc_html(__('You do not have sufficient permissions to modify this setting.', 'jobcapturepro')) . '</p>';
 			return;
 		}
 
@@ -121,7 +121,7 @@ class JobCaptureProAdmin
 			size="80" type="text"
 			value="<?php echo esc_attr($options[$args['label_for']] ?? ''); ?>" />
 		<p class="description">
-			<?php esc_html_e('Enter your JobCapturePro API key from your account dashboard.', 'job-capture-pro'); ?>
+			<?php esc_html_e('Enter your JobCapturePro API key from your account dashboard.', 'jobcapturepro'); ?>
 		</p>
 <?php
 	}
@@ -143,7 +143,7 @@ class JobCaptureProAdmin
 				add_settings_error(
 					'jobcapturepro_options',
 					'nonce_verification_failed',
-					esc_html(__('Security verification failed. Please try again.', 'job-capture-pro')),
+					esc_html(__('Security verification failed. Please try again.', 'jobcapturepro')),
 					'error'
 				);
 				return $existing_options;
@@ -157,7 +157,7 @@ class JobCaptureProAdmin
 			add_settings_error(
 				'jobcapturepro_options',
 				'insufficient_permissions',
-				esc_html(__('You do not have sufficient permissions to modify JobCapturePro settings.', 'job-capture-pro')),
+				esc_html(__('You do not have sufficient permissions to modify JobCapturePro settings.', 'jobcapturepro')),
 				'error'
 			);
 			return $existing_options;
@@ -169,7 +169,7 @@ class JobCaptureProAdmin
 			add_settings_error(
 				'jobcapturepro_options',
 				'invalid_input_format',
-				esc_html(__('Invalid input format received.', 'job-capture-pro')),
+				esc_html(__('Invalid input format received.', 'jobcapturepro')),
 				'error'
 			);
 			return $existing_options;
@@ -187,28 +187,28 @@ class JobCaptureProAdmin
 				add_settings_error(
 					'jobcapturepro_options',
 					'empty_api_key',
-					esc_html(__('API Key cannot be empty.', 'job-capture-pro')),
+					esc_html(__('API Key cannot be empty.', 'jobcapturepro')),
 					'error'
 				);
 			} elseif (strlen($api_key) < 10) {
 				add_settings_error(
 					'jobcapturepro_options',
 					'invalid_api_key_length',
-					esc_html(__('API Key must be at least 10 characters long.', 'job-capture-pro')),
+					esc_html(__('API Key must be at least 10 characters long.', 'jobcapturepro')),
 					'error'
 				);
 			} elseif (strlen($api_key) > 200) {
 				add_settings_error(
 					'jobcapturepro_options',
 					'invalid_api_key_length',
-					esc_html(__('API Key is too long. Maximum 200 characters allowed.', 'job-capture-pro')),
+					esc_html(__('API Key is too long. Maximum 200 characters allowed.', 'jobcapturepro')),
 					'error'
 				);
 			} elseif (! preg_match('/^[a-zA-Z0-9\-_]+$/', $api_key)) {
 				add_settings_error(
 					'jobcapturepro_options',
 					'invalid_api_key_format',
-					esc_html(__('API Key contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.', 'job-capture-pro')),
+					esc_html(__('API Key contains invalid characters. Only letters, numbers, hyphens, and underscores are allowed.', 'jobcapturepro')),
 					'error'
 				);
 			} else {
@@ -216,7 +216,7 @@ class JobCaptureProAdmin
 				add_settings_error(
 					'jobcapturepro_options',
 					'api_key_updated',
-					esc_html(__('JobCapturePro API Key has been updated successfully.', 'job-capture-pro')),
+					esc_html(__('JobCapturePro API Key has been updated successfully.', 'jobcapturepro')),
 					'updated'
 				);
 			}

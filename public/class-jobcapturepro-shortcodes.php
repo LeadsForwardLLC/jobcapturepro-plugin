@@ -275,14 +275,14 @@ class JobCaptureProShortcodes
         }
 
         if (!$checkin_id) {
-            return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'job-capture-pro')) . '</div>';
+            return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'jobcapturepro')) . '</div>';
         }
 
         // Fetch specific checkin using the direct endpoint
         $result = $this->fetch_api_data("checkins/" . $checkin_id, array());
         if (!$result) {
             return $this->render_error_message(
-                __('Unable to load checkin data at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load checkin data at this time. Please try again later.', 'jobcapturepro'),
                 'api_fetch_failed'
             );
         }
@@ -299,7 +299,7 @@ class JobCaptureProShortcodes
         $result = $this->fetch_api_data('checkins', $atts);
         if (!$result) {
             return $this->render_error_message(
-                __('Unable to load checkins at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load checkins at this time. Please try again later.', 'jobcapturepro'),
                 'checkins_fetch_failed'
             );
         }
@@ -315,7 +315,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($checkins))
             );
             return $this->render_error_message(
-                __('Invalid checkins data received. Please try again later.', 'job-capture-pro'),
+                __('Invalid checkins data received. Please try again later.', 'jobcapturepro'),
                 'invalid_checkins_structure'
             );
         }
@@ -351,7 +351,7 @@ class JobCaptureProShortcodes
 
         if (!$map_result) {
             return $this->render_error_message(
-                __('Unable to load map data at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
                 'map_fetch_failed'
             );
         }
@@ -366,7 +366,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($map_data))
             );
             return $this->render_error_message(
-                __('Invalid map data received. Please try again later.', 'job-capture-pro'),
+                __('Invalid map data received. Please try again later.', 'jobcapturepro'),
                 'invalid_map_structure'
             );
         }
@@ -399,7 +399,7 @@ class JobCaptureProShortcodes
 
         if (!$company_info) {
             return $this->render_error_message(
-                __('Company information is not available at this time.', 'job-capture-pro'),
+                __('Company information is not available at this time.', 'jobcapturepro'),
                 'company_info_not_found'
             );
         }
@@ -408,7 +408,7 @@ class JobCaptureProShortcodes
         $checkins_result = $this->fetch_api_data('checkins', $atts);
         if (!$checkins_result) {
             return $this->render_error_message(
-                __('Unable to load checkins data at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load checkins data at this time. Please try again later.', 'jobcapturepro'),
                 'checkins_fetch_failed'
             );
         }
@@ -424,7 +424,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($checkins))
             );
             return $this->render_error_message(
-                __('Invalid checkins data received. Please try again later.', 'job-capture-pro'),
+                __('Invalid checkins data received. Please try again later.', 'jobcapturepro'),
                 'invalid_combined_checkins_structure'
             );
         }
@@ -433,7 +433,7 @@ class JobCaptureProShortcodes
         $map_result = $this->fetch_api_data('map', $atts);
         if (!$map_result) {
             return $this->render_error_message(
-                __('Unable to load map data at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
                 'map_fetch_failed'
             );
         }
@@ -448,7 +448,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($map_data))
             );
             return $this->render_error_message(
-                __('Invalid map data received. Please try again later.', 'job-capture-pro'),
+                __('Invalid map data received. Please try again later.', 'jobcapturepro'),
                 'invalid_combined_map_structure'
             );
         }
@@ -476,7 +476,7 @@ class JobCaptureProShortcodes
 
         if (!$company_id) {
             return $this->render_error_message(
-                __('No valid company ID provided.', 'job-capture-pro'),
+                __('No valid company ID provided.', 'jobcapturepro'),
                 'missing_company_id'
             );
         }
@@ -486,7 +486,7 @@ class JobCaptureProShortcodes
 
         if (!$apikey) {
             return $this->render_error_message(
-                __('Plugin configuration error. Please contact the site administrator.', 'job-capture-pro'),
+                __('Plugin configuration error. Please contact the site administrator.', 'jobcapturepro'),
                 'missing_api_key'
             );
         }
@@ -498,7 +498,7 @@ class JobCaptureProShortcodes
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             $this->log_api_error('Invalid company API URL constructed', 'url_validation', array('url' => $url));
             return $this->render_error_message(
-                __('Unable to connect to company data service.', 'job-capture-pro'),
+                __('Unable to connect to company data service.', 'jobcapturepro'),
                 'invalid_api_url'
             );
         }
@@ -523,7 +523,7 @@ class JobCaptureProShortcodes
                 array('url' => $url, 'company_id' => $company_id)
             );
             return $this->render_error_message(
-                __('Unable to load company information at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load company information at this time. Please try again later.', 'jobcapturepro'),
                 'api_request_failed'
             );
         }
@@ -544,13 +544,13 @@ class JobCaptureProShortcodes
 
             if ($response_code === 404) {
                 return $this->render_error_message(
-                    __('Company information not found.', 'job-capture-pro'),
+                    __('Company information not found.', 'jobcapturepro'),
                     'company_not_found'
                 );
             }
 
             return $this->render_error_message(
-                __('Unable to load company information at this time. Please try again later.', 'job-capture-pro'),
+                __('Unable to load company information at this time. Please try again later.', 'jobcapturepro'),
                 'api_http_error'
             );
         }
@@ -562,7 +562,7 @@ class JobCaptureProShortcodes
                 array('url' => $url, 'company_id' => $company_id)
             );
             return $this->render_error_message(
-                __('No company data available.', 'job-capture-pro'),
+                __('No company data available.', 'jobcapturepro'),
                 'empty_response'
             );
         }
@@ -581,7 +581,7 @@ class JobCaptureProShortcodes
                 )
             );
             return $this->render_error_message(
-                __('Invalid company data received. Please try again later.', 'job-capture-pro'),
+                __('Invalid company data received. Please try again later.', 'jobcapturepro'),
                 'invalid_json'
             );
         }
@@ -594,7 +594,7 @@ class JobCaptureProShortcodes
                 array('url' => $url, 'company_id' => $company_id, 'error_data' => $company_data)
             );
             return $this->render_error_message(
-                __('Company information is currently unavailable.', 'job-capture-pro'),
+                __('Company information is currently unavailable.', 'jobcapturepro'),
                 'api_error_response'
             );
         }

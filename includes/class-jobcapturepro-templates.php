@@ -99,7 +99,7 @@ class JobCaptureProTemplates
         }
 
         return '<div class="jobcapturepro-unavailable">' .
-            esc_html__('Content is temporarily unavailable. Please try again later.', 'job-capture-pro') .
+            esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') .
             '</div>';
     }
 
@@ -260,12 +260,12 @@ class JobCaptureProTemplates
             'company_info' => $company_info,
             'gridId' => $gridId,
         ]);
-        
-        if(self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
+
+        if (self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
             $checkins_grid_html .= Template::render_template('company-stats', [
                 'company_info' => $company_info,
             ]);
-        } 
+        }
 
         //
         return $checkins_grid_html;
