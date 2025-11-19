@@ -1,3 +1,12 @@
+<?php
+
+// Prevent direct access.
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+?>
+
 <div class="jobcapturepro-stats-container">
     <?php if (!empty($company_info['stats']['jobs_this_month'])): ?>
         <div class="jobcapturepro-stat-item">

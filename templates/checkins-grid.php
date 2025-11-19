@@ -1,3 +1,13 @@
+<?php
+
+// Prevent direct access.
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+?>
+
+
 <!-- Checkins Grid -->
 <div class="jobcapturepro-container mt-8 mx-auto">
     <div id="checkins-grid" class="jobcapturepro-checkins-grid <?php echo esc_attr($gridId); ?>" data-column-count="3">

@@ -1,4 +1,10 @@
 <?php
+
+// Prevent direct access.
+if (! defined('ABSPATH')) {
+    exit;
+}
+
 // Rating processing
 if (!empty($checkin['rating'])) {
     $rating = min(5, max(1, (int)$checkin['rating'])); // Ensure 1-5 range

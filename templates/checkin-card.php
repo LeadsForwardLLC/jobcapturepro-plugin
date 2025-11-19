@@ -1,4 +1,10 @@
 <?php
+
+// Prevent direct access.
+if (! defined('ABSPATH')) {
+    exit;
+}
+
 // Create clickable link with checkinId parameter
 $current_url = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
 $checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
