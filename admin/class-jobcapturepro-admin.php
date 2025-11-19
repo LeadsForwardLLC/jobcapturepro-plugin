@@ -242,14 +242,14 @@ class JobCaptureProAdmin
 		$sanitized_id = sanitize_text_field($id);
 
 		// Validate ID format - only alphanumeric, hyphens, and underscores
-		if (! preg_match('/^[a-zA-Z0-9\-_]+$/', $sanitized_id)) {
-			error_log("JobCapturePro: Invalid {$context} ID format: " . $sanitized_id);
+		if (!preg_match('/^[a-zA-Z0-9\-_]+$/', $sanitized_id)) {
+			// error_log("JobCapturePro: Invalid {$context} ID format: " . $sanitized_id);
 			return null;
 		}
 
 		// Check reasonable length limits
 		if (strlen($sanitized_id) < 1 || strlen($sanitized_id) > 100) {
-			error_log("JobCapturePro: Invalid {$context} ID length: " . strlen($sanitized_id));
+			// error_log("JobCapturePro: Invalid {$context} ID length: " . strlen($sanitized_id));
 			return null;
 		}
 

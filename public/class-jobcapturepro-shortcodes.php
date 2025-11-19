@@ -68,7 +68,7 @@ class JobCaptureProShortcodes
             $log_message .= ' | Data: ' . wp_json_encode($data);
         }
 
-        error_log($log_message);
+        // error_log($log_message);
     }
 
     /**
@@ -112,14 +112,14 @@ class JobCaptureProShortcodes
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
 
         if (!$apikey) {
-            error_log('JobCapturePro: Invalid or missing API key');
+            // error_log('JobCapturePro: Invalid or missing API key');
             return null;
         }
 
         // Sanitize the endpoint parameter
         $endpoint = sanitize_text_field($endpoint);
         if (empty($endpoint)) {
-            error_log('JobCapturePro: Invalid endpoint provided');
+            // error_log('JobCapturePro: Invalid endpoint provided');
             return null;
         }
 
@@ -142,7 +142,7 @@ class JobCaptureProShortcodes
 
         // Validate the final URL
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            error_log('JobCapturePro: Invalid API URL constructed: ' . $url);
+            // error_log('JobCapturePro: Invalid API URL constructed: ' . $url);
             return null;
         }
 

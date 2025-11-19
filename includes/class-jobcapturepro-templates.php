@@ -64,13 +64,13 @@ class JobCaptureProTemplates
     public static function validate_template_data($data, $required_fields = array(), $context = 'template')
     {
         if (!is_array($data)) {
-            error_log("JobCapturePro Template Error: Invalid data type for {$context}, expected array, got " . gettype($data));
+            // error_log("JobCapturePro Template Error: Invalid data type for {$context}, expected array, got " . gettype($data));
             return false;
         }
 
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
-                error_log("JobCapturePro Template Error: Missing required field '{$field}' in {$context}");
+                // error_log("JobCapturePro Template Error: Missing required field '{$field}' in {$context}");
                 return false;
             }
         }
