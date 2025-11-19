@@ -1,10 +1,20 @@
+<?php
+
+// Prevent direct access.
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+?>
+
+
 <!-- Checkins Grid -->
 <div class="jobcapturepro-container mt-8 mx-auto">
     <div id="checkins-grid" class="jobcapturepro-checkins-grid <?php echo esc_attr($gridId); ?>" data-column-count="3">
         <?php foreach ($checkins as $checkin): ?>
-            <?php echo Template::render_template('checkin-card', [
+            <?php echo wp_kses_post(Template::render_template('checkin-card', [
                 'checkin' => $checkin,
-            ]);
+            ]));
             ?>
         <?php endforeach; ?>
     </div>

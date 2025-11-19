@@ -81,6 +81,19 @@ class JobCaptureProAPI
     }
 
     /**
+     * Check permissions for API access
+     * 
+     * @param WP_REST_Request $request The REST request
+     * @return bool True if access is allowed
+     */
+    public function check_permissions($request)
+    {
+        // For now, allow public access but we could add authentication here
+        // Rate limiting could also be implemented here
+        return true;
+    }
+
+    /**
      * Register API routes
      */
     public function register_routes()
@@ -105,7 +118,7 @@ class JobCaptureProAPI
         register_rest_route($this->namespace, '/checkins', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_checkins'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_permissions'),
             'args' => array(
                 'page' => array(
                     'required' => false,
@@ -115,19 +128,6 @@ class JobCaptureProAPI
                 ),
             )
         ));
-    }
-
-    /**
-     * Check permissions for API access
-     * 
-     * @param WP_REST_Request $request The REST request
-     * @return bool True if access is allowed
-     */
-    public function check_permissions($request)
-    {
-        // For now, allow public access but we could add authentication here
-        // Rate limiting could also be implemented here
-        return true;
     }
 
     /**

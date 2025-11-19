@@ -1,3 +1,12 @@
+<?php
+
+// Prevent direct access.
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+?>
+
 <div class="jobcapturepro-cta-container mt-8">
     <div class="jobcapturepro-cta">
         <h2>Let Your Work Speak For Itself</h2>

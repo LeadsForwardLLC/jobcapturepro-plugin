@@ -64,13 +64,13 @@ class JobCaptureProTemplates
     public static function validate_template_data($data, $required_fields = array(), $context = 'template')
     {
         if (!is_array($data)) {
-            error_log("JobCapturePro Template Error: Invalid data type for {$context}, expected array, got " . gettype($data));
+            // error_log("JobCapturePro Template Error: Invalid data type for {$context}, expected array, got " . gettype($data));
             return false;
         }
 
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
-                error_log("JobCapturePro Template Error: Missing required field '{$field}' in {$context}");
+                // error_log("JobCapturePro Template Error: Missing required field '{$field}' in {$context}");
                 return false;
             }
         }
@@ -99,7 +99,7 @@ class JobCaptureProTemplates
         }
 
         return '<div class="jobcapturepro-unavailable">' .
-            esc_html__('Content is temporarily unavailable. Please try again later.', 'job-capture-pro') .
+            esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') .
             '</div>';
     }
 
@@ -260,12 +260,12 @@ class JobCaptureProTemplates
             'company_info' => $company_info,
             'gridId' => $gridId,
         ]);
-        
-        if(self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
+
+        if (self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
             $checkins_grid_html .= Template::render_template('company-stats', [
                 'company_info' => $company_info,
             ]);
-        } 
+        }
 
         //
         return $checkins_grid_html;
