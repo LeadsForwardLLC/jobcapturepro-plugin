@@ -27,12 +27,12 @@ $timestamp = strtotime($checkin['createdAt']);
 <div class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">
     <!-- Images (if available) -->
     <?php if (!empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])): ?>
-        <?php echo Template::render_template('image-gallery', [
+        <?php echo wp_kses_post(Template::render_template('image-gallery', [
             'imageUrls' => $checkin['imageUrls'],
             'imageCount' => count($checkin['imageUrls']),
             'showArrows' => count($checkin['imageUrls']) > 1,
             'galleryId' => 'checkin-gallery-' . $checkin['id']
-        ]); ?>
+        ])); ?>
     <?php endif; ?>
 
     <!-- User info (if available) -->
