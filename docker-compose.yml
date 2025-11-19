@@ -24,7 +24,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PASS}
       WORDPRESS_DB_NAME: ${DB_NAME}
     volumes:
-      - ./:/var/www/html/wp-content/plugins/job-capture-pro
+      - ./:/var/www/html/wp-content/plugins/jobcapturepro
 
   cli:
     image: wordpress:cli
@@ -33,7 +33,7 @@ services:
       - db
     user: "33:33" # www-data user inside wp container
     volumes:
-      - ./:/var/www/html/wp-content/plugins/job-capture-pro
+      - ./:/var/www/html/wp-content/plugins/jobcapturepro
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: ${DB_USER}
