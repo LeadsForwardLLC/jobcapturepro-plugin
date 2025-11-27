@@ -249,7 +249,7 @@ class JobCaptureProTemplates
         self::enqueue_checkins_grid_styles();
 
         // Add dynamic selectors styles
-        $checkins_grid_html = self::get_dynamic_selectors_checkins_grid_styles($gridId);
+        self::add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId);
 
         // Enqueue scripts
         self::enqueue_checkins_grid_script($gridId, $company_info);
@@ -277,11 +277,11 @@ class JobCaptureProTemplates
      * @param string $gridId The unique ID for the grid
      * @return string CSS styles for the checkins grid
      */
-    private static function get_dynamic_selectors_checkins_grid_styles($gridId = null)
+    private static function add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId = null)
     {
         $gridSelector = $gridId ? '.' . $gridId : '.jobcapturepro-checkins-grid';
 
-        return '<style>
+        $dynamic_css = '<style>
             ' . $gridSelector . ' {
                 /* Keep masonry-style layout with CSS columns */
                 column-count: 3;
@@ -308,6 +308,8 @@ class JobCaptureProTemplates
                 }
             }
         </style>';
+
+        wp_add_inline_style('jcp-checkins-grid', $dynamic_css);
     }
 
 
@@ -417,7 +419,7 @@ class JobCaptureProTemplates
         return array($minLat, $maxLat, $minLng, $maxLng);
     }
 
-    /**
+    /*e
      * Generate HTML for a Google Maps map with multiple markers
      * 
      * @param array $locations The location data as defined by geopoints in RFC 7946
@@ -506,7 +508,7 @@ class JobCaptureProTemplates
         // Enqueue styles for the map & checkins cards inside the map
         self::enqueue_map_styles();
         self::enqueue_checkins_grid_styles();
-        $output .= self::get_dynamic_selectors_checkins_grid_styles();
+        self::add_inline_dynamic_styles_to_checkins_grid_stylesheet();
 
         // Enqueue the gallery script
         self::enqueue_gallery_script();
