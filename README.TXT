@@ -4,7 +4,7 @@ Tags: service business, field service, job tracking
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,19 @@ All communication with the JobCapturePro API uses secure HTTPS connections. Your
 
 == Changelog ==
 
+= 1.0.4 =
+* Hotfix: Fixed TailwindCSS global style overrides affecting site-wide styling
+* Improved CSS scoping to prevent conflicts with theme styles
+
+= 1.0.3 =
+* Bug fixes and improvements
+
+= 1.0.2 =
+* Bug fixes and improvements
+
+= 1.0.1 =
+* Bug fixes and improvements
+
 = 1.0.0 =
 * Initial release
 * Job check-ins display functionality
@@ -88,6 +101,9 @@ All communication with the JobCapturePro API uses secure HTTPS connections. Your
 * Security enhancements and data sanitization
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+Hotfix release: Fixes TailwindCSS global style overrides that could affect your site's styling. Recommended update for all users.
 
 = 1.0.0 =
 Initial release of JobCapturePro WordPress plugin. Connect your website to your JobCapturePro service account to display job information and interactive maps.
