@@ -59,58 +59,58 @@ async function initJobCaptureProMap() {
             // Add info window if there\'s additional content
             const infoWindow = new google.maps.InfoWindow({
                 content: `
-                    <div class="jobcapturepro-info-window pt-0 !max-w-[350px] animate-pulse">
+                    <div class="jobcapturepro-info-window jcp:pt-0 !jcp:max-w-[350px] jcp:animate-pulse">
                         <!-- Image Gallery Skeleton -->
-                        <div class="jobcapturepro-checkin-image !h-[160px] !mb-2 relative">
-                            <div class="w-full h-full bg-gray-300 rounded-t-lg animate-pulse"></div>
-                            <div class="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-400 rounded"></div>
-                            <div class="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-400 rounded"></div>
-                            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                                <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                        <div class="jobcapturepro-checkin-image !jcp:h-[160px] !jcp:mb-2 jcp:relative">
+                            <div class="jcp:w-full jcp:h-full jcp:bg-gray-300 jcp:rounded-t-lg jcp:animate-pulse"></div>
+                            <div class="jcp:absolute jcp:left-2 jcp:top-1/2 jcp:transform jcp:-translate-y-1/2 jcp:w-8 jcp:h-8 jcp:bg-gray-400 jcp:rounded"></div>
+                            <div class="jcp:absolute jcp:right-2 jcp:top-1/2 jcp:transform jcp:-translate-y-1/2 jcp:w-8 jcp:h-8 jcp:bg-gray-400 jcp:rounded"></div>
+                            <div class="jcp:absolute jcp:bottom-2 jcp:left-1/2 jcp:transform jcp:-translate-x-1/2 jcp:flex jcp:space-x-2">
+                                <span class="jcp:w-2 jcp:h-2 jcp:bg-gray-400 jcp:rounded-full"></span>
+                                <span class="jcp:w-2 jcp:h-2 jcp:bg-gray-400 jcp:rounded-full"></span>
+                                <span class="jcp:w-2 jcp:h-2 jcp:bg-gray-400 jcp:rounded-full"></span>
                             </div>
                         </div>
                         
                         <!-- User Section Skeleton -->
-                        <div class="jobcapturepro-checkin-user flex items-center justify-between p-4">
-                            <div class="flex justify-between items-center gap-2">
+                        <div class="jobcapturepro-checkin-user jcp:flex jcp:items-center jcp:justify-between jcp:p-4">
+                            <div class="jcp:flex jcp:justify-between jcp:items-center jcp:gap-2">
                                 <div class="jobcapturepro-user-image">
-                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div class="jcp:w-12 jcp:h-12 jcp:bg-gray-300 jcp:rounded-full"></div>
                                 </div>
                                 
-                                <div class="flex-1">
-                                    <div class="h-4 bg-gray-300 rounded w-24"></div>
+                                <div class="jcp:flex-1">
+                                    <div class="jcp:h-4 jcp:bg-gray-300 jcp:rounded jcp:w-24"></div>
                                 </div>
                             </div>
                             
-                            <div class="jobcapturepro-job-reviews flex space-x-1">
-                                <div class="w-3 h-3 bg-gray-300 rounded"></div>
-                                <div class="w-3 h-3 bg-gray-300 rounded"></div>
-                                <div class="w-3 h-3 bg-gray-300 rounded"></div>
-                                <div class="w-3 h-3 bg-gray-300 rounded"></div>
-                                <div class="w-3 h-3 bg-gray-300 rounded"></div>
+                            <div class="jobcapturepro-job-reviews jcp:flex jcp:space-x-1">
+                                <div class="jcp:w-3 jcp:h-3 jcp:bg-gray-300 jcp:rounded"></div>
+                                <div class="jcp:w-3 jcp:h-3 jcp:bg-gray-300 jcp:rounded"></div>
+                                <div class="jcp:w-3 jcp:h-3 jcp:bg-gray-300 jcp:rounded"></div>
+                                <div class="jcp:w-3 jcp:h-3 jcp:bg-gray-300 jcp:rounded"></div>
+                                <div class="jcp:w-3 jcp:h-3 jcp:bg-gray-300 jcp:rounded"></div>
                             </div>
                         </div>
                         
                         <!-- Description Section Skeleton -->
-                        <div class="jobcapturepro-checkin-description px-4 pb-2">
-                            <div class="h-3 bg-gray-300 rounded w-full mb-2"></div>
-                            <div class="h-3 bg-gray-300 rounded w-3/4"></div>
+                        <div class="jobcapturepro-checkin-description jcp:px-4 jcp:pb-2">
+                            <div class="jcp:h-3 jcp:bg-gray-300 jcp:rounded jcp:w-full jcp:mb-2"></div>
+                            <div class="jcp:h-3 jcp:bg-gray-300 jcp:rounded jcp:w-3/4"></div>
                         </div>
                         
                         <!-- Date Section Skeleton -->
-                        <div class="flex justify-between items-center">
+                        <div class="jcp:flex jcp:justify-between jcp:items-center">
                             <div class="jobcapturepro-checkin-date">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-4 h-4 bg-gray-300 rounded"></div>
-                                    <div class="h-3 bg-gray-300 rounded w-20"></div>
+                                <div class="jcp:flex jcp:items-center jcp:space-x-2">
+                                    <div class="jcp:w-4 jcp:h-4 jcp:bg-gray-300 jcp:rounded"></div>
+                                    <div class="jcp:h-3 jcp:bg-gray-300 jcp:rounded jcp:w-20"></div>
                                 </div>
                             </div>
                             
                             <!-- Address Section Skeleton -->
                             <div class="jobcapturepro-checkin-address">
-                                <div class="h-3 bg-gray-300 rounded w-32"></div>
+                                <div class="jcp:h-3 jcp:bg-gray-300 jcp:rounded jcp:w-32"></div>
                             </div>
                         </div>
                     </div>
@@ -138,9 +138,9 @@ async function initJobCaptureProMap() {
                         const locationDisplay = `${city}, ${stateAbbr}`;
 
                         infoWindow.setContent(`
-                            <div class="jobcapturepro-info-window pt-0" style="max-width: 350px;">
+                            <div class="jobcapturepro-info-window jcp:pt-0" style="max-width: 350px;">
                                 ${data.imageUrls && data.imageUrls.length > 0 ? `
-                                    <div class="jobcapturepro-checkin-image !h-[160px] !mb-2" id="gallery-${data.id}">
+                                    <div class="jobcapturepro-checkin-image !jcp:h-[160px] !jcp:mb-2" id="gallery-${data.id}">
                                         ${data.imageUrls.map((imageUrl, index) => `
                                             <div class="gallery-image ${index === 0 ? 'active' : ''}" data-index="${index}">
                                                 <img src="${imageUrl}" alt="Checkin image ${index + 1}" style="height: auto;">

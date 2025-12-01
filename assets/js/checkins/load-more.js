@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.rearrangeItems();
                     }
                 } else {
-                    loadMoreBtn.classList.add('hidden');
+                    loadMoreBtn.classList.add('jcp:hidden');
                 }
 
                 // If no more pages, hide the button
@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Return button to normal state
                     changeButtonState('normal');
                 } else {
-                    loadMoreBtn.classList.remove('block');
-                    loadMoreBtn.classList.add('hidden');
+                    loadMoreBtn.classList.remove('jcp:block');
+                    loadMoreBtn.classList.add('jcp:hidden');
                 }
             })
             .catch(error => {
@@ -257,22 +257,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 loadMoreBtn.disabled = true;
 
                 // Show spinner
-                buttonSpinner.classList.remove('hidden');
+                buttonSpinner.classList.remove('jcp:hidden');
 
                 // Loading state styles
-                loadMoreBtn.classList.remove('bg-accent', 'text-white', 'hover:bg-red-600', 'cursor-pointer', 'opacity-100');
-                loadMoreBtn.classList.add('bg-gray-500', 'text-gray-200', 'cursor-not-allowed', 'opacity-60');
+                loadMoreBtn.classList.remove('jcp:bg-accent', 'jcp:text-white', 'hover:jcp:bg-red-600', 'jcp:cursor-pointer', 'jcp:opacity-100');
+                loadMoreBtn.classList.add('jcp:bg-gray-500', 'jcp:text-gray-200', 'jcp:cursor-not-allowed', 'jcp:opacity-60');
                 break;
             case 'normal':
                 // Enable/disable button
                 loadMoreBtn.disabled = false;
 
                 // Hide spinner
-                buttonSpinner.classList.add('hidden');
+                buttonSpinner.classList.add('jcp:hidden');
 
                 // Normal state styles
-                loadMoreBtn.classList.remove('bg-gray-500', 'text-gray-200', 'cursor-not-allowed', 'opacity-60');
-                loadMoreBtn.classList.add('bg-accent', 'text-white', 'hover:bg-red-600', 'cursor-pointer', 'opacity-100');
+                loadMoreBtn.classList.remove('jcp:bg-gray-500', 'jcp:text-gray-200', 'jcp:cursor-not-allowed', 'jcp:opacity-60');
+                loadMoreBtn.classList.add('jcp:bg-accent', 'jcp:text-white', 'hover:jcp:bg-red-600', 'jcp:cursor-pointer', 'jcp:opacity-100');
                 break;
             default:
                 break;
