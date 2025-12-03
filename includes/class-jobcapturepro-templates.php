@@ -467,16 +467,8 @@ class JobCaptureProTemplates
 
         wp_enqueue_script(
             'jobcapturepro-map',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/map.js',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/map.min.js',
             array(),
-            '1.0.0',
-            true
-        );
-
-        wp_enqueue_script(
-            'jobcapturepro-markerclusterer',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/markerclusterer.min.js',
-            array('jobcapturepro-map'),
             '1.0.0',
             true
         );
@@ -546,7 +538,7 @@ class JobCaptureProTemplates
     {
         wp_enqueue_style(
             'jobcapturepro-map',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/css/map.css',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/map.min.css',
             array(),
             '1.0.0',
             'all'
@@ -562,7 +554,7 @@ class JobCaptureProTemplates
     {
         wp_enqueue_style(
             'jcp-company-info-styles',
-            plugin_dir_url(dirname(__FILE__)) . '/assets/css/company-info.css',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/company-info.min.css',
             array(),
             '1.0.0',
             'all'
@@ -578,7 +570,7 @@ class JobCaptureProTemplates
     {
         wp_enqueue_style(
             'jcp-single-checkin',
-            plugin_dir_url(dirname(__FILE__)) . '/assets/css/single-checkin.css',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/single-checkin.min.css',
             array(),
             '1.0.0',
             'all'
@@ -592,7 +584,7 @@ class JobCaptureProTemplates
     {
         wp_enqueue_style(
             'jcp-checkins-grid',
-            plugin_dir_url(dirname(__FILE__)) . '/assets/css/checkins-grid.css',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/checkins-grid.min.css',
             array(),
             '1.0.0',
             'all'
@@ -617,7 +609,7 @@ class JobCaptureProTemplates
 
         wp_enqueue_script(
             'jobcapturepro-gallery',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/gallery.js',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/gallery.min.js',
             array(),
             '1.0.0',
             true
@@ -632,7 +624,7 @@ class JobCaptureProTemplates
         // Enqueue masonry grid script
         wp_enqueue_script(
             'jcp-checkins-grid',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins/masonry-grid.js',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/masonry-grid.min.js',
             array(),
             '1.0.0',
             true
@@ -647,7 +639,7 @@ class JobCaptureProTemplates
         // Enqueue load more script
         wp_enqueue_script(
             'jcp-checkins-load-more',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/checkins/load-more.js',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/load-more.min.js',
             array(),
             '1.0.0',
             true
