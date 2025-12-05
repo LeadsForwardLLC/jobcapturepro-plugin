@@ -207,7 +207,7 @@ class JobCaptureProPlugin
 		// Enqueue Tailwind CSS globally for frontend
 		wp_enqueue_style(
 			'jobcapturepro-tailwind',
-			plugin_dir_url(__FILE__) . '../assets/css/tailwind.css',
+			JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/tailwind.min.css',
 			array(),
 			$this->version,
 			'all'
