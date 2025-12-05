@@ -73,6 +73,9 @@ Log into your JobCapturePro account dashboard and navigate to the API settings s
 
 All communication with the JobCapturePro API uses secure HTTPS connections. Your API key should be kept confidential and only entered in your WordPress admin settings.
 
+= Where is the source code? =
+Full source code available at: https://github.com/LeadsForwardLLC/jobcapturepro-plugin
+
 == Changelog ==
 
 = 1.0.0 =
