@@ -1,5 +1,53 @@
+// For check-in image galleries on the check-in grid
+document.addEventListener('DOMContentLoaded', function () {
+    const galleries = document.querySelectorAll('.jobcapturepro-checkin-image');
 
-function jobcaptureproChangeImage(event, galleryId, direction) {
+    galleries.forEach(gallery => {
+        const images = gallery.querySelectorAll('.gallery-image');
+        if (images.length === 0) return;
+
+        const prevButton = gallery.querySelector('.gallery-prev');
+        const nextButton = gallery.querySelector('.gallery-next');
+        const dotsContainer = gallery.querySelector('.gallery-dots');
+        const dots = dotsContainer ? dotsContainer.querySelectorAll('.gallery-dot') : [];
+        let currentIndex = 0;
+
+        function showImage(index) {
+            images.forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+
+            currentIndex = index;
+        }
+
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                const newIndex = (currentIndex - 1 + images.length) % images.length;
+                showImage(newIndex);
+            });
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                const newIndex = (currentIndex + 1) % images.length;
+                showImage(newIndex);
+            });
+        }
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                showImage(index);
+            });
+        });
+    });
+})
+
+// Functions to be called from inline HTML event handlers for the map info window
+window.jobcaptureproChangeImage = function (event, galleryId, direction) {
     // Prevent redirection when the user only wants to change the image
     event.preventDefault();
 
@@ -34,7 +82,7 @@ function jobcaptureproChangeImage(event, galleryId, direction) {
     if (dots.length) dots[newIndex].classList.add("active");
 }
 
-function jobcaptureproShowImage(event, galleryId, index) {
+window.jobcaptureproShowImage = function (event, galleryId, index) {
     // Prevent redirection when the user only wants to see an image
     event.preventDefault();
 
