@@ -54,7 +54,7 @@ class JobCaptureProPlugin
 		}
 
 		$this->plugin_name = 'jobcapturepro';
-		$this->jcp_api_base_url = 'https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/';
+		$this->jcp_api_base_url = 'https://app.jobcapturepro.com/api/';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
@@ -207,7 +207,7 @@ class JobCaptureProPlugin
 		// Enqueue Tailwind CSS globally for frontend
 		wp_enqueue_style(
 			'jobcapturepro-tailwind',
-			plugin_dir_url(__FILE__) . '../assets/css/tailwind.css',
+			JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/tailwind.min.css',
 			array(),
 			$this->version,
 			'all'
