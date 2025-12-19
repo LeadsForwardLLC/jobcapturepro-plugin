@@ -54,7 +54,7 @@ class JobCaptureProPlugin
 		}
 
 		$this->plugin_name = 'jobcapturepro';
-		$this->jcp_api_base_url = 'https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/';
+		$this->jcp_api_base_url = 'https://app.jobcapturepro.com/api/';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
