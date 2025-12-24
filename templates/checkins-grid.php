@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 <div class="jobcapturepro-container jcp:mt-8 jcp:mx-auto">
     <div id="checkins-grid" class="jobcapturepro-checkins-grid <?php echo esc_attr($gridId); ?>" data-column-count="3">
         <?php foreach ($checkins as $checkin): ?>
-            <?php echo wp_kses_post(Template::render_template('checkin-card', [
+            <?php echo wp_kses_post(JobCapturePro_Template::render_template('checkin-card', [
                 'checkin' => $checkin,
             ]));
             ?>
