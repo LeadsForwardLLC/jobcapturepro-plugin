@@ -5,10 +5,6 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-// Create clickable link with checkinId parameter
-$current_url = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
-$checkin_url = add_query_arg('checkinId', sanitize_text_field($checkin['id']), $current_url);
-
 // Parse address (assuming format: "Street, City, State, ZIP, Country")
 $address_parts = explode(',', $checkin['address']);
 
@@ -27,7 +23,7 @@ $timestamp = strtotime($checkin['createdAt']);
 <div class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">
     <!-- Images (if available) -->
     <?php if (!empty($checkin['imageUrls']) && is_array($checkin['imageUrls'])): ?>
-        <?php echo wp_kses_post(Template::render_template('image-gallery', [
+        <?php echo wp_kses_post(JobCapturePro_Template::render_template('image-gallery', [
             'imageUrls' => $checkin['imageUrls'],
             'imageCount' => count($checkin['imageUrls']),
             'showArrows' => count($checkin['imageUrls']) > 1,

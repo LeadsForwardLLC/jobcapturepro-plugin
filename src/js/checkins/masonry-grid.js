@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Get grid ID from localized data
-    const gridId = jcpGridData.gridId;
+    const gridId = jobcaptureproGridData.gridId;
     const grid = document.querySelector("." + gridId);
 
     if (!grid) return;

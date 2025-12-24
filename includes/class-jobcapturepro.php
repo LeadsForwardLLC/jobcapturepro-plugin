@@ -47,11 +47,7 @@ class JobCaptureProPlugin
 	 */
 	public function __construct()
 	{
-		if (defined('JOBCAPTUREPRO_VERSION')) {
-			$this->version = JOBCAPTUREPRO_VERSION;
-		} else {
-			$this->version = '1.0.0';
-		}
+		$this->version = JOBCAPTUREPRO_VERSION;
 
 		$this->plugin_name = 'jobcapturepro';
 		$this->jcp_api_base_url = 'https://app.jobcapturepro.com/api/';

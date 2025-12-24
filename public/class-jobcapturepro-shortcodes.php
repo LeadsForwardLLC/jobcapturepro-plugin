@@ -86,27 +86,11 @@ class JobCaptureProShortcodes
             'companyid' => '',
         ), $atts, 'jobcapturepro');
 
-        // Check if checkinid attribute was provided, if not check URL parameter
+        // Check if checkinid attribute was provided
         $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
 
-        // If no attribute provided, check for URL parameter
-        if (!$checkin_id && isset($_GET['checkinId'])) {
-            $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
-                sanitize_text_field(wp_unslash($_GET['checkinId'])),
-                'checkin'
-            );
-        }
-
-        // Check if companyid attribute was provided, if not check URL parameter
+        // Check if companyid attribute was provided
         $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
-
-        // If no attribute provided, check for URL parameter
-        if (!$company_id && isset($_GET['companyId'])) {
-            $company_id = JobCaptureProAdmin::sanitize_id_parameter(
-                sanitize_text_field(wp_unslash($_GET['companyId'])),
-                'company'
-            );
-        }
 
         // Get the API Key using the enhanced sanitization method
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
@@ -263,16 +247,8 @@ class JobCaptureProShortcodes
             'checkinid' => '',
         ), $atts, 'jobcapturepro_checkin');
 
-        // Check if checkinid attribute was provided, if not check URL parameter
+        // Check if checkinid attribute was provided
         $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
-
-        // If no attribute provided, check for URL parameter
-        if (!$checkin_id && isset($_GET['checkinid'])) {
-            $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
-                sanitize_text_field(wp_unslash($_GET['checkinid'])),
-                'checkin'
-            );
-        }
 
         if (!$checkin_id) {
             return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'jobcapturepro')) . '</div>';

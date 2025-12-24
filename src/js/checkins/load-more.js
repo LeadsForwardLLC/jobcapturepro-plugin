@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
         changeButtonState('loading');
 
         // Fetch next page of check-ins
-        fetch(`${jcpLoadMoreData.baseApiUrl}/checkins?page=${currentPage + 1}&companyId=${jcpLoadMoreData.companyId}`)
+        fetch(`${jobcaptureproLoadMoreData.baseApiUrl}/checkins?page=${currentPage + 1}&companyId=${jobcaptureproLoadMoreData.companyId}`)
             .then(response => response.json())
             .then(data => {
                 const checkins = data.checkins;
@@ -55,12 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Render a single check-in card
     function renderCheckinCard(checkin) {
-        // Create clickable link with checkinId parameter
-        const currentUrl = window.location.href;
-        const url = new URL(currentUrl);
-        url.searchParams.set('checkinId', checkin.id);
-        const checkinUrl = url.toString();
-
         // Parse address (assuming format: "Street, City, State, ZIP, Country")
         const addressParts = checkin.address.split(',');
 
@@ -166,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return `
-        <a href="${escapeHtml(checkinUrl)}" class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">
+        <div class="jobcapturepro-checkin-card" style="text-decoration: none; color: inherit;">
             ${imageGalleryHtml}
             ${userInfoHtml}
             
@@ -187,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="jobcapturepro-checkin-address">
                 <p><strong>Near</strong> ${escapeHtml(city + ', ' + stateAbbr)}</p>
             </div>
-        </a>
+        </div>
         `;
     }
 
