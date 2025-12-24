@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
         changeButtonState('loading');
 
         // Fetch next page of check-ins
-        fetch(`${jcpLoadMoreData.baseApiUrl}/checkins?page=${currentPage + 1}&companyId=${jcpLoadMoreData.companyId}`)
+        fetch(`${jobcaptureproLoadMoreData.baseApiUrl}/checkins?page=${currentPage + 1}&companyId=${jobcaptureproLoadMoreData.companyId}`)
             .then(response => response.json())
             .then(data => {
                 const checkins = data.checkins;

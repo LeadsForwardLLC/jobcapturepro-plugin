@@ -204,7 +204,7 @@ class JobCaptureProTemplates
         self::enqueue_checkins_grid_styles();
 
         // 
-        return Template::render_template('single-checkin', [
+        return JobCapturePro_Template::render_template('single-checkin', [
             'checkin' => $checkin,
             'company_info' => $company_info,
             'should_show_feature' => function ($feature_name, $data_exists = false) {
@@ -228,7 +228,7 @@ class JobCaptureProTemplates
         }
 
         //
-        return Template::render_template('checkin-card', [
+        return JobCapturePro_Template::render_template('checkin-card', [
             'checkin' => $checkin,
         ]);
     }
@@ -255,14 +255,14 @@ class JobCaptureProTemplates
         self::enqueue_checkins_grid_script($gridId, $company_info);
         self::enqueue_gallery_script();
 
-        $checkins_grid_html .= Template::render_template('checkins-grid', [
+        $checkins_grid_html .= JobCapturePro_Template::render_template('checkins-grid', [
             'checkins' => $checkins,
             'company_info' => $company_info,
             'gridId' => $gridId,
         ]);
 
         if (self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
-            $checkins_grid_html .= Template::render_template('company-stats', [
+            $checkins_grid_html .= JobCapturePro_Template::render_template('company-stats', [
                 'company_info' => $company_info,
             ]);
         }
@@ -309,7 +309,7 @@ class JobCaptureProTemplates
             }
         </style>';
 
-        wp_add_inline_style('jcp-checkins-grid', $dynamic_css);
+        wp_add_inline_style('jobcapturepro-checkins-grid', $dynamic_css);
     }
 
 
@@ -370,7 +370,7 @@ class JobCaptureProTemplates
             self::enqueue_gallery_script();
         }
 
-        return Template::render_template('image-gallery', [
+        return JobCapturePro_Template::render_template('image-gallery', [
             'imageUrls' => $imageUrls,
             'imageCount' => $imageCount,
             'showArrows' => $showArrows,
@@ -526,7 +526,7 @@ class JobCaptureProTemplates
         self::enqueue_company_info_styles();
 
         // 
-        return Template::render_template('company-info', ["company_info" => $company_info]);
+        return JobCapturePro_Template::render_template('company-info', ["company_info" => $company_info]);
     }
 
     /**
@@ -553,7 +553,7 @@ class JobCaptureProTemplates
     private static function enqueue_company_info_styles()
     {
         wp_enqueue_style(
-            'jcp-company-info-styles',
+            'jobcapturepro-company-info-styles',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/company-info.min.css',
             array(),
             '1.0.0',
@@ -569,7 +569,7 @@ class JobCaptureProTemplates
     private static function enqueue_single_checkin_styles()
     {
         wp_enqueue_style(
-            'jcp-single-checkin',
+            'jobcapturepro-single-checkin',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/single-checkin.min.css',
             array(),
             '1.0.0',
@@ -583,7 +583,7 @@ class JobCaptureProTemplates
     private static function enqueue_checkins_grid_styles()
     {
         wp_enqueue_style(
-            'jcp-checkins-grid',
+            'jobcapturepro-checkins-grid',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/checkins-grid.min.css',
             array(),
             '1.0.0',
@@ -623,7 +623,7 @@ class JobCaptureProTemplates
     {
         // Enqueue masonry grid script
         wp_enqueue_script(
-            'jcp-checkins-grid',
+            'jobcapturepro-checkins-grid',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/masonry-grid.min.js',
             array(),
             '1.0.0',
@@ -631,14 +631,14 @@ class JobCaptureProTemplates
         );
 
         // Pass grid ID to JavaScript
-        wp_localize_script('jcp-checkins-grid', 'jcpGridData', array(
+        wp_localize_script('jobcapturepro-checkins-grid', 'jobcaptureproGridData', array(
             'gridId' => $gridId
         ));
 
 
         // Enqueue load more script
         wp_enqueue_script(
-            'jcp-checkins-load-more',
+            'jobcapturepro-checkins-load-more',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/load-more.min.js',
             array(),
             '1.0.0',
@@ -646,7 +646,7 @@ class JobCaptureProTemplates
         );
 
         // Pass company id to the load more script 
-        wp_localize_script('jcp-checkins-load-more', 'jcpLoadMoreData', array(
+        wp_localize_script('jobcapturepro-checkins-load-more', 'jobcaptureproLoadMoreData', array(
             'companyId' => $company_info['id'] ?? '',
             'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
         ));
