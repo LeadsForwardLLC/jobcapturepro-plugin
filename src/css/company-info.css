@@ -110,21 +110,6 @@
     background-color: #e2353c;
 }
 
-.powered-by {
-    font-size: 0.75rem;
-    color: #888;
-    margin-top: 0.6rem;
-}
-
-.powered-by a {
-    font-weight: bold;
-    text-decoration: none;
-    color: #000;
-}
-
-.powered-by a:hover {
-    text-decoration: underline;
-}
 
 @media (max-width: 600px) {
     .jobcapturepro-company-info {

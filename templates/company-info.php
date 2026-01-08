@@ -53,11 +53,6 @@ if ($has_url) {
         </div>
     </div>
 
-    <!-- <div class="jobcapturepro-company-logo">
-        <a href="<?php echo esc_url($company_info['quoteUrl']); ?>" class="quote-btn">Get a Quote</a>
-        <p class="powered-by">Powered by <a href="https://jobcapturepro.com">JobCapturePro</a></p>
-    </div> -->
-
     <?php if (!empty($company_info['logoUrl'])): ?>
         <div class="jobcapturepro-company-logo">
             <img src="<?php echo esc_url($company_info['logoUrl']); ?>" alt="<?php echo esc_attr($company_info['name']); ?> Logo">
