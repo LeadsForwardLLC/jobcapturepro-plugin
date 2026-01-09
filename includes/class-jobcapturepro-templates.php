@@ -279,7 +279,7 @@ class JobCaptureProTemplates
      */
     private static function add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId = null)
     {
-        $gridSelector = $gridId ? '.' . $gridId : '.jobcapturepro-checkins-grid';
+        $gridSelector = $gridId ? '.' . sanitize_html_class($gridId) : '.jobcapturepro-checkins-grid';
 
         $dynamic_css = '
             ' . $gridSelector . ' {
