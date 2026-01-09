@@ -279,9 +279,9 @@ class JobCaptureProTemplates
      */
     private static function add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId = null)
     {
-        $gridSelector = $gridId ? '.' . $gridId : '.jobcapturepro-checkins-grid';
+        $gridSelector = $gridId ? '.' . sanitize_html_class($gridId) : '.jobcapturepro-checkins-grid';
 
-        $dynamic_css = '<style>
+        $dynamic_css = '
             ' . $gridSelector . ' {
                 /* Keep masonry-style layout with CSS columns */
                 column-count: 3;
@@ -307,7 +307,7 @@ class JobCaptureProTemplates
                     column-count: 1;
                 }
             }
-        </style>';
+        ';
 
         wp_add_inline_style('jobcapturepro-checkins-grid', $dynamic_css);
     }

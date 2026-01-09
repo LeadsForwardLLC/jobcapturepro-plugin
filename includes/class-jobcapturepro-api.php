@@ -102,7 +102,7 @@ class JobCaptureProAPI
         register_rest_route($this->namespace, '/checkin/(?P<id>[a-zA-Z0-9\-_]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_checkin'),
-            'permission_callback' => array($this, 'check_permissions'),
+            'permission_callback' => '__return_true',
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -118,7 +118,7 @@ class JobCaptureProAPI
         register_rest_route($this->namespace, '/checkins', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_checkins'),
-            'permission_callback' => array($this, 'check_permissions'),
+            'permission_callback' => '__return_true',
             'args' => array(
                 'page' => array(
                     'required' => false,
