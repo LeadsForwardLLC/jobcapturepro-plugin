@@ -106,6 +106,12 @@ This plugin relies on the following external services:
 - Terms of Service: https://www.jobcapturepro.com/terms-of-service
 - Privacy Policy: https://www.jobcapturepro.com/privacy-policy
 
+**Google Maps API** (https://maps.googleapis.com)
+- Purpose: Displaying interactive maps with location markers
+- Data transmitted: Search terms, IP addresses, latitude/longitude coordinates, map interactions (as per Google Maps Platform Terms Section 4.4)
+- Terms of Service: https://cloud.google.com/maps-platform/terms
+- Privacy Policy: https://policies.google.com/privacy
+
 == Developer Information ==
 
 **Plugin Structure:**
