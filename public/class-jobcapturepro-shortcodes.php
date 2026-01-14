@@ -80,17 +80,12 @@ class JobCaptureProShortcodes
      */
     private function fetch_api_data($endpoint, $atts)
     {
-        // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts(array(
-            'checkinid' => '',
-            'companyid' => '',
-        ), $atts, 'jobcapturepro');
+        // Sanitize all attributes
+        $atts = array_map('sanitize_text_field', $atts);
 
-        // Check if checkinid attribute was provided
-        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
-
-        // Check if companyid attribute was provided
-        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
+        // Extract specific IDs for return value
+        $checkin_id = isset($atts['checkinid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin') : null;
+        $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
 
         // Get the API Key using the enhanced sanitization method
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
@@ -109,15 +104,12 @@ class JobCaptureProShortcodes
 
         $url = $this->jcp_api_base_url . $endpoint;
 
-        // Add company_id and checkin_id as query parameters if provided
+        // Add all attributes as query parameters
         $query_params = array();
-
-        if ($company_id) {
-            $query_params[] = "companyId=" . urlencode($company_id);
-        }
-
-        if ($checkin_id) {
-            $query_params[] = "checkinId=" . urlencode($checkin_id);
+        foreach ($atts as $key => $value) {
+            if (!empty($value)) {
+                $query_params[] = urlencode($key) . "=" . urlencode($value);
+            }
         }
 
         if (!empty($query_params)) {
@@ -323,7 +315,9 @@ class JobCaptureProShortcodes
         }
 
         // Fetch map data
-        $map_result = $this->fetch_api_data('map', $atts);
+        $map_atts = $atts;
+        $map_atts['pageSize'] = 1000;
+        $map_result = $this->fetch_api_data('map', $map_atts);
 
         if (!$map_result) {
             return $this->render_error_message(
@@ -356,9 +350,7 @@ class JobCaptureProShortcodes
     public function get_combined_components($atts)
     {
         // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts(array(
-            'companyid' => '',
-        ), $atts, 'jobcapturepro_combined');
+        $atts = shortcode_atts($atts, 'jobcapturepro_combined');
 
         // Check if companyid attribute was provided
         $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
@@ -406,7 +398,9 @@ class JobCaptureProShortcodes
         }
 
         // Fetch map data
-        $map_result = $this->fetch_api_data('map', $atts);
+        $map_atts = $atts;
+        $map_atts['pageSize'] = 1000;
+        $map_result = $this->fetch_api_data('map', $map_atts);
         if (!$map_result) {
             return $this->render_error_message(
                 __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
