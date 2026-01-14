@@ -315,7 +315,9 @@ class JobCaptureProShortcodes
         }
 
         // Fetch map data
-        $map_result = $this->fetch_api_data('map', $atts);
+        $map_atts = $atts;
+        $map_atts['pageSize'] = 1000;
+        $map_result = $this->fetch_api_data('map', $map_atts);
 
         if (!$map_result) {
             return $this->render_error_message(
@@ -396,7 +398,9 @@ class JobCaptureProShortcodes
         }
 
         // Fetch map data
-        $map_result = $this->fetch_api_data('map', $atts);
+        $map_atts = $atts;
+        $map_atts['pageSize'] = 1000;
+        $map_result = $this->fetch_api_data('map', $map_atts);
         if (!$map_result) {
             return $this->render_error_message(
                 __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
