@@ -17,10 +17,37 @@ document.addEventListener("DOMContentLoaded", function () {
         // Change button to loading state
         changeButtonState('loading');
 
+        // Build fetch URL with URL and URLSearchParams using localized shortcode atts
+        const params = new URLSearchParams();
+
+        // page param
+        params.set('page', String(currentPage + 1));
+
+        // companyId if provided
+        if (jobcaptureproLoadMoreData.companyId) {
+            params.set('companyId', String(jobcaptureproLoadMoreData.companyId));
+        }
+
+        // Append any shortcode attributes passed via localization
+        const scAtts = jobcaptureproLoadMoreData.scAtts || {};
+        Object.entries(scAtts).forEach(([key, value]) => {
+            if (value === null || value === undefined) return;
+            if (value.trim() !== '') params.append(key, String(value));
+        });
+
+        // Get base API URL and ensure it ends with a slash
+        let base = jobcaptureproLoadMoreData.baseApiUrl;
+        if (!base.endsWith('/')) base += '/';
+
+        // Construct full URL
+        const url = new URL('checkins', base);
+        url.search = params.toString();
+
         // Fetch next page of check-ins
-        fetch(`${jobcaptureproLoadMoreData.baseApiUrl}/checkins?page=${currentPage + 1}&companyId=${jobcaptureproLoadMoreData.companyId}`)
+        fetch(url.toString())
             .then(response => response.json())
             .then(data => {
+                // Checkins
                 const checkins = data.checkins;
 
                 // Append new check-ins if available

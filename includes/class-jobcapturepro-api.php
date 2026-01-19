@@ -201,11 +201,11 @@ class JobCaptureProAPI
      */
     public function get_checkins($request)
     {
-        // Get page number
-        $page = $request->get_param('page') ?: 1;
+        // Build query string from request query parameters
+        $query = http_build_query($request->get_query_params());
 
-        // Build URL to real API
-        $url = $this->jcp_api_base_url . "checkins?page=" . $page;
+        // Build API URL 
+        $url = $this->jcp_api_base_url . "checkins?" . $query;
 
         // Make the request
         return $this->make_api_request($url, 'checkins');
