@@ -132,6 +132,7 @@ async function initJobCaptureProMap() {
                 fetch(`${jobcaptureproMapData.baseApiUrl}/checkin/${markerData.id}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('JobCapturePro API Response (Checkin):', data);
                         const addressParts = data.address.split(',');
                         const city = (addressParts[1] || '').trim();
                         const state = (addressParts[2] || '').trim();

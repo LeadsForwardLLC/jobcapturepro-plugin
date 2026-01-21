@@ -252,7 +252,7 @@ class JobCaptureProTemplates
         self::add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId);
 
         // Enqueue scripts
-        self::enqueue_checkins_grid_script($gridId, $company_info);
+        self::enqueue_checkins_grid_script($gridId, $company_info, $checkins);
         self::enqueue_gallery_script();
 
         $checkins_grid_html .= JobCapturePro_Template::render_template('checkins-grid', [
@@ -619,7 +619,7 @@ class JobCaptureProTemplates
     /**
      * Enqueue the masonry grid JavaScript
      */
-    private static function enqueue_checkins_grid_script($gridId, $company_info)
+    private static function enqueue_checkins_grid_script($gridId, $company_info, $initial_checkins = array())
     {
         // Enqueue masonry grid script
         wp_enqueue_script(
@@ -652,6 +652,7 @@ class JobCaptureProTemplates
             'companyId' => $company_info['id'] ?? null,
             'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
             'scAtts' => $jcp_combined_sc_atts ?? array(),
+            'initialCheckins' => $initial_checkins,
         ));
     }
 }

@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Log initial checkins data if available
+    if (typeof jobcaptureproLoadMoreData !== 'undefined' && jobcaptureproLoadMoreData.initialCheckins) {
+        console.log('JobCapturePro API Response (Initial Checkins):', jobcaptureproLoadMoreData.initialCheckins);
+    }
+
     // Current page tracker
     let currentPage = 1;
 
@@ -47,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(url.toString())
             .then(response => response.json())
             .then(data => {
+                console.log('JobCapturePro API Response (Checkins):', data);
                 // Checkins
                 const checkins = data.checkins;
 
