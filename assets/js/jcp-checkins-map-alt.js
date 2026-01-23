@@ -314,8 +314,11 @@
 
         const updateButtonState = () => {
             const maxScroll = cardsViewport.scrollWidth - cardsViewport.clientWidth;
-            prevButton.disabled = cardsViewport.scrollLeft <= 0;
-            nextButton.disabled = cardsViewport.scrollLeft >= maxScroll - 1;
+            const canScroll = maxScroll > 1;
+            prevButton.disabled = !canScroll || cardsViewport.scrollLeft <= 0;
+            nextButton.disabled = !canScroll || cardsViewport.scrollLeft >= maxScroll - 1;
+            slider.classList.toggle('is-scrollable', canScroll);
+            cardsViewport.classList.add('is-clean');
         };
 
         const scrollByCard = (direction) => {
