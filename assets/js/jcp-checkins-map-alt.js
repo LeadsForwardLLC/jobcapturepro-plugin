@@ -50,20 +50,11 @@
         return loadScriptOnce(src, 'google-maps-alt');
     };
 
-    const normalizeAssetsUrl = (assetsUrl) => {
-        if (!assetsUrl) return '';
-        return assetsUrl.endsWith('/') ? assetsUrl : `${assetsUrl}/`;
-    };
-
-    const loadMarkerClusterer = (assetsUrl) => {
+    const ensureMarkerClusterer = () => {
         if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
             return Promise.resolve();
         }
-        const baseUrl = normalizeAssetsUrl(assetsUrl);
-        if (!baseUrl) {
-            return Promise.reject(new Error('Missing assets URL for markerclusterer'));
-        }
-        return loadScriptOnce(`${baseUrl}assets/js/markerclusterer.min.js`, 'marker-clusterer');
+        return Promise.reject(new Error('markerclusterer.min.js not loaded'));
     };
 
     const getCompanyName = (checkin) => {
@@ -190,7 +181,6 @@
     const initAltLayout = async (root) => {
         const mapData = parseJsonAttr(root, 'data-jcp-alt-map');
         const checkins = parseJsonAttr(root, 'data-jcp-alt-checkins');
-        const assetsUrl = root.getAttribute('data-jcp-alt-assets-url') || '';
 
         if (!mapData || !checkins || !Array.isArray(checkins)) return;
 
@@ -254,7 +244,9 @@
         };
 
         await loadGoogleMaps(mapData.googleMapsApiKey || '');
-        await loadMarkerClusterer(assetsUrl);
+        await ensureMarkerClusterer().catch((error) => {
+            console.warn('JobCapturePro alt map: markerclusterer not loaded', error);
+        });
 
         const locations = mapData.locations || {};
         const features = Array.isArray(locations.features) ? locations.features : [];

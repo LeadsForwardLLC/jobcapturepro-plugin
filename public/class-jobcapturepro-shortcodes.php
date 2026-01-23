@@ -502,6 +502,15 @@ class JobCaptureProShortcodes
             true
         );
 
+        // Enqueue the original marker clusterer used by the legacy map shortcode.
+        wp_enqueue_script(
+            'jobcapturepro-markerclusterer',
+            JOBCAPTUREPRO_PLUGIN_URL . 'assets/js/markerclusterer.min.js',
+            array(),
+            $this->version,
+            true
+        );
+
         // Reduce payload to existing check-in fields needed for the alternate card layout.
         $checkins_for_js = array_map(function ($checkin) {
             $company_name = '';
