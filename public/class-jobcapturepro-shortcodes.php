@@ -433,6 +433,117 @@ class JobCaptureProShortcodes
     }
 
     /**
+     * Shortcode to display an alternate map + checkins layout (map on top, cards below).
+     * This differs from the default combined shortcode by returning only a JS-bootstrapped
+     * container rather than rendering the existing map/checkin templates.
+     */
+    public function get_checkins_map_alt($atts)
+    {
+        // Fetch checkins data (reuse existing checkins query logic)
+        $checkins_result = $this->fetch_api_data('checkins', $atts);
+        if (!$checkins_result) {
+            return $this->render_error_message(
+                __('Unable to load checkins data at this time. Please try again later.', 'jobcapturepro'),
+                'checkins_fetch_failed'
+            );
+        }
+
+        $checkins_payload = $checkins_result['data']['checkins'] ?? $checkins_result['data'] ?? array();
+
+        if (!is_array($checkins_payload)) {
+            $this->log_api_error(
+                'Invalid checkins data structure for alt map layout',
+                'invalid_alt_checkins_data',
+                array('data_type' => gettype($checkins_payload))
+            );
+            return $this->render_error_message(
+                __('Invalid checkins data received. Please try again later.', 'jobcapturepro'),
+                'invalid_alt_checkins_structure'
+            );
+        }
+
+        // Fetch map data (reuse existing map query logic)
+        $map_atts = $atts;
+        $map_atts['pageSize'] = 1000;
+        $map_result = $this->fetch_api_data('map', $map_atts);
+        if (!$map_result) {
+            return $this->render_error_message(
+                __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
+                'map_fetch_failed'
+            );
+        }
+
+        $map_data = $map_result['data'];
+        if (!is_array($map_data)) {
+            $this->log_api_error(
+                'Invalid map data structure for alt map layout',
+                'invalid_alt_map_data',
+                array('data_type' => gettype($map_data))
+            );
+            return $this->render_error_message(
+                __('Invalid map data received. Please try again later.', 'jobcapturepro'),
+                'invalid_alt_map_structure'
+            );
+        }
+
+        // Enqueue alternate layout assets (map + cards rendered via JS)
+        wp_enqueue_style(
+            'jobcapturepro-checkins-map-alt',
+            JOBCAPTUREPRO_PLUGIN_URL . 'assets/css/jcp-checkins-map-alt.css',
+            array(),
+            $this->version
+        );
+
+        wp_enqueue_script(
+            'jobcapturepro-checkins-map-alt',
+            JOBCAPTUREPRO_PLUGIN_URL . 'assets/js/jcp-checkins-map-alt.js',
+            array(),
+            $this->version,
+            true
+        );
+
+        // Reduce payload to existing check-in fields needed for the alternate card layout.
+        $checkins_for_js = array_map(function ($checkin) {
+            $company_name = '';
+            if (!empty($checkin['companyName'])) {
+                $company_name = $checkin['companyName'];
+            } elseif (!empty($checkin['company']) && is_array($checkin['company']) && !empty($checkin['company']['name'])) {
+                $company_name = $checkin['company']['name'];
+            }
+
+            return array(
+                'id' => $checkin['id'] ?? null,
+                'title' => $checkin['title'] ?? null,
+                'description' => $checkin['description'] ?? null,
+                'companyName' => $company_name,
+                'service_tags' => $checkin['service_tags'] ?? null,
+                'serviceTags' => $checkin['serviceTags'] ?? null,
+                'address' => $checkin['address'] ?? null,
+                'createdAt' => $checkin['createdAt'] ?? null,
+                'imageUrls' => $checkin['imageUrls'] ?? null,
+            );
+        }, $checkins_payload);
+
+        $map_for_js = array(
+            'googleMapsApiKey' => $map_data['googleMapsApiKey']['value'] ?? '',
+            'locations' => $map_data['locations'] ?? array(),
+        );
+
+        $checkins_json = wp_json_encode($checkins_for_js, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        $map_json = wp_json_encode($map_for_js, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+
+        $container_id = 'jcp-alt-checkins-map-' . uniqid();
+
+        // Output only the root container with data attributes for JS bootstrapping.
+        return sprintf(
+            '<div id="%1$s" class="jcp-alt-map" data-jcp-alt-map="%2$s" data-jcp-alt-checkins="%3$s"></div>',
+            esc_attr($container_id),
+            esc_attr($map_json),
+            esc_attr($checkins_json)
+        );
+    }
+
+    /**
      * Shortcode to display company information
      */
     public function get_company_info($atts)

@@ -126,6 +126,7 @@ class JobCaptureProPlugin
 		$this->loader->add_shortcode(shortcode: 'jobcapturepro_map', component: $plugin_shortcodes, callback: 'get_map');
 		$this->loader->add_shortcode(shortcode: 'jobcapturepro_company_info', component: $plugin_shortcodes, callback: 'get_company_info');
 		$this->loader->add_shortcode(shortcode: 'jobcapturepro_combined', component: $plugin_shortcodes, callback: 'get_combined_components');
+		$this->loader->add_shortcode(shortcode: 'jobcapturepro_checkins_map_alt', component: $plugin_shortcodes, callback: 'get_checkins_map_alt');
 
 		// Keep old shortcodes for backwards compatibility
 		$this->loader->add_shortcode(shortcode: 'jcp_checkin', component: $plugin_shortcodes, callback: 'get_checkin');
@@ -133,6 +134,7 @@ class JobCaptureProPlugin
 		$this->loader->add_shortcode(shortcode: 'jcp_multimap', component: $plugin_shortcodes, callback: 'get_map');
 		$this->loader->add_shortcode(shortcode: 'jcp_company_info', component: $plugin_shortcodes, callback: 'get_company_info');
 		$this->loader->add_shortcode(shortcode: 'jcp_combined_components', component: $plugin_shortcodes, callback: 'get_combined_components');
+		$this->loader->add_shortcode(shortcode: 'jcp_checkins_map_alt', component: $plugin_shortcodes, callback: 'get_checkins_map_alt');
 	}
 
 	/**
