@@ -46,7 +46,7 @@
         if (!apiKey) {
             return Promise.reject(new Error('Missing Google Maps API key'));
         }
-        const src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=marker`;
+        const src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=marker,visualization`;
         return loadScriptOnce(src, 'google-maps');
     };
 
@@ -259,6 +259,7 @@
         });
 
         const markers = [];
+        const heatmapPoints = [];
 
         features.forEach((feature) => {
             if (!feature || !feature.geometry || !feature.properties) return;
@@ -268,6 +269,7 @@
 
             const position = { lat: coords[1], lng: coords[0] };
             bounds.extend(position);
+            heatmapPoints.push(new google.maps.LatLng(position.lat, position.lng));
 
             const marker = new google.maps.Marker({
                 position,
@@ -284,6 +286,16 @@
 
         if (markers.length > 1 && window.MarkerClusterer) {
             new MarkerClusterer({ map, markers });
+        }
+
+        if (heatmapPoints.length > 0 && google.maps.visualization) {
+            const heatmap = new google.maps.visualization.HeatmapLayer({
+                data: heatmapPoints,
+                dissipating: true,
+                radius: 30,
+                opacity: 0.4
+            });
+            heatmap.setMap(map);
         }
 
         if (!bounds.isEmpty()) {
