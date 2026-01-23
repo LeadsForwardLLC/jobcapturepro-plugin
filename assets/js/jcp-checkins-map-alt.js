@@ -41,13 +41,18 @@
 
     const loadGoogleMaps = (apiKey) => {
         if (window.google && window.google.maps) {
-            return Promise.resolve();
+            if (window.google.maps.visualization) {
+                return Promise.resolve();
+            }
+            if (typeof window.google.maps.importLibrary === 'function') {
+                return window.google.maps.importLibrary('visualization');
+            }
         }
         if (!apiKey) {
             return Promise.reject(new Error('Missing Google Maps API key'));
         }
         const src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=marker,visualization`;
-        return loadScriptOnce(src, 'google-maps');
+        return loadScriptOnce(src, 'google-maps-alt');
     };
 
     const loadMarkerClusterer = () => {
