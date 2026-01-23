@@ -190,11 +190,34 @@
         const mapEl = document.createElement('div');
         mapEl.className = 'jcp-alt-map-canvas';
 
+        const slider = document.createElement('div');
+        slider.className = 'jcp-alt-slider';
+
+        const prevButton = document.createElement('button');
+        prevButton.type = 'button';
+        prevButton.className = 'jcp-alt-slider-btn jcp-alt-slider-prev';
+        prevButton.setAttribute('aria-label', 'Previous check-ins');
+        prevButton.innerHTML = '&#10094;';
+
+        const nextButton = document.createElement('button');
+        nextButton.type = 'button';
+        nextButton.className = 'jcp-alt-slider-btn jcp-alt-slider-next';
+        nextButton.setAttribute('aria-label', 'Next check-ins');
+        nextButton.innerHTML = '&#10095;';
+
+        const cardsViewport = document.createElement('div');
+        cardsViewport.className = 'jcp-alt-cards-viewport';
+
         const cardsWrap = document.createElement('div');
         cardsWrap.className = 'jcp-alt-cards';
 
+        cardsViewport.appendChild(cardsWrap);
+        slider.appendChild(prevButton);
+        slider.appendChild(cardsViewport);
+        slider.appendChild(nextButton);
+
         root.appendChild(mapEl);
-        root.appendChild(cardsWrap);
+        root.appendChild(slider);
 
         const cardIndex = new Map();
         const markerIndex = new Map();
@@ -288,6 +311,24 @@
             event.preventDefault();
             card.click();
         });
+
+        const updateButtonState = () => {
+            const maxScroll = cardsViewport.scrollWidth - cardsViewport.clientWidth;
+            prevButton.disabled = cardsViewport.scrollLeft <= 0;
+            nextButton.disabled = cardsViewport.scrollLeft >= maxScroll - 1;
+        };
+
+        const scrollByCard = (direction) => {
+            const card = cardsWrap.querySelector('.jcp-alt-checkin-card');
+            const cardWidth = card ? card.getBoundingClientRect().width : cardsViewport.clientWidth / 2;
+            cardsViewport.scrollBy({ left: direction * (cardWidth + 18), behavior: 'smooth' });
+        };
+
+        prevButton.addEventListener('click', () => scrollByCard(-1));
+        nextButton.addEventListener('click', () => scrollByCard(1));
+        cardsViewport.addEventListener('scroll', updateButtonState, { passive: true });
+        window.addEventListener('resize', updateButtonState);
+        updateButtonState();
     };
 
     const initAll = () => {

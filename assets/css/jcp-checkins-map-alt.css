@@ -17,6 +17,18 @@
     border: 1px solid #e5e7eb;
 }
 
+.jcp-alt-slider {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.jcp-alt-cards-viewport {
+    overflow: hidden;
+}
+
 .jcp-alt-cards {
     display: flex;
     gap: 18px;
@@ -24,6 +36,44 @@
     scroll-snap-type: x mandatory;
     padding-bottom: 8px;
     -webkit-overflow-scrolling: touch;
+}
+
+.jcp-alt-cards::-webkit-scrollbar {
+    height: 10px;
+}
+
+.jcp-alt-cards::-webkit-scrollbar-track {
+    background: #eef2f7;
+    border-radius: 999px;
+}
+
+.jcp-alt-cards::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+.jcp-alt-slider-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #1f2937;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.jcp-alt-slider-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.12);
+}
+
+.jcp-alt-slider-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+    box-shadow: none;
+    transform: none;
 }
 
 .jcp-alt-checkin-card {
@@ -138,6 +188,25 @@
 
     .jcp-alt-map-canvas {
         height: 360px;
+    }
+
+    .jcp-alt-slider {
+        grid-template-columns: 1fr;
+    }
+
+    .jcp-alt-slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+    }
+
+    .jcp-alt-slider-prev {
+        left: 8px;
+    }
+
+    .jcp-alt-slider-next {
+        right: 8px;
     }
 }
 
