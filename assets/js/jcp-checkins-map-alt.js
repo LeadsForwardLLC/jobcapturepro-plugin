@@ -50,11 +50,20 @@
         return loadScriptOnce(src, 'google-maps-alt');
     };
 
-    const loadMarkerClusterer = () => {
-        if (window.MarkerClusterer) {
+    const normalizeAssetsUrl = (assetsUrl) => {
+        if (!assetsUrl) return '';
+        return assetsUrl.endsWith('/') ? assetsUrl : `${assetsUrl}/`;
+    };
+
+    const loadMarkerClusterer = (assetsUrl) => {
+        if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
             return Promise.resolve();
         }
-        return loadScriptOnce('https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', 'marker-clusterer');
+        const baseUrl = normalizeAssetsUrl(assetsUrl);
+        if (!baseUrl) {
+            return Promise.reject(new Error('Missing assets URL for markerclusterer'));
+        }
+        return loadScriptOnce(`${baseUrl}assets/js/markerclusterer.min.js`, 'marker-clusterer');
     };
 
     const getCompanyName = (checkin) => {
@@ -181,6 +190,7 @@
     const initAltLayout = async (root) => {
         const mapData = parseJsonAttr(root, 'data-jcp-alt-map');
         const checkins = parseJsonAttr(root, 'data-jcp-alt-checkins');
+        const assetsUrl = root.getAttribute('data-jcp-alt-assets-url') || '';
 
         if (!mapData || !checkins || !Array.isArray(checkins)) return;
 
@@ -244,7 +254,7 @@
         };
 
         await loadGoogleMaps(mapData.googleMapsApiKey || '');
-        await loadMarkerClusterer();
+        await loadMarkerClusterer(assetsUrl);
 
         const locations = mapData.locations || {};
         const features = Array.isArray(locations.features) ? locations.features : [];
@@ -282,35 +292,11 @@
             markerIndex.set(String(checkinId), marker);
         });
 
-        const ClustererClass = window.MarkerClusterer
-            || (window.markerClusterer && window.markerClusterer.MarkerClusterer);
-
-        if (markers.length > 1 && ClustererClass) {
-            const renderer = {
-                render({ count, position }) {
-                    const size = Math.max(40, Math.min(64, 34 + Math.log(count) * 10));
-                    const svg = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-                            <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="rgba(99, 102, 241, 0.2)"/>
-                            <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 6}" fill="rgba(99, 102, 241, 0.55)"/>
-                            <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 14}" fill="#4f46e5"/>
-                            <text x="50%" y="50%" text-anchor="middle" dy=".35em" font-size="${Math.max(12, size / 3.2)}" font-weight="700" fill="#fff" font-family="Arial, sans-serif">${count}</text>
-                        </svg>
-                    `;
-
-                    return new google.maps.Marker({
-                        position,
-                        icon: {
-                            url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-                            scaledSize: new google.maps.Size(size, size),
-                            anchor: new google.maps.Point(size / 2, size / 2)
-                        },
-                        zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
-                    });
-                }
-            };
-
-            new ClustererClass({ map, markers, renderer });
+        if (markers.length > 1 && window.markerClusterer && window.markerClusterer.MarkerClusterer) {
+            new markerClusterer.MarkerClusterer({
+                map,
+                markers
+            });
         }
 
         if (!bounds.isEmpty()) {

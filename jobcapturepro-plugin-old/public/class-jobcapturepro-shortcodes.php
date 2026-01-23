@@ -68,7 +68,7 @@ class JobCaptureProShortcodes
             $log_message .= ' | Data: ' . wp_json_encode($data);
         }
 
-        // error_log($log_message);
+        error_log($log_message);
     }
 
     /**
@@ -80,36 +80,60 @@ class JobCaptureProShortcodes
      */
     private function fetch_api_data($endpoint, $atts)
     {
-        // Sanitize all attributes
-        $atts = array_map('sanitize_text_field', $atts);
+        // Sanitize and validate shortcode attributes
+        $atts = shortcode_atts(array(
+            'checkinid' => '',
+            'companyid' => '',
+        ), $atts, 'jobcapturepro');
 
-        // Extract specific IDs for return value
-        $checkin_id = isset($atts['checkinid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin') : null;
-        $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
+        // Check if checkinid attribute was provided, if not check URL parameter
+        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
+
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinId'])) {
+            $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
+                sanitize_text_field(wp_unslash($_GET['checkinId'])),
+                'checkin'
+            );
+        }
+
+        // Check if companyid attribute was provided, if not check URL parameter
+        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
+
+        // If no attribute provided, check for URL parameter
+        if (!$company_id && isset($_GET['companyId'])) {
+            $company_id = JobCaptureProAdmin::sanitize_id_parameter(
+                sanitize_text_field(wp_unslash($_GET['companyId'])),
+                'company'
+            );
+        }
 
         // Get the API Key using the enhanced sanitization method
         $apikey = JobCaptureProAdmin::get_sanitized_api_key();
 
         if (!$apikey) {
-            // error_log('JobCapturePro: Invalid or missing API key');
+            error_log('JobCapturePro: Invalid or missing API key');
             return null;
         }
 
         // Sanitize the endpoint parameter
         $endpoint = sanitize_text_field($endpoint);
         if (empty($endpoint)) {
-            // error_log('JobCapturePro: Invalid endpoint provided');
+            error_log('JobCapturePro: Invalid endpoint provided');
             return null;
         }
 
         $url = $this->jcp_api_base_url . $endpoint;
 
-        // Add all attributes as query parameters
+        // Add company_id and checkin_id as query parameters if provided
         $query_params = array();
-        foreach ($atts as $key => $value) {
-            if (!empty($value)) {
-                $query_params[] = urlencode($key) . "=" . urlencode($value);
-            }
+
+        if ($company_id) {
+            $query_params[] = "companyId=" . urlencode($company_id);
+        }
+
+        if ($checkin_id) {
+            $query_params[] = "checkinId=" . urlencode($checkin_id);
         }
 
         if (!empty($query_params)) {
@@ -118,7 +142,7 @@ class JobCaptureProShortcodes
 
         // Validate the final URL
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            // error_log('JobCapturePro: Invalid API URL constructed: ' . $url);
+            error_log('JobCapturePro: Invalid API URL constructed: ' . $url);
             return null;
         }
 
@@ -239,18 +263,26 @@ class JobCaptureProShortcodes
             'checkinid' => '',
         ), $atts, 'jobcapturepro_checkin');
 
-        // Check if checkinid attribute was provided
+        // Check if checkinid attribute was provided, if not check URL parameter
         $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
 
+        // If no attribute provided, check for URL parameter
+        if (!$checkin_id && isset($_GET['checkinid'])) {
+            $checkin_id = JobCaptureProAdmin::sanitize_id_parameter(
+                sanitize_text_field(wp_unslash($_GET['checkinid'])),
+                'checkin'
+            );
+        }
+
         if (!$checkin_id) {
-            return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'jobcapturepro')) . '</div>';
+            return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'job-capture-pro')) . '</div>';
         }
 
         // Fetch specific checkin using the direct endpoint
         $result = $this->fetch_api_data("checkins/" . $checkin_id, array());
         if (!$result) {
             return $this->render_error_message(
-                __('Unable to load checkin data at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load checkin data at this time. Please try again later.', 'job-capture-pro'),
                 'api_fetch_failed'
             );
         }
@@ -267,7 +299,7 @@ class JobCaptureProShortcodes
         $result = $this->fetch_api_data('checkins', $atts);
         if (!$result) {
             return $this->render_error_message(
-                __('Unable to load checkins at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load checkins at this time. Please try again later.', 'job-capture-pro'),
                 'checkins_fetch_failed'
             );
         }
@@ -283,7 +315,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($checkins))
             );
             return $this->render_error_message(
-                __('Invalid checkins data received. Please try again later.', 'jobcapturepro'),
+                __('Invalid checkins data received. Please try again later.', 'job-capture-pro'),
                 'invalid_checkins_structure'
             );
         }
@@ -315,13 +347,11 @@ class JobCaptureProShortcodes
         }
 
         // Fetch map data
-        $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
-        $map_result = $this->fetch_api_data('map', $map_atts);
+        $map_result = $this->fetch_api_data('map', $atts);
 
         if (!$map_result) {
             return $this->render_error_message(
-                __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load map data at this time. Please try again later.', 'job-capture-pro'),
                 'map_fetch_failed'
             );
         }
@@ -336,7 +366,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($map_data))
             );
             return $this->render_error_message(
-                __('Invalid map data received. Please try again later.', 'jobcapturepro'),
+                __('Invalid map data received. Please try again later.', 'job-capture-pro'),
                 'invalid_map_structure'
             );
         }
@@ -349,9 +379,10 @@ class JobCaptureProShortcodes
      */
     public function get_combined_components($atts)
     {
-        // Global var to pass this shortcode's attributes to the load more script
-        global $jcp_combined_sc_atts;
-        $jcp_combined_sc_atts = $atts;
+        // Sanitize and validate shortcode attributes
+        $atts = shortcode_atts(array(
+            'companyid' => '',
+        ), $atts, 'jobcapturepro_combined');
 
         // Check if companyid attribute was provided
         $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
@@ -368,7 +399,7 @@ class JobCaptureProShortcodes
 
         if (!$company_info) {
             return $this->render_error_message(
-                __('Company information is not available at this time.', 'jobcapturepro'),
+                __('Company information is not available at this time.', 'job-capture-pro'),
                 'company_info_not_found'
             );
         }
@@ -377,7 +408,7 @@ class JobCaptureProShortcodes
         $checkins_result = $this->fetch_api_data('checkins', $atts);
         if (!$checkins_result) {
             return $this->render_error_message(
-                __('Unable to load checkins data at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load checkins data at this time. Please try again later.', 'job-capture-pro'),
                 'checkins_fetch_failed'
             );
         }
@@ -393,18 +424,16 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($checkins))
             );
             return $this->render_error_message(
-                __('Invalid checkins data received. Please try again later.', 'jobcapturepro'),
+                __('Invalid checkins data received. Please try again later.', 'job-capture-pro'),
                 'invalid_combined_checkins_structure'
             );
         }
 
         // Fetch map data
-        $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
-        $map_result = $this->fetch_api_data('map', $map_atts);
+        $map_result = $this->fetch_api_data('map', $atts);
         if (!$map_result) {
             return $this->render_error_message(
-                __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load map data at this time. Please try again later.', 'job-capture-pro'),
                 'map_fetch_failed'
             );
         }
@@ -419,7 +448,7 @@ class JobCaptureProShortcodes
                 array('data_type' => gettype($map_data))
             );
             return $this->render_error_message(
-                __('Invalid map data received. Please try again later.', 'jobcapturepro'),
+                __('Invalid map data received. Please try again later.', 'job-capture-pro'),
                 'invalid_combined_map_structure'
             );
         }
@@ -429,118 +458,6 @@ class JobCaptureProShortcodes
             $map_data,
             $checkins,
             $checkin_id
-        );
-    }
-
-    /**
-     * Shortcode to display an alternate map + checkins layout (map on top, cards below).
-     * This differs from the default combined shortcode by returning only a JS-bootstrapped
-     * container rather than rendering the existing map/checkin templates.
-     */
-    public function get_checkins_map_alt($atts)
-    {
-        // Fetch checkins data (reuse existing checkins query logic)
-        $checkins_result = $this->fetch_api_data('checkins', $atts);
-        if (!$checkins_result) {
-            return $this->render_error_message(
-                __('Unable to load checkins data at this time. Please try again later.', 'jobcapturepro'),
-                'checkins_fetch_failed'
-            );
-        }
-
-        $checkins_payload = $checkins_result['data']['checkins'] ?? $checkins_result['data'] ?? array();
-
-        if (!is_array($checkins_payload)) {
-            $this->log_api_error(
-                'Invalid checkins data structure for alt map layout',
-                'invalid_alt_checkins_data',
-                array('data_type' => gettype($checkins_payload))
-            );
-            return $this->render_error_message(
-                __('Invalid checkins data received. Please try again later.', 'jobcapturepro'),
-                'invalid_alt_checkins_structure'
-            );
-        }
-
-        // Fetch map data (reuse existing map query logic)
-        $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
-        $map_result = $this->fetch_api_data('map', $map_atts);
-        if (!$map_result) {
-            return $this->render_error_message(
-                __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
-                'map_fetch_failed'
-            );
-        }
-
-        $map_data = $map_result['data'];
-        if (!is_array($map_data)) {
-            $this->log_api_error(
-                'Invalid map data structure for alt map layout',
-                'invalid_alt_map_data',
-                array('data_type' => gettype($map_data))
-            );
-            return $this->render_error_message(
-                __('Invalid map data received. Please try again later.', 'jobcapturepro'),
-                'invalid_alt_map_structure'
-            );
-        }
-
-        // Enqueue alternate layout assets (map + cards rendered via JS)
-        wp_enqueue_style(
-            'jobcapturepro-checkins-map-alt',
-            JOBCAPTUREPRO_PLUGIN_URL . 'assets/css/jcp-checkins-map-alt.css',
-            array(),
-            $this->version
-        );
-
-        wp_enqueue_script(
-            'jobcapturepro-checkins-map-alt',
-            JOBCAPTUREPRO_PLUGIN_URL . 'assets/js/jcp-checkins-map-alt.js',
-            array(),
-            $this->version,
-            true
-        );
-
-        // Reduce payload to existing check-in fields needed for the alternate card layout.
-        $checkins_for_js = array_map(function ($checkin) {
-            $company_name = '';
-            if (!empty($checkin['companyName'])) {
-                $company_name = $checkin['companyName'];
-            } elseif (!empty($checkin['company']) && is_array($checkin['company']) && !empty($checkin['company']['name'])) {
-                $company_name = $checkin['company']['name'];
-            }
-
-            return array(
-                'id' => $checkin['id'] ?? null,
-                'title' => $checkin['title'] ?? null,
-                'description' => $checkin['description'] ?? null,
-                'companyName' => $company_name,
-                'service_tags' => $checkin['service_tags'] ?? null,
-                'serviceTags' => $checkin['serviceTags'] ?? null,
-                'address' => $checkin['address'] ?? null,
-                'createdAt' => $checkin['createdAt'] ?? null,
-                'imageUrls' => $checkin['imageUrls'] ?? null,
-            );
-        }, $checkins_payload);
-
-        $map_for_js = array(
-            'googleMapsApiKey' => $map_data['googleMapsApiKey']['value'] ?? '',
-            'locations' => $map_data['locations'] ?? array(),
-        );
-
-        $checkins_json = wp_json_encode($checkins_for_js, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-        $map_json = wp_json_encode($map_for_js, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-
-        $container_id = 'jcp-alt-checkins-map-' . uniqid();
-
-        // Output only the root container with data attributes for JS bootstrapping.
-        return sprintf(
-            '<div id="%1$s" class="jcp-alt-map" data-jcp-alt-map="%2$s" data-jcp-alt-checkins="%3$s" data-jcp-alt-assets-url="%4$s"></div>',
-            esc_attr($container_id),
-            esc_attr($map_json),
-            esc_attr($checkins_json),
-            esc_attr(JOBCAPTUREPRO_PLUGIN_URL)
         );
     }
 
@@ -559,7 +476,7 @@ class JobCaptureProShortcodes
 
         if (!$company_id) {
             return $this->render_error_message(
-                __('No valid company ID provided.', 'jobcapturepro'),
+                __('No valid company ID provided.', 'job-capture-pro'),
                 'missing_company_id'
             );
         }
@@ -569,7 +486,7 @@ class JobCaptureProShortcodes
 
         if (!$apikey) {
             return $this->render_error_message(
-                __('Plugin configuration error. Please contact the site administrator.', 'jobcapturepro'),
+                __('Plugin configuration error. Please contact the site administrator.', 'job-capture-pro'),
                 'missing_api_key'
             );
         }
@@ -581,7 +498,7 @@ class JobCaptureProShortcodes
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             $this->log_api_error('Invalid company API URL constructed', 'url_validation', array('url' => $url));
             return $this->render_error_message(
-                __('Unable to connect to company data service.', 'jobcapturepro'),
+                __('Unable to connect to company data service.', 'job-capture-pro'),
                 'invalid_api_url'
             );
         }
@@ -606,7 +523,7 @@ class JobCaptureProShortcodes
                 array('url' => $url, 'company_id' => $company_id)
             );
             return $this->render_error_message(
-                __('Unable to load company information at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load company information at this time. Please try again later.', 'job-capture-pro'),
                 'api_request_failed'
             );
         }
@@ -627,13 +544,13 @@ class JobCaptureProShortcodes
 
             if ($response_code === 404) {
                 return $this->render_error_message(
-                    __('Company information not found.', 'jobcapturepro'),
+                    __('Company information not found.', 'job-capture-pro'),
                     'company_not_found'
                 );
             }
 
             return $this->render_error_message(
-                __('Unable to load company information at this time. Please try again later.', 'jobcapturepro'),
+                __('Unable to load company information at this time. Please try again later.', 'job-capture-pro'),
                 'api_http_error'
             );
         }
@@ -645,7 +562,7 @@ class JobCaptureProShortcodes
                 array('url' => $url, 'company_id' => $company_id)
             );
             return $this->render_error_message(
-                __('No company data available.', 'jobcapturepro'),
+                __('No company data available.', 'job-capture-pro'),
                 'empty_response'
             );
         }
@@ -664,7 +581,7 @@ class JobCaptureProShortcodes
                 )
             );
             return $this->render_error_message(
-                __('Invalid company data received. Please try again later.', 'jobcapturepro'),
+                __('Invalid company data received. Please try again later.', 'job-capture-pro'),
                 'invalid_json'
             );
         }
@@ -677,7 +594,7 @@ class JobCaptureProShortcodes
                 array('url' => $url, 'company_id' => $company_id, 'error_data' => $company_data)
             );
             return $this->render_error_message(
-                __('Company information is currently unavailable.', 'jobcapturepro'),
+                __('Company information is currently unavailable.', 'job-capture-pro'),
                 'api_error_response'
             );
         }
