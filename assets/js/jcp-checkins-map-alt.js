@@ -41,17 +41,12 @@
 
     const loadGoogleMaps = (apiKey) => {
         if (window.google && window.google.maps) {
-            if (window.google.maps.visualization) {
-                return Promise.resolve();
-            }
-            if (typeof window.google.maps.importLibrary === 'function') {
-                return window.google.maps.importLibrary('visualization');
-            }
+            return Promise.resolve();
         }
         if (!apiKey) {
             return Promise.reject(new Error('Missing Google Maps API key'));
         }
-        const src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=marker,visualization`;
+        const src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=marker`;
         return loadScriptOnce(src, 'google-maps-alt');
     };
 
@@ -264,7 +259,6 @@
         });
 
         const markers = [];
-        const heatmapPoints = [];
 
         features.forEach((feature) => {
             if (!feature || !feature.geometry || !feature.properties) return;
@@ -274,7 +268,6 @@
 
             const position = { lat: coords[1], lng: coords[0] };
             bounds.extend(position);
-            heatmapPoints.push(new google.maps.LatLng(position.lat, position.lng));
 
             const marker = new google.maps.Marker({
                 position,
@@ -289,18 +282,35 @@
             markerIndex.set(String(checkinId), marker);
         });
 
-        if (markers.length > 1 && window.MarkerClusterer) {
-            new MarkerClusterer({ map, markers });
-        }
+        const ClustererClass = window.MarkerClusterer
+            || (window.markerClusterer && window.markerClusterer.MarkerClusterer);
 
-        if (heatmapPoints.length > 0 && google.maps.visualization) {
-            const heatmap = new google.maps.visualization.HeatmapLayer({
-                data: heatmapPoints,
-                dissipating: true,
-                radius: 30,
-                opacity: 0.4
-            });
-            heatmap.setMap(map);
+        if (markers.length > 1 && ClustererClass) {
+            const renderer = {
+                render({ count, position }) {
+                    const size = Math.max(40, Math.min(64, 34 + Math.log(count) * 10));
+                    const svg = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+                            <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="rgba(99, 102, 241, 0.2)"/>
+                            <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 6}" fill="rgba(99, 102, 241, 0.55)"/>
+                            <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 14}" fill="#4f46e5"/>
+                            <text x="50%" y="50%" text-anchor="middle" dy=".35em" font-size="${Math.max(12, size / 3.2)}" font-weight="700" fill="#fff" font-family="Arial, sans-serif">${count}</text>
+                        </svg>
+                    `;
+
+                    return new google.maps.Marker({
+                        position,
+                        icon: {
+                            url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+                            scaledSize: new google.maps.Size(size, size),
+                            anchor: new google.maps.Point(size / 2, size / 2)
+                        },
+                        zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
+                    });
+                }
+            };
+
+            new ClustererClass({ map, markers, renderer });
         }
 
         if (!bounds.isEmpty()) {
