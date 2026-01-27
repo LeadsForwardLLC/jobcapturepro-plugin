@@ -3,10 +3,10 @@ services:
     image: mariadb:latest
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: "jcp_root_pass"
+      MYSQL_DATABASE: "jcp_db"
+      MYSQL_USER: "jcp_user"
+      MYSQL_PASSWORD: "jcp_pass"
     volumes:
       - db_data:/var/lib/mysql
 
@@ -18,9 +18,9 @@ services:
       - "8888:80" # browse at http://localhost:8888
     environment:
       WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: ${DB_USER}
-      WORDPRESS_DB_PASSWORD: ${DB_PASS}
-      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: "jcp_user"
+      WORDPRESS_DB_PASSWORD: "jcp_pass"
+      WORDPRESS_DB_NAME: "jcp_db"
     volumes:
       - ./:/var/www/html/wp-content/plugins/jobcapturepro
 
@@ -34,9 +34,9 @@ services:
       - ./:/var/www/html/wp-content/plugins/jobcapturepro
     environment:
       WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: ${DB_USER}
-      WORDPRESS_DB_PASSWORD: ${DB_PASS}
-      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: "jcp_user"
+      WORDPRESS_DB_PASSWORD: "jcp_pass"
+      WORDPRESS_DB_NAME: "jcp_db"
     working_dir: /var/www/html
 
 volumes:
