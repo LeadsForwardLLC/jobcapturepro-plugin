@@ -349,8 +349,9 @@ class JobCaptureProShortcodes
      */
     public function get_combined_components($atts)
     {
-        // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts($atts, 'jobcapturepro_combined');
+        // Global var to pass this shortcode's attributes to the load more script
+        global $jcp_combined_sc_atts;
+        $jcp_combined_sc_atts = $atts;
 
         // Check if companyid attribute was provided
         $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');

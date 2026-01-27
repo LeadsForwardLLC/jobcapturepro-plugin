@@ -645,10 +645,13 @@ class JobCaptureProTemplates
             true
         );
 
+        global $jcp_combined_sc_atts;
+
         // Pass company id to the load more script 
         wp_localize_script('jobcapturepro-checkins-load-more', 'jobcaptureproLoadMoreData', array(
-            'companyId' => $company_info['id'] ?? '',
+            'companyId' => $company_info['id'] ?? null,
             'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
+            'scAtts' => $jcp_combined_sc_atts ?? array(),
         ));
     }
 }
