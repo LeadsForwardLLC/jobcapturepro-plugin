@@ -50,8 +50,20 @@ class JobCaptureProShortcodes
     }
 
     /**
+     * Render a message when no check-ins are available to display
+     *
+     * @return string HTML message
+     */
+    private function render_no_checkins_message()
+    {
+        return '<p class="jobcapturepro-no-checkins">' .
+            esc_html__('There are no job check-ins to display', 'jobcapturepro') .
+            '</p>';
+    }
+
+    /**
      * Log API errors with context
-     * 
+     *
      * @param string $message Error message
      * @param string $context Additional context
      * @param array $data Optional data to log
@@ -234,13 +246,8 @@ class JobCaptureProShortcodes
      */
     public function get_checkin($atts)
     {
-        // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts(array(
-            'checkinid' => '',
-        ), $atts, 'jobcapturepro_checkin');
-
         // Check if checkinid attribute was provided
-        $checkin_id = JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin');
+        $checkin_id = isset($atts['checkinid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin') : null;
 
         if (!$checkin_id) {
             return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'jobcapturepro')) . '</div>';
@@ -256,6 +263,12 @@ class JobCaptureProShortcodes
         }
 
         $checkin = $result['data'];
+
+        // Check if checkin data is empty
+        if (empty($checkin)) {
+            return $this->render_no_checkins_message();
+        }
+
         return JobCaptureProTemplates::render_checkins_grid([$checkin]);
     }
 
@@ -288,6 +301,11 @@ class JobCaptureProShortcodes
             );
         }
 
+        // Check if there are any check-ins to display
+        if (empty($checkins)) {
+            return $this->render_no_checkins_message();
+        }
+
         return JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins);
     }
 
@@ -296,13 +314,8 @@ class JobCaptureProShortcodes
      */
     public function get_map($atts)
     {
-        // Sanitize and validate shortcode attributes
-        $atts = shortcode_atts(array(
-            'companyid' => '',
-        ), $atts);
-
         // Check if companyid attribute was provided
-        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
+        $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
 
         if ($company_id) {
             // Fetch specific company information using the direct endpoint
@@ -339,6 +352,11 @@ class JobCaptureProShortcodes
                 __('Invalid map data received. Please try again later.', 'jobcapturepro'),
                 'invalid_map_structure'
             );
+        }
+
+        // Check if there are any check-ins to display
+        if (($map_data['total'] ?? 0) === 0) {
+            return $this->render_no_checkins_message();
         }
 
         return JobCaptureProTemplates::render_map_conditionally($map_data, $company_info);
@@ -422,6 +440,13 @@ class JobCaptureProShortcodes
                 __('Invalid map data received. Please try again later.', 'jobcapturepro'),
                 'invalid_combined_map_structure'
             );
+        }
+
+        // Check if there are any check-ins to display
+        if (empty($checkins) && ($map_data['total'] ?? 0) === 0) {
+            $output = JobCaptureProTemplates::render_company_info($company_info);
+            $output .= $this->render_no_checkins_message();
+            return $output;
         }
 
         return JobCaptureProTemplates::render_combined_components(
