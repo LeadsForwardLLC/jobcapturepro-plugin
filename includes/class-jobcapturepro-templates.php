@@ -469,7 +469,7 @@ class JobCaptureProTemplates
             'jobcapturepro-map',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/map.min.js',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             true
         );
 
@@ -540,7 +540,7 @@ class JobCaptureProTemplates
             'jobcapturepro-map',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/map.min.css',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             'all'
         );
     }
@@ -556,7 +556,7 @@ class JobCaptureProTemplates
             'jobcapturepro-company-info-styles',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/company-info.min.css',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             'all'
         );
     }
@@ -572,7 +572,7 @@ class JobCaptureProTemplates
             'jobcapturepro-single-checkin',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/single-checkin.min.css',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             'all'
         );
     }
@@ -586,7 +586,7 @@ class JobCaptureProTemplates
             'jobcapturepro-checkins-grid',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/checkins-grid.min.css',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             'all'
         );
     }
@@ -611,7 +611,7 @@ class JobCaptureProTemplates
             'jobcapturepro-gallery',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/gallery.min.js',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             true
         );
     }
@@ -626,7 +626,7 @@ class JobCaptureProTemplates
             'jobcapturepro-checkins-grid',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/masonry-grid.min.js',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             true
         );
 
@@ -641,7 +641,7 @@ class JobCaptureProTemplates
             'jobcapturepro-checkins-load-more',
             JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/load-more.min.js',
             array(),
-            '1.0.0',
+            JOBCAPTUREPRO_VERSION,
             true
         );
 
