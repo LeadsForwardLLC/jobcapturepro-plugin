@@ -95,6 +95,9 @@ class JobCaptureProShortcodes
         // Sanitize all attributes
         $atts = array_map('sanitize_text_field', $atts);
 
+        // Apply default query param values (can be overridden via shortcode atts)
+        $atts = array_merge(array('minImages' => '1'), $atts);
+
         // Extract specific IDs for return value
         $checkin_id = isset($atts['checkinid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin') : null;
         $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
