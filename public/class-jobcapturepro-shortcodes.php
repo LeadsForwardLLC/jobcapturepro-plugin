@@ -22,6 +22,14 @@ class JobCaptureProShortcodes
 {
 
     /**
+     * Default query parameters per endpoint prefix.
+     * These are merged before shortcode atts, so atts can override them.
+     */
+    private $endpoint_defaults = array(
+        'checkins' => array('minImages' => '1', 'strict' => 'false', 'sortBy' => 'jobCompletedAt', 'sortOrder' => 'DESC'),
+    );
+
+    /**
      * Render a user-friendly error message
      * 
      * @param string $message The error message to display
@@ -94,6 +102,14 @@ class JobCaptureProShortcodes
     {
         // Sanitize all attributes
         $atts = array_map('sanitize_text_field', $atts);
+
+        // Apply endpoint-specific default query params (can be overridden via shortcode atts)
+        foreach ($this->endpoint_defaults as $prefix => $defaults) {
+            if (strncmp($endpoint, $prefix, strlen($prefix)) === 0) {
+                $atts = array_merge($defaults, $atts);
+                break;
+            }
+        }
 
         // Extract specific IDs for return value
         $checkin_id = isset($atts['checkinid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin') : null;
