@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Default params for checkins (can be overridden by shortcode atts below)
         params.set('minImages', '1');
         params.set('strict', 'false');
-        params.set('sortBy', 'jobCompletedAt');
+        params.set('sortBy', 'jobCompletedDate');
         params.set('sortOrder', 'DESC');
 
         // Append any shortcode attributes passed via localization

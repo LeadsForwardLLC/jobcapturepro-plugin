@@ -26,7 +26,7 @@ class JobCaptureProShortcodes
      * These are merged before shortcode atts, so atts can override them.
      */
     private $endpoint_defaults = array(
-        'checkins' => array('minImages' => '1', 'strict' => 'false', 'sortBy' => 'jobCompletedAt', 'sortOrder' => 'DESC'),
+        'checkins' => array('minImages' => '1', 'strict' => 'false', 'sortBy' => 'jobCompletedDate', 'sortOrder' => 'DESC'),
     );
 
     /**
