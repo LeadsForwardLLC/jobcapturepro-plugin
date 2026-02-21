@@ -84,8 +84,49 @@ class JobCaptureProShortcodes
     }
 
     /**
+     * Fetch all pages of map data and merge the features arrays into a single result.
+     *
+     * @param array $atts Shortcode attributes (should include pageSize)
+     * @return array|null Merged map data with all features, or null on error
+     */
+    private function fetch_all_map_pages($atts)
+    {
+        $atts['page'] = 1;
+        $result = $this->fetch_api_data('map', $atts);
+
+        if (!$result) {
+            return null;
+        }
+
+        $map_data = $result['data'];
+        $all_features = $map_data['locations']['features'] ?? [];
+
+        while (!empty($map_data['hasNext'])) {
+            $atts['page']++;
+            $next_result = $this->fetch_api_data('map', $atts);
+
+            if (!$next_result) {
+                break;
+            }
+
+            $map_data = $next_result['data'];
+            $next_features = $map_data['locations']['features'] ?? [];
+            $all_features = array_merge($all_features, $next_features);
+        }
+
+        // Replace the features in the final page's data with the merged set
+        $map_data['locations']['features'] = $all_features;
+
+        return array(
+            'checkin_id' => $result['checkin_id'],
+            'company_id' => $result['company_id'],
+            'data'       => $map_data,
+        );
+    }
+
+    /**
      * Helper method to fetch data from API with common logic
-     * 
+     *
      * @param string $endpoint The API endpoint (e.g., 'checkins', 'map')
      * @param array $atts Shortcode attributes
      * @return array|null Returns array with checkin_id, company_id, and API response data, or null on error
@@ -327,10 +368,10 @@ class JobCaptureProShortcodes
             $company_info = $company_result ? $company_result['data'] : null;
         }
 
-        // Fetch map data
+        // Fetch map data (all pages)
         $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
-        $map_result = $this->fetch_api_data('map', $map_atts);
+        $map_atts['pageSize'] = 100000;
+        $map_result = $this->fetch_all_map_pages($map_atts);
 
         if (!$map_result) {
             return $this->render_error_message(
@@ -416,10 +457,10 @@ class JobCaptureProShortcodes
             );
         }
 
-        // Fetch map data
+        // Fetch map data (all pages)
         $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
-        $map_result = $this->fetch_api_data('map', $map_atts);
+        $map_atts['pageSize'] = 100000;
+        $map_result = $this->fetch_all_map_pages($map_atts);
         if (!$map_result) {
             return $this->render_error_message(
                 __('Unable to load map data at this time. Please try again later.', 'jobcapturepro'),
