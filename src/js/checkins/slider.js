@@ -13,9 +13,11 @@
     if (vw < 1024) return 2;
     return 3;
   }
+
   function getViewportWidth(el) {
     return el && el.offsetWidth ? el.offsetWidth : 0;
   }
+
   function setSliderVars() {
     if (!sliderViewport || !sliderTrack) return;
     var cardsVisible = getCardsVisible();
@@ -33,12 +35,14 @@
     updateSliderPosition();
     updateSliderButtons(cardsVisible);
   }
+
   function updateSliderPosition() {
     if (!sliderTrack) return;
     var step =
       parseFloat(sliderTrack.style.getPropertyValue("--card-step")) || 324;
     sliderTrack.style.transform = "translateX(-" + currentIndex * step + "px)";
   }
+
   function updateSliderButtons(cardsVisible) {
     var visible = cardsVisible || getCardsVisible();
     if (sliderPrev) sliderPrev.disabled = currentIndex <= 0;
@@ -46,12 +50,14 @@
       sliderNext.disabled =
         totalCards <= visible || currentIndex >= totalCards - visible;
   }
+
   function goPrev() {
     if (currentIndex <= 0) return;
     currentIndex -= 1;
     updateSliderPosition();
     updateSliderButtons();
   }
+
   function goNext() {
     var visible = getCardsVisible();
     if (totalCards <= visible || currentIndex >= totalCards - visible) return;
@@ -64,7 +70,6 @@
     }
   }
 
-  // Exposed so load-more.js can call it after appending new cards
   window.jcpSliderRefresh = function () {
     setSliderVars();
     initCardCarousels();
@@ -135,7 +140,9 @@
 
   if (sliderPrev) sliderPrev.addEventListener("click", goPrev);
   if (sliderNext) sliderNext.addEventListener("click", goNext);
+
   var resizeTimeout;
+
   window.addEventListener("resize", function () {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(function () {
@@ -143,6 +150,7 @@
       initDescriptionToggles();
     }, 100);
   });
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       setSliderVars();
