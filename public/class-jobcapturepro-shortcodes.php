@@ -367,7 +367,7 @@ class JobCaptureProShortcodes
      */
     public function get_combined_components($atts)
     {
-        // Global var to pass this shortcode's attributes to the load more script
+        // Global var to pass this shortcode's attributes to the checkins pagination script
         global $jcp_combined_sc_atts;
         $jcp_combined_sc_atts = $atts;
 

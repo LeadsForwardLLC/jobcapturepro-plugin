@@ -6,7 +6,7 @@ module.exports = {
     entry: {
         'js/map': './src/js/map.js',
         'js/gallery': './src/js/gallery.js',
-        'js/checkins/load-more': './src/js/checkins/load-more.js',
+        'js/checkins/checkins-pagination': './src/js/checkins/checkins-pagination.js',
         'js/checkins/slider': './src/js/checkins/slider.js',
         'css/tailwind': './src/css/tailwind.css',
         'css/checkins-slider': './src/css/checkins-slider.css',

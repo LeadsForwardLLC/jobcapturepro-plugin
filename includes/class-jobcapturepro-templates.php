@@ -494,10 +494,10 @@ class JobCaptureProTemplates
             true
         );
 
-        // Enqueue load more script
+        // Enqueue checkins pagination script
         wp_enqueue_script(
-            'jobcapturepro-checkins-load-more',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/load-more.min.js',
+            'jobcapturepro-checkins-pagination',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/checkins-pagination.min.js',
             array(),
             JOBCAPTUREPRO_VERSION,
             true
@@ -505,8 +505,8 @@ class JobCaptureProTemplates
 
         global $jcp_combined_sc_atts;
 
-        // Pass company id to the load more script
-        wp_localize_script('jobcapturepro-checkins-load-more', 'jobcaptureproLoadMoreData', array(
+        // Pass data to the checkins pagination script
+        wp_localize_script('jobcapturepro-checkins-pagination', 'jobcaptureproLoadMoreData', array(
             'companyId' => $company_info['id'] ?? null,
             'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
             'scAtts' => $jcp_combined_sc_atts ?? array(),
