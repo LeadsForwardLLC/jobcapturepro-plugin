@@ -30,19 +30,19 @@ document.addEventListener("DOMContentLoaded", function () {
         params.set('page', String(currentPage + 1));
 
         // companyId if provided
-        if (jobcaptureproLoadMoreData.companyId) {
-            params.set('companyId', String(jobcaptureproLoadMoreData.companyId));
+        if (jobcaptureproPaginationData.companyId) {
+            params.set('companyId', String(jobcaptureproPaginationData.companyId));
         }
 
         // Append any shortcode attributes passed via localization
-        const scAtts = jobcaptureproLoadMoreData.scAtts || {};
+        const scAtts = jobcaptureproPaginationData.scAtts || {};
         Object.entries(scAtts).forEach(([key, value]) => {
             if (value === null || value === undefined) return;
             if (value.trim() !== '') params.append(key, String(value));
         });
 
         // Get base API URL and ensure it ends with a slash
-        let base = jobcaptureproLoadMoreData.baseApiUrl;
+        let base = jobcaptureproPaginationData.baseApiUrl;
         if (!base.endsWith('/')) base += '/';
 
         // Construct full URL

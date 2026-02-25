@@ -506,7 +506,7 @@ class JobCaptureProTemplates
         global $jcp_combined_sc_atts;
 
         // Pass data to the checkins pagination script
-        wp_localize_script('jobcapturepro-checkins-pagination', 'jobcaptureproLoadMoreData', array(
+        wp_localize_script('jobcapturepro-checkins-pagination', 'jobcaptureproPaginationData', array(
             'companyId' => $company_info['id'] ?? null,
             'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),
             'scAtts' => $jcp_combined_sc_atts ?? array(),
