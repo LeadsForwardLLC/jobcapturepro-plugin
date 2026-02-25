@@ -141,8 +141,8 @@ class JobCaptureProTemplates
         if ($checkin_id && count($checkins) === 1) {
             return JobCaptureProTemplates::render_single_checkin($checkins[0], $company_info);
         } else {
-            // Otherwise render as a grid of multiple checkins
-            return JobCaptureProTemplates::render_checkins_grid($checkins, $company_info);
+            // Otherwise render as a slider of multiple checkins
+            return JobCaptureProTemplates::render_checkins_slider($checkins, $company_info);
         }
     }
 
@@ -189,6 +189,9 @@ class JobCaptureProTemplates
         // Render checkins with conditional logic
         $output .= JobCaptureProTemplates::render_checkins_conditionally($checkin_id, $checkins, $company_info);
 
+        // Powered by footer
+        $output .= JobCapturePro_Template::render_template('powered-by-footer');
+
         $output .= '</div>';
 
         return $output;
@@ -201,7 +204,6 @@ class JobCaptureProTemplates
     {
         // Enqueue styles
         self::enqueue_single_checkin_styles();
-        self::enqueue_checkins_grid_styles();
 
         // 
         return JobCapturePro_Template::render_template('single-checkin', [
@@ -234,149 +236,33 @@ class JobCaptureProTemplates
     }
 
     /**
-     * Generate HTML for the checkins grid layout with items sorted by date (newest first)
-     * 
+     * Generate HTML for the checkins slider
+     *
      * @param array $checkins Array of checkin data
      * @param array $company_info Company data for stats
-     * @return string HTML for all checkins in a responsive grid
+     * @return string HTML for the checkins slider
      */
-    public static function render_checkins_grid($checkins, $company_info = array())
+    public static function render_checkins_slider($checkins, $company_info = array())
     {
-        // Generate unique ID for this grid instance
-        $gridId = 'jobcapturepro-checkins-grid-' . uniqid();
+        // Enqueue styles and scripts
+        self::enqueue_checkins_slider_styles();
+        self::enqueue_checkins_slider_script($company_info);
 
-        // Enqueue styles
-        self::enqueue_checkins_grid_styles();
-
-        // Add dynamic selectors styles
-        self::add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId);
-
-        // Enqueue scripts
-        self::enqueue_checkins_grid_script($gridId, $company_info);
-        self::enqueue_gallery_script();
-
-        $checkins_grid_html .= JobCapturePro_Template::render_template('checkins-grid', [
+        $checkins_slider_html = JobCapturePro_Template::render_template('checkins-slider', [
             'checkins' => $checkins,
             'company_info' => $company_info,
-            'gridId' => $gridId,
         ]);
 
         if (self::should_show_feature('show_company_stats', !empty($company_info['stats']))) {
-            $checkins_grid_html .= JobCapturePro_Template::render_template('company-stats', [
+            $checkins_slider_html .= JobCapturePro_Template::render_template('company-stats', [
                 'company_info' => $company_info,
             ]);
         }
 
-        //
-        return $checkins_grid_html;
-    }
-
-    /**
-     * Generate CSS styles for the checkins grid
-     * 
-     * @param string $gridId The unique ID for the grid
-     * @return string CSS styles for the checkins grid
-     */
-    private static function add_inline_dynamic_styles_to_checkins_grid_stylesheet($gridId = null)
-    {
-        $gridSelector = $gridId ? '.' . sanitize_html_class($gridId) : '.jobcapturepro-checkins-grid';
-
-        $dynamic_css = '
-            ' . $gridSelector . ' {
-                /* Keep masonry-style layout with CSS columns */
-                column-count: 3;
-                column-gap: 20px;
-                width: 100%;
-            }
-
-            /* Responsive design */
-            @media (max-width: 1024px) {
-                ' . $gridSelector . ' {
-                    column-count: 3;
-                }
-            }
-            
-            @media (max-width: 768px) {
-                ' . $gridSelector . ' {
-                    column-count: 2;
-                }
-            }
-            
-            @media (max-width: 480px) {
-                ' . $gridSelector . ' {
-                    column-count: 1;
-                }
-            }
-        ';
-
-        wp_add_inline_style('jobcapturepro-checkins-grid', $dynamic_css);
+        return $checkins_slider_html;
     }
 
 
-    /**
-     * Generate HTML for the address section
-     */
-    private static function render_address($address)
-    {
-        $output = '<div class="address" style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 15px;">';
-        $output .= '<p style="margin: 0;">' . esc_html($address['addressLine1']) . '<br>';
-        if (isset($address['city']) && isset($address['region']) && isset($address['postalCode'])) {
-            $output .= esc_html($address['city']) . ', ' . esc_html($address['region']) . ' ' . esc_html($address['postalCode']) . '<br>';
-        }
-        if (isset($address['countryCode'])) {
-            $output .= esc_html($address['countryCode']);
-        }
-        $output .= '</p>';
-        $output .= '</div>';
-        return $output;
-    }
-
-    /**
-     * Generate HTML for the images grid
-     */
-    private static function render_images_grid($imageUrls)
-    {
-        if (empty($imageUrls)) {
-            return '';
-        }
-
-        $output = '<div class="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">';
-        foreach ($imageUrls as $imageUrl) {
-            $output .= '<img src="' . esc_url($imageUrl) . '" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px;">';
-        }
-        $output .= '</div>';
-        return $output;
-    }
-
-    /**
-     * Generate HTML for the images gallery with navigation arrows
-     * 
-     * @param array $imageUrls Array of image URLs
-     * @return string HTML for the image gallery
-     */
-    private static function render_images_gallery($imageUrls)
-    {
-        if (empty($imageUrls) || !is_array($imageUrls)) {
-            return '';
-        }
-
-        $imageCount = count($imageUrls);
-        $showArrows = $imageCount > 1;
-        $galleryId = 'gallery-' . wp_rand();
-
-
-        if ($showArrows) {
-            // Enqueue gallery script only if there are multiple images
-            self::enqueue_gallery_script();
-        }
-
-        return JobCapturePro_Template::render_template('image-gallery', [
-            'imageUrls' => $imageUrls,
-            'imageCount' => $imageCount,
-            'showArrows' => $showArrows,
-            'galleryId' => $galleryId
-        ]);
-    }
 
     /**
      * Determine map bounds based on checkin locations
@@ -497,13 +383,8 @@ class JobCaptureProTemplates
             )
         );
 
-        // Enqueue styles for the map & checkins cards inside the map
+        // Enqueue styles for the map
         self::enqueue_map_styles();
-        self::enqueue_checkins_grid_styles();
-        self::add_inline_dynamic_styles_to_checkins_grid_stylesheet();
-
-        // Enqueue the gallery script
-        self::enqueue_gallery_script();
 
         //
         return $output;
@@ -578,14 +459,21 @@ class JobCaptureProTemplates
     }
 
     /**
-     * Enqueue checkins grid styles
+     * Enqueue checkins slider styles
      */
-    private static function enqueue_checkins_grid_styles()
+    private static function enqueue_checkins_slider_styles()
     {
         wp_enqueue_style(
-            'jobcapturepro-checkins-grid',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/checkins-grid.min.css',
+            'jobcapturepro-inter-font',
+            'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
             array(),
+            null
+        );
+
+        wp_enqueue_style(
+            'jobcapturepro-checkins-slider',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/checkins-slider.min.css',
+            array('jobcapturepro-inter-font'),
             JOBCAPTUREPRO_VERSION,
             'all'
         );
@@ -593,48 +481,18 @@ class JobCaptureProTemplates
 
 
     /**
-     * Enqueue JavaScript for image gallery functionality
-     * 
+     * Enqueue the slider JavaScript
      */
-    private static function enqueue_gallery_script()
+    private static function enqueue_checkins_slider_script($company_info)
     {
-        // Check if script has already been added to avoid duplication
-        static $scriptAdded = false;
-
-        if ($scriptAdded) {
-            return;
-        }
-
-        $scriptAdded = true;
-
+        // Enqueue slider script
         wp_enqueue_script(
-            'jobcapturepro-gallery',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/gallery.min.js',
+            'jobcapturepro-checkins-slider',
+            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/slider.min.js',
             array(),
             JOBCAPTUREPRO_VERSION,
             true
         );
-    }
-
-    /**
-     * Enqueue the masonry grid JavaScript
-     */
-    private static function enqueue_checkins_grid_script($gridId, $company_info)
-    {
-        // Enqueue masonry grid script
-        wp_enqueue_script(
-            'jobcapturepro-checkins-grid',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/js/checkins/masonry-grid.min.js',
-            array(),
-            JOBCAPTUREPRO_VERSION,
-            true
-        );
-
-        // Pass grid ID to JavaScript
-        wp_localize_script('jobcapturepro-checkins-grid', 'jobcaptureproGridData', array(
-            'gridId' => $gridId
-        ));
-
 
         // Enqueue load more script
         wp_enqueue_script(
@@ -647,7 +505,7 @@ class JobCaptureProTemplates
 
         global $jcp_combined_sc_atts;
 
-        // Pass company id to the load more script 
+        // Pass company id to the load more script
         wp_localize_script('jobcapturepro-checkins-load-more', 'jobcaptureproLoadMoreData', array(
             'companyId' => $company_info['id'] ?? null,
             'baseApiUrl' => JobCaptureProAPI::get_wp_plugin_api_base_url(),

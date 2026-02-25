@@ -7,9 +7,9 @@ module.exports = {
         'js/map': './src/js/map.js',
         'js/gallery': './src/js/gallery.js',
         'js/checkins/load-more': './src/js/checkins/load-more.js',
-        'js/checkins/masonry-grid': './src/js/checkins/masonry-grid.js',
+        'js/checkins/slider': './src/js/checkins/slider.js',
         'css/tailwind': './src/css/tailwind.css',
-        'css/checkins-grid': './src/css/checkins-grid.css',
+        'css/checkins-slider': './src/css/checkins-slider.css',
         'css/company-info': './src/css/company-info.css',
         'css/map': './src/css/map.css',
         'css/single-checkin': './src/css/single-checkin.css'

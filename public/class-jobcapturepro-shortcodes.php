@@ -269,7 +269,7 @@ class JobCaptureProShortcodes
             return $this->render_no_checkins_message();
         }
 
-        return JobCaptureProTemplates::render_checkins_grid([$checkin]);
+        return JobCaptureProTemplates::render_checkins_slider([$checkin]);
     }
 
     /**
@@ -363,7 +363,7 @@ class JobCaptureProShortcodes
     }
 
     /**
-     * Shortcode to display combined components (checkins grid + multimap)
+     * Shortcode to display combined components (checkins slider + multimap)
      */
     public function get_combined_components($atts)
     {
