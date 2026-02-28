@@ -110,28 +110,28 @@ document.addEventListener("DOMContentLoaded", function () {
         let galleryHtml = '';
         if (hasImages) {
             const slidesHtml = imageUrls.map((url, i) => `
-                <div class="jcp-plugin-card__slide${i === 0 ? ' is-active' : ''}">
-                    <img src="${escape(url)}" alt="" width="400" height="260" loading="${i === 0 ? 'eager' : 'lazy'}">
+                <div class="jcp-plugin-card__slide ${i === 0 ? 'jcp:opacity-100 jcp:visible' : 'jcp:opacity-0 jcp:invisible'}">
+                    <img src="${escape(url)}" alt="" width="400" height="260" class="jcp:w-full jcp:h-full jcp:object-cover jcp:block" loading="${i === 0 ? 'eager' : 'lazy'}">
                 </div>`).join('');
 
             const navHtml = hasGallery ? `
-                <button type="button" class="jcp-plugin-card__nav jcp-plugin-card__nav--prev" aria-label="Previous image">
+                <button type="button" class="jcp-plugin-card__nav jcp-plugin-card__nav--prev jcp:left-2" aria-label="Previous image">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
-                <button type="button" class="jcp-plugin-card__nav jcp-plugin-card__nav--next" aria-label="Next image">
+                <button type="button" class="jcp-plugin-card__nav jcp-plugin-card__nav--next jcp:right-2" aria-label="Next image">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
-                <div class="jcp-plugin-card__dots">
+                <div class="jcp-plugin-card__dots jcp:absolute jcp:bottom-2 jcp:left-1/2 jcp:-translate-x-1/2 jcp:flex jcp:gap-1.5 jcp:z-2">
                     ${imageUrls.map((_, i) => `
                         <button type="button"
-                                class="jcp-plugin-card__dot${i === 0 ? ' is-active' : ''}"
+                                class="jcp-plugin-card__dot"
                                 aria-label="Image ${i + 1}"></button>
                     `).join('')}
                 </div>` : '';
 
             galleryHtml = `
-                <div class="jcp-plugin-card__gallery"${hasGallery ? ' data-carousel' : ''}>
-                    <div class="jcp-plugin-card__gallery-inner">
+                <div class="jcp-plugin-card__gallery jcp:relative jcp:w-full jcp:aspect-400/260 jcp:overflow-hidden jcp:bg-[#f3f4f6]"${hasGallery ? ' data-carousel' : ''}>
+                    <div class="jcp-plugin-card__gallery-inner jcp:relative jcp:w-full jcp:h-full">
                         ${slidesHtml}
                     </div>
                     ${navHtml}
@@ -139,12 +139,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return `
-        <article class="jcp-plugin-card">
+        <article class="jcp-plugin-card jcp:group jcp:flex-[0_0_var(--card-width,300px)] jcp:min-w-0 jcp:bg-white jcp:rounded-xl jcp:overflow-hidden jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
             ${galleryHtml}
-            <div class="jcp-plugin-card__body">
-                <p class="jcp-plugin-card__description" data-desc-text>${nl2br(checkin.description || '')}</p>
-                <button type="button" class="jcp-plugin-card__toggle" data-desc-toggle hidden aria-expanded="false">Read more</button>
-                <div class="jcp-plugin-card__meta">
+            <div class="jcp-plugin-card__body jcp:p-6 jcp:border-2 jcp:border-[#e5e7eb] jcp:border-t-0 jcp:rounded-b-xl">
+                <p class="jcp-plugin-card__description jcp:text-[17px] jcp:leading-[1.6] jcp:text-[#111827] jcp:mb-2 jcp:line-clamp-4 jcp:overflow-hidden" data-desc-text>${nl2br(checkin.description || '')}</p>
+                <button type="button" class="jcp-plugin-card__toggle jcp:border-0 jcp:bg-transparent jcp:text-accent jcp:text-sm jcp:font-semibold jcp:p-0 jcp:mb-4 jcp:cursor-pointer jcp:hover:underline" data-desc-toggle hidden aria-expanded="false">Read more</button>
+                <div class="jcp-plugin-card__meta jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:pt-4 jcp:border-t jcp:border-[#e5e7eb] jcp:text-sm jcp:text-[#6b7280]">
                     <span class="jcp-plugin-card__meta-item jcp-plugin-card__date">
                         <svg class="jcp-plugin-card__meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="M8 2v4"/><path d="M16 2v4"/>
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         </svg>
                         ${escape(formattedDate)}
                     </span>
-                    <span class="jcp-plugin-card__meta-item jcp-plugin-card__location">
+                    <span class="jcp-plugin-card__meta-item jcp-plugin-card__location jcp:font-semibold jcp:text-[#111827]">
                         <svg class="jcp-plugin-card__meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 1 1 16 0Z"/>
                             <circle cx="12" cy="10" r="3"/>

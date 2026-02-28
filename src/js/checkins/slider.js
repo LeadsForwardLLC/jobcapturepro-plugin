@@ -93,10 +93,22 @@
           if (i >= total) i = 0;
           active = i;
           slides.forEach(function (slide, idx) {
-            slide.classList.toggle("is-active", idx === active);
+            if (idx === active) {
+              slide.classList.add("jcp:opacity-100", "jcp:visible");
+              slide.classList.remove("jcp:opacity-0", "jcp:invisible");
+            } else {
+              slide.classList.add("jcp:opacity-0", "jcp:invisible");
+              slide.classList.remove("jcp:opacity-100", "jcp:visible");
+            }
           });
           dots.forEach(function (dot, idx) {
-            dot.classList.toggle("is-active", idx === active);
+            if (idx === active) {
+              dot.classList.add("jcp:bg-white", "jcp:scale-[1.2]");
+              dot.classList.remove("jcp:bg-white/60");
+            } else {
+              dot.classList.add("jcp:bg-white/60");
+              dot.classList.remove("jcp:bg-white", "jcp:scale-[1.2]");
+            }
           });
         }
         if (prevBtn)
@@ -122,13 +134,22 @@
       if (!text || !toggle) return;
       if (!toggle.dataset.bound) {
         toggle.addEventListener("click", function () {
-          var expanded = text.classList.toggle("is-expanded");
-          toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-          toggle.textContent = expanded ? "Show less" : "Read more";
+          var expanded = text.classList.contains("jcp:line-clamp-none");
+          if (expanded) {
+            text.classList.remove("jcp:line-clamp-none", "jcp:overflow-visible");
+            text.classList.add("jcp:line-clamp-4", "jcp:overflow-hidden");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.textContent = "Read more";
+          } else {
+            text.classList.add("jcp:line-clamp-none", "jcp:overflow-visible");
+            text.classList.remove("jcp:line-clamp-4", "jcp:overflow-hidden");
+            toggle.setAttribute("aria-expanded", "true");
+            toggle.textContent = "Show less";
+          }
         });
         toggle.dataset.bound = "1";
       }
-      if (text.classList.contains("is-expanded")) {
+      if (text.classList.contains("jcp:line-clamp-none")) {
         toggle.hidden = false;
         return;
       }

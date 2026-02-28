@@ -89,7 +89,7 @@ class JobCaptureProTemplates
     {
         if (defined('WP_DEBUG') && WP_DEBUG && current_user_can('manage_options')) {
             return sprintf(
-                '<div class="jobcapturepro-template-error" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9;">
+                '<div class="jcp-template-error" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9;">
                     <strong>Template Error:</strong> %s
                     %s
                 </div>',
@@ -98,7 +98,7 @@ class JobCaptureProTemplates
             );
         }
 
-        return '<div class="jobcapturepro-unavailable">' .
+        return '<div class="jcp-unavailable">' .
             esc_html__('Content is temporarily unavailable. Please try again later.', 'jobcapturepro') .
             '</div>';
     }
@@ -178,7 +178,7 @@ class JobCaptureProTemplates
      */
     public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id)
     {
-        $output = '<div class="jobcapturepro-combined-components">';
+        $output = '<div class="jcp-combined-components">';
 
         // Render the company info section
         $output .= JobCaptureProTemplates::render_company_info($company_info);
@@ -202,10 +202,7 @@ class JobCaptureProTemplates
      */
     public static function render_single_checkin($checkin, $company_info = array())
     {
-        // Enqueue styles
-        self::enqueue_single_checkin_styles();
-
-        // 
+        //
         return JobCapturePro_Template::render_template('single-checkin', [
             'checkin' => $checkin,
             'company_info' => $company_info,
@@ -244,8 +241,6 @@ class JobCaptureProTemplates
      */
     public static function render_checkins_slider($checkins, $company_info = array())
     {
-        // Enqueue styles and scripts
-        self::enqueue_checkins_slider_styles();
         self::enqueue_checkins_slider_script($company_info);
 
         $checkins_slider_html = JobCapturePro_Template::render_template('checkins-slider', [
@@ -329,7 +324,7 @@ class JobCaptureProTemplates
         $centerLng = ($minLng + $maxLng) / 2;
 
         // Start building HTML output
-        $output = '<div id="jobcapturepro-map" class="jobcapturepro-map"></div>';
+        $output = '<div id="jcp-map" class="jcp-map jcp:h-[500px] jcp:max-[480px]:h-[400px] jcp:w-full jcp:rounded-xl jcp:overflow-hidden jcp:mx-auto"></div>';
 
         // Generate unique markers data with properties
         $markersData = array();
@@ -383,9 +378,6 @@ class JobCaptureProTemplates
             )
         );
 
-        // Enqueue styles for the map
-        self::enqueue_map_styles();
-
         //
         return $output;
     }
@@ -403,82 +395,9 @@ class JobCaptureProTemplates
             return '';
         }
 
-        // Enqueue styles 
-        self::enqueue_company_info_styles();
-
-        // 
+        //
         return JobCapturePro_Template::render_template('company-info', ["company_info" => $company_info]);
     }
-
-    /**
-     * Enqueue styles for the map
-     * 
-     * @return void
-     */
-    private static function enqueue_map_styles()
-    {
-        wp_enqueue_style(
-            'jobcapturepro-map',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/map.min.css',
-            array(),
-            JOBCAPTUREPRO_VERSION,
-            'all'
-        );
-    }
-
-    /**
-     * Enqueue styles for company info
-     * 
-     * @return void
-     */
-    private static function enqueue_company_info_styles()
-    {
-        wp_enqueue_style(
-            'jobcapturepro-company-info-styles',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/company-info.min.css',
-            array(),
-            JOBCAPTUREPRO_VERSION,
-            'all'
-        );
-    }
-
-    /**
-     * Enqueue styles for single checkin
-     * 
-     * @return void
-     */
-    private static function enqueue_single_checkin_styles()
-    {
-        wp_enqueue_style(
-            'jobcapturepro-single-checkin',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/single-checkin.min.css',
-            array(),
-            JOBCAPTUREPRO_VERSION,
-            'all'
-        );
-    }
-
-    /**
-     * Enqueue checkins slider styles
-     */
-    private static function enqueue_checkins_slider_styles()
-    {
-        wp_enqueue_style(
-            'jobcapturepro-inter-font',
-            'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-            array(),
-            null
-        );
-
-        wp_enqueue_style(
-            'jobcapturepro-checkins-slider',
-            JOBCAPTUREPRO_PLUGIN_URL . 'dist/css/checkins-slider.min.css',
-            array('jobcapturepro-inter-font'),
-            JOBCAPTUREPRO_VERSION,
-            'all'
-        );
-    }
-
 
     /**
      * Enqueue the slider JavaScript
