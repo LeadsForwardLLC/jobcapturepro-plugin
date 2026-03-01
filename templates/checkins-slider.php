@@ -11,9 +11,7 @@ if (! defined('ABSPATH')) {
     <div class="jcp-plugin-slider jcp:relative jcp:px-14">
 
         <button type="button" class="jcp-plugin-slider__btn jcp-plugin-slider__btn--prev jcp:left-0" id="jcp-plugin-slider-prev" aria-label="Previous check-ins">
-            <svg class="jcp:block" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6"/>
-            </svg>
+            <?php echo jcp_icon('chevron-left', 24, 'jcp:block'); ?>
         </button>
 
         <div class="jcp-plugin-slider__viewport jcp:w-full jcp:min-w-0 jcp:overflow-hidden">
@@ -28,9 +26,7 @@ if (! defined('ABSPATH')) {
         </div>
 
         <button type="button" class="jcp-plugin-slider__btn jcp-plugin-slider__btn--next jcp:right-0" id="jcp-plugin-slider-next" aria-label="Next check-ins">
-            <svg class="jcp:block" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M9 18l6-6-6-6"/>
-            </svg>
+            <?php echo jcp_icon('chevron-right', 24, 'jcp:block'); ?>
         </button>
 
     </div>

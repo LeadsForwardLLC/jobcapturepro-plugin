@@ -35,14 +35,10 @@ $has_gallery   = $has_images && count($image_urls) > 1;
 
         <?php if ($has_gallery) : ?>
             <button type="button" class="jcp-plugin-card__nav jcp-plugin-card__nav--prev jcp:left-2" aria-label="Previous image">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
+                <?php echo jcp_icon('chevron-left', 20); ?>
             </button>
             <button type="button" class="jcp-plugin-card__nav jcp-plugin-card__nav--next jcp:right-2" aria-label="Next image">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 18l6-6-6-6"/>
-                </svg>
+                <?php echo jcp_icon('chevron-right', 20); ?>
             </button>
             <div class="jcp-plugin-card__dots jcp:absolute jcp:bottom-2 jcp:left-1/2 jcp:-translate-x-1/2 jcp:flex jcp:gap-1.5 jcp:z-2">
                 <?php foreach ($image_urls as $i => $url) : ?>
@@ -60,18 +56,11 @@ $has_gallery   = $has_images && count($image_urls) > 1;
         <button type="button" class="jcp-plugin-card__toggle jcp:border-0 jcp:bg-transparent jcp:text-accent jcp:text-sm jcp:font-semibold jcp:p-0 jcp:mb-4 jcp:cursor-pointer jcp:hover:underline" data-desc-toggle hidden aria-expanded="false">Read more</button>
         <div class="jcp-plugin-card__meta jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:pt-4 jcp:border-t jcp:border-[#e5e7eb] jcp:text-sm jcp:text-[#6b7280]">
             <span class="jcp-plugin-card__meta-item jcp-plugin-card__date">
-                <svg class="jcp-plugin-card__meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M8 2v4"/><path d="M16 2v4"/>
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <path d="M3 10h18"/>
-                </svg>
+                <?php echo jcp_icon('calendar', 14, 'jcp-plugin-card__meta-icon'); ?>
                 <?php echo esc_html(gmdate('F j, Y', $timestamp)); ?>
             </span>
             <span class="jcp-plugin-card__meta-item jcp-plugin-card__location jcp:font-semibold jcp:text-[#111827]">
-                <svg class="jcp-plugin-card__meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 1 1 16 0Z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
+                <?php echo jcp_icon('map-pin', 14, 'jcp-plugin-card__meta-icon'); ?>
                 Near <?php echo esc_html($city . ', ' . $state_abbr); ?>
             </span>
         </div>
