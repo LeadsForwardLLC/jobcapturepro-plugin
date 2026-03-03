@@ -162,25 +162,20 @@
   if (sliderPrev) sliderPrev.addEventListener("click", goPrev);
   if (sliderNext) sliderNext.addEventListener("click", goNext);
 
-  var resizeTimeout;
-
-  window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function () {
-      setSliderVars();
-      initDescriptionToggles();
-    }, 100);
-  });
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () {
-      setSliderVars();
-      initCardCarousels();
-      initDescriptionToggles();
-    });
-  } else {
-    setSliderVars();
+  function init() {
     initCardCarousels();
     initDescriptionToggles();
+  }
+
+  if (sliderViewport) {
+    new ResizeObserver(function () {
+      setSliderVars();
+    }).observe(sliderViewport);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
   }
 })();
