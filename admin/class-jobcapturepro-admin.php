@@ -93,7 +93,7 @@ class JobCaptureProAdmin
 ?>
 		<p id="<?php echo esc_attr($args['id']); ?>">
 			<?php esc_html_e('Account settings can be found in the  ', 'jobcapturepro'); ?>
-			<a href="https://app.jobcapturepro.com/" target="_blank">JobCapturePro App Dashboard</a>
+			<a href="https://production--jobcapturepro.us-east4.hosted.app/" target="_blank">JobCapturePro App Dashboard</a>
 		</p>
 	<?php
 	}
