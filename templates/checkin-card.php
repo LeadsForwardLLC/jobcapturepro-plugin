@@ -52,9 +52,10 @@ $has_gallery   = $has_images && count($image_urls) > 1;
     <?php endif; ?>
 
     <div class="jcp-plugin-card__body jcp:p-6 jcp:border-2 jcp:border-[#e5e7eb] jcp:border-t-0 jcp:rounded-b-xl">
-        <p class="jcp-plugin-card__description jcp:text-[17px] jcp:leading-[1.6] jcp:text-[#111827] jcp:mb-2 jcp:line-clamp-4 jcp:overflow-hidden" data-desc-text><?php echo nl2br(esc_html($checkin['description'] ?? '')); ?></p>
-        <button type="button" class="jcp-plugin-card__toggle jcp:border-0 jcp:bg-transparent jcp:text-accent jcp:text-sm jcp:font-semibold jcp:p-0 jcp:mb-4 jcp:cursor-pointer jcp:hover:underline" data-desc-toggle hidden aria-expanded="false">Read more</button>
-        <div class="jcp-plugin-card__meta jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:pt-4 jcp:border-t jcp:border-[#e5e7eb] jcp:text-sm jcp:text-[#6b7280]">
+        <p class="jcp-plugin-card__description jcp:text-[17px] jcp:leading-[1.6] jcp:text-[#111827] jcp:m-0 jcp:line-clamp-4 jcp:overflow-hidden" data-desc-text><?php echo nl2br(esc_html($checkin['description'] ?? '')); ?></p>
+        <button type="button" class="jcp-plugin-card__toggle jcp:border-0 jcp:bg-transparent jcp:text-accent jcp:text-sm jcp:font-semibold jcp:p-0 jcp:cursor-pointer jcp:hover:underline" data-desc-toggle hidden aria-expanded="false">Read more</button>
+        <hr class="jcp:border-0 jcp:border-t jcp:border-[#e5e7eb] jcp:my-4">
+        <div class="jcp-plugin-card__meta jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:text-xs jcp:md:text-sm jcp:text-[#6b7280]">
             <span class="jcp-plugin-card__meta-item jcp-plugin-card__date">
                 <?php echo jcp_icon('calendar', 14, 'jcp-plugin-card__meta-icon'); ?>
                 <?php echo esc_html(gmdate('F j, Y', $timestamp)); ?>
