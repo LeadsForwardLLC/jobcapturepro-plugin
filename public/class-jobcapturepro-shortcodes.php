@@ -269,7 +269,7 @@ class JobCaptureProShortcodes
             return $this->render_no_checkins_message();
         }
 
-        return JobCaptureProTemplates::render_checkins_grid([$checkin]);
+        return JobCaptureProTemplates::render_checkins_slider([$checkin]);
     }
 
     /**
@@ -277,6 +277,10 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
+        $atts = shortcode_atts(array(
+            'pagesize' => '25',
+        ), $atts, 'jobcapturepro_checkins');
+
         $result = $this->fetch_api_data('checkins', $atts);
         if (!$result) {
             return $this->render_error_message(
@@ -363,11 +367,15 @@ class JobCaptureProShortcodes
     }
 
     /**
-     * Shortcode to display combined components (checkins grid + multimap)
+     * Shortcode to display combined components (checkins slider + multimap)
      */
     public function get_combined_components($atts)
     {
-        // Global var to pass this shortcode's attributes to the load more script
+        $atts = shortcode_atts(array(
+            'pagesize' => '25',
+        ), $atts, 'jobcapturepro_combined');
+
+        // Global var to pass this shortcode's attributes to the checkins pagination script
         global $jcp_combined_sc_atts;
         $jcp_combined_sc_atts = $atts;
 
