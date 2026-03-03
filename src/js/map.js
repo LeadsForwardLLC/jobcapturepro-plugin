@@ -1,9 +1,9 @@
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
-import { Star, Calendar } from 'lucide';
+import { createElement, Star, Calendar } from 'lucide';
 
 function lucideSvg(icon, size, cssClass) {
-    const el = icon.createElement({ width: size, height: size });
+    const el = createElement(icon, { width: size, height: size });
     if (cssClass) el.setAttribute('class', cssClass);
     el.setAttribute('aria-hidden', 'true');
     return el.outerHTML;
@@ -24,21 +24,24 @@ async function initJobCaptureProMap() {
         let currentInfoWindow = null;
 
         // Create the map
+        const isMobile = window.innerWidth < 768;
         const map = new Map(document.getElementById("jcp-map"), {
             center: { lat: parseFloat(jobcaptureproMapData.centerLat), lng: parseFloat(jobcaptureproMapData.centerLng) },
-            zoom: 10,
+            zoom: isMobile ? 2 : 10,
             mapId: "f4a15cb6cd4f8d61",
             gestureHandling: 'greedy',
         });
 
-        // Define bounds for the map
-        const bounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(parseFloat(jobcaptureproMapData.minLat), parseFloat(jobcaptureproMapData.minLng)),
-            new google.maps.LatLng(parseFloat(jobcaptureproMapData.maxLat), parseFloat(jobcaptureproMapData.maxLng))
-        );
+        if (!isMobile) {
+            // Define bounds for the map
+            const bounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(parseFloat(jobcaptureproMapData.minLat), parseFloat(jobcaptureproMapData.minLng)),
+                new google.maps.LatLng(parseFloat(jobcaptureproMapData.maxLat), parseFloat(jobcaptureproMapData.maxLng))
+            );
 
-        // Fit the map to these bounds
-        map.fitBounds(bounds);
+            // Fit the map to these bounds
+            map.fitBounds(bounds);
+        }
 
         // Markers data
         const markersData = jobcaptureproMapData.markersData;
@@ -126,7 +129,7 @@ async function initJobCaptureProMap() {
                 `
             });
 
-            marker.addListener("click", () => {
+            marker.addListener("gmp-click", () => {
                 // Close any currently open info window
                 if (currentInfoWindow) {
                     currentInfoWindow.close();

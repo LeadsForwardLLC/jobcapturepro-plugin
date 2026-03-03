@@ -1,7 +1,7 @@
-import { Calendar, MapPin, ChevronLeft, ChevronRight } from 'lucide';
+import { createElement, Calendar, MapPin, ChevronLeft, ChevronRight } from 'lucide';
 
 function lucideSvg(icon, size, cssClass) {
-    const el = icon.createElement({ width: size, height: size });
+    const el = createElement(icon, { width: size, height: size });
     if (cssClass) el.setAttribute('class', cssClass);
     el.setAttribute('aria-hidden', 'true');
     return el.outerHTML;
