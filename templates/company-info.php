@@ -28,8 +28,8 @@ if ($has_url) {
         <div class="jcp-company-div-2 jcp:flex jcp:flex-wrap jcp:items-center jcp:gap-x-1 jcp:gap-y-1">
             <div class="jcp-company-reviews-text">
                 <p class="jcp:flex jcp:items-center jcp:gap-1.5 jcp:m-0">
-                    <?php echo jcp_icon('star', 18); ?>
-                    <span>No Reviews</span>
+                    <?php echo jcp_icon('star', 14); ?>
+                    <span class="jcp:text-sm jcp:text-[#444]">No Reviews</span>
                 </p>
             </div>
 
