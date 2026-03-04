@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const stateAbbr = state.length > 2 ? state.substring(0, 2) : state;
 
         // Process date
-        const timestamp = new Date(checkin.createdAt);
+        const timestamp = new Date(checkin.jobCompletedDate || checkin.createdAt);
         const formattedDate = timestamp.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
