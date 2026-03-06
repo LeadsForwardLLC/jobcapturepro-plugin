@@ -160,7 +160,7 @@ class JobCaptureProTemplates
         $maps_api_key = isset($map_data['googleMapsApiKey']['value']) ? $map_data['googleMapsApiKey']['value'] : '';
 
         // Render the map
-        return JobCaptureProTemplates::render_map($locations, $maps_api_key, $company_info);
+        return JobCaptureProTemplates::render_map($locations, $maps_api_key, $company_info, $map_data);
     }
 
 
@@ -306,7 +306,7 @@ class JobCaptureProTemplates
      * @param array $locations The location data as defined by geopoints in RFC 7946
      * @return string HTML for a Google Maps map with multiple markers
      */
-    public static function render_map($locations, $maps_api_key, $company_info = array())
+    public static function render_map($locations, $maps_api_key, $company_info = array(), $map_data = array())
     {
         // Check for required fields
         if (empty($locations)) {
@@ -375,6 +375,10 @@ class JobCaptureProTemplates
                 'maxLat' => (float)$maxLat,
                 'maxLng' => (float)$maxLng,
                 'markersData' => $markersData,
+                'hasNext'     => $map_data['hasNext'] ?? false,
+                'totalPages'  => $map_data['totalPages'] ?? 1,
+                'pageSize'    => $map_data['pageSize'] ?? 100,
+                'companyId'   => $company_info['id'] ?? null,
             )
         );
 

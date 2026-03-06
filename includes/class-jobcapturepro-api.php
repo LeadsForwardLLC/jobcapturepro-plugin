@@ -128,6 +128,13 @@ class JobCaptureProAPI
                 ),
             )
         ));
+
+        // Register map route
+        register_rest_route($this->namespace, '/map', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_map'),
+            'permission_callback' => '__return_true',
+        ));
     }
 
     /**
@@ -194,6 +201,16 @@ class JobCaptureProAPI
 
         // Make the request
         return $this->make_api_request($url, 'checkin');
+    }
+
+    /**
+     * Map endpoint
+     */
+    public function get_map($request)
+    {
+        $query = http_build_query($request->get_query_params());
+        $url = $this->jcp_api_base_url . "map?" . $query;
+        return $this->make_api_request($url, 'map');
     }
 
     /**
