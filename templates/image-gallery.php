@@ -9,7 +9,7 @@ $maxImagesToDisplay = 5;
 
 ?>
 
-<div class="jobcapturepro-checkin-image">
+<div class="jcp-checkin-image">
     <!-- Add all images but only first is visible initially -->
     <?php foreach ($imageUrls as $index => $imageUrl): ?>
         <?php if ($index >= $maxImagesToDisplay) break; ?>
