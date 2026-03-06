@@ -200,7 +200,7 @@ async function initJobCaptureProMap() {
                                 <div class="jcp-checkin-date">
                                     <p class="date-icon jcp:my-[5px] jcp:text-xs jcp:text-[#666]">
                                         ${lucideSvg(Calendar, 12)}
-                                        ${data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US',
+                                        ${(data.jobCompletedDate || data.createdAt) ? new Date(data.jobCompletedDate || data.createdAt).toLocaleDateString('en-US',
                             {
                                 year: 'numeric',
                                 month: 'long',
@@ -321,7 +321,7 @@ async function initJobCaptureProMap() {
                                         <div class="jcp-checkin-date">
                                             <p class="date-icon jcp:my-[5px] jcp:text-xs jcp:text-[#666]">
                                                 ${lucideSvg(Calendar, 12)}
-                                                ${d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date not available'}
+                                                ${(d.jobCompletedDate || d.createdAt) ? new Date(d.jobCompletedDate || d.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date not available'}
                                             </p>
                                         </div>
                                         ${d.address ? `
