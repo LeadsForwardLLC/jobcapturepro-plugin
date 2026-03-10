@@ -16,7 +16,7 @@ $state = trim($address_parts[2] ?? ''); // State (full name)
 $state_abbr = strlen($state) > 2 ? substr($state, 0, 2) : $state;
 
 // Process date
-$timestamp = strtotime($checkin['createdAt']);
+$timestamp = strtotime($checkin['jobCompletedDate'] ?? $checkin['createdAt']);
 
 ?>
 
