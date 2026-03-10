@@ -28,11 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
             params.set('companyId', String(jobcaptureproLoadMoreData.companyId));
         }
 
+        // Default params for checkins (can be overridden by shortcode atts below)
+        params.set('minImages', '1');
+        params.set('strict', 'false');
+        params.set('sortBy', 'jobCompletedDate');
+        params.set('sortOrder', 'DESC');
+
         // Append any shortcode attributes passed via localization
         const scAtts = jobcaptureproLoadMoreData.scAtts || {};
         Object.entries(scAtts).forEach(([key, value]) => {
             if (value === null || value === undefined) return;
-            if (value.trim() !== '') params.append(key, String(value));
+            if (value.trim() !== '') params.set(key, String(value));
         });
 
         // Get base API URL and ensure it ends with a slash
