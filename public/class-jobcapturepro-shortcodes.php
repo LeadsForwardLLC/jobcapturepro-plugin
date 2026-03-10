@@ -345,7 +345,7 @@ class JobCaptureProShortcodes
 
         // Fetch map data
         $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
+        $map_atts['pageSize'] = 100;
         $map_result = $this->fetch_api_data('map', $map_atts);
 
         if (!$map_result) {
@@ -434,7 +434,7 @@ class JobCaptureProShortcodes
 
         // Fetch map data
         $map_atts = $atts;
-        $map_atts['pageSize'] = 1000;
+        $map_atts['pageSize'] = 100;
         $map_result = $this->fetch_api_data('map', $map_atts);
         if (!$map_result) {
             return $this->render_error_message(
