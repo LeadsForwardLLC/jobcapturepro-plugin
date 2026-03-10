@@ -70,6 +70,7 @@ PROD_FILES=(
     includes/class-jobcapturepro-templates.php
     includes/class-jobcapturepro.php
     includes/class-template-loader.php
+    includes/helpers.php
     includes/index.php
     public/class-jobcapturepro-shortcodes.php
     public/index.php
