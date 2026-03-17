@@ -15,24 +15,52 @@
 
 /* --- Checkin Card --- */
 
+.jcp-plugin-card__gallery {
+    @apply jcp:relative jcp:w-full jcp:aspect-400/260 jcp:overflow-hidden jcp:bg-[#f3f4f6];
+}
+
+.jcp-plugin-card__gallery-inner {
+    @apply jcp:relative jcp:w-full jcp:h-full;
+}
+
 .jcp-plugin-card__slide {
     @apply jcp:absolute jcp:inset-0 jcp:transition-[opacity,visibility] jcp:duration-250;
+}
+
+.jcp-plugin-card__slide img {
+    @apply jcp:w-full jcp:h-full jcp:object-cover jcp:block;
 }
 
 .jcp-plugin-card__nav {
     @apply jcp:absolute jcp:top-1/2 jcp:-translate-y-1/2 jcp:w-9 jcp:h-9 jcp:inline-flex jcp:items-center jcp:justify-center jcp:border-none jcp:rounded-full jcp:bg-white/90 jcp:text-[#111827] jcp:cursor-pointer jcp:shadow-[0_2px_8px_rgba(0,0,0,0.15)] jcp:transition-[background,transform] jcp:duration-200 jcp:hover:bg-white jcp:hover:scale-[1.08] jcp:z-2;
 }
 
+.jcp-plugin-card__dots {
+    @apply jcp:absolute jcp:bottom-2 jcp:left-1/2 jcp:-translate-x-1/2 jcp:flex jcp:gap-1.5 jcp:z-2;
+}
+
 .jcp-plugin-card__dot {
     @apply jcp:w-2 jcp:h-2 jcp:rounded-full jcp:border-none jcp:bg-white/60 jcp:cursor-pointer jcp:p-0 jcp:transition-[background,transform] jcp:duration-200 jcp:hover:bg-white/90;
+}
+
+.jcp-plugin-card__description {
+    @apply jcp:text-[17px] jcp:leading-[1.6] jcp:text-[#111827] jcp:m-0;
+}
+
+.jcp-plugin-card__meta {
+    @apply jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:text-xs jcp:md:text-sm jcp:text-[#6b7280];
+}
+
+.jcp-plugin-card__meta-item {
+    @apply jcp:inline-flex jcp:items-center jcp:gap-2 jcp:whitespace-nowrap;
 }
 
 .jcp-plugin-card__meta-icon {
     @apply jcp:text-[#9ca3af] jcp:group-hover:text-accent jcp:shrink-0 jcp:transition-colors jcp:duration-200;
 }
 
-.jcp-plugin-card__meta-item {
-    @apply jcp:inline-flex jcp:items-center jcp:gap-2 jcp:whitespace-nowrap;
+.jcp-plugin-card__location {
+    @apply jcp:font-semibold jcp:text-[#111827];
 }
 
 /* --- Checkins Slider --- */
