@@ -293,9 +293,7 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
-        $atts = shortcode_atts(array(
-            'pagesize' => '25',
-        ), $atts, 'jobcapturepro_checkins');
+        if (!isset($atts['pagesize'])) $atts['pagesize'] = '25';
 
         $result = $this->fetch_api_data('checkins', $atts);
         if (!$result) {
@@ -387,9 +385,7 @@ class JobCaptureProShortcodes
      */
     public function get_combined_components($atts)
     {
-        $atts = shortcode_atts(array(
-            'pagesize' => '25',
-        ), $atts, 'jobcapturepro_combined');
+        if (!isset($atts['pagesize'])) $atts['pagesize'] = '25';
 
         // Global var to pass this shortcode's attributes to the checkins pagination script
         global $jcp_combined_sc_atts;
