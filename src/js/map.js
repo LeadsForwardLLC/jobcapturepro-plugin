@@ -200,7 +200,7 @@ async function initJobCaptureProMap() {
                                 <div class="jcp-checkin-date">
                                     <p class="date-icon jcp:my-[5px] jcp:text-xs jcp:text-[#666]">
                                         ${lucideSvg(Calendar, 12)}
-                                        ${data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US',
+                                        ${(data.jobCompletedDate || data.createdAt) ? new Date(data.jobCompletedDate || data.createdAt).toLocaleDateString('en-US',
                             {
                                 year: 'numeric',
                                 month: 'long',
@@ -224,11 +224,134 @@ async function initJobCaptureProMap() {
         });
 
         // After creating all markers, add clustering (only if there are multiple markers)
+        let clusterer = null;
         if (markers.length > 1) {
-            new MarkerClusterer({
+            clusterer = new MarkerClusterer({
                 map: map,
                 markers: markers
             });
+        }
+
+        // Progressively fetch remaining map pages if there are more
+        if (jobcaptureproMapData.hasNext) {
+            const baseApiUrl = jobcaptureproMapData.baseApiUrl.endsWith('/')
+                ? jobcaptureproMapData.baseApiUrl
+                : jobcaptureproMapData.baseApiUrl + '/';
+
+            const fetchPage = async (page) => {
+                const params = new URLSearchParams({ page, pageSize: jobcaptureproMapData.pageSize });
+                if (jobcaptureproMapData.companyId) {
+                    params.set('companyId', jobcaptureproMapData.companyId);
+                }
+
+                const response = await fetch(baseApiUrl + 'map?' + params.toString());
+                const data = await response.json();
+                const features = data?.locations?.features ?? [];
+                const newMarkers = [];
+
+                features.forEach((feature) => {
+                    const lat = feature.geometry.coordinates[1];
+                    const lng = feature.geometry.coordinates[0];
+                    const checkinId = feature.properties?.checkinId;
+                    if (!checkinId) return;
+
+                    const marker = new AdvancedMarkerElement({
+                        map: map,
+                        position: { lat, lng },
+                        id: checkinId,
+                        ...(customMarkerImg && { content: customMarkerImg.cloneNode(true) })
+                    });
+
+                    const infoWindow = new google.maps.InfoWindow({ content: '' });
+
+                    marker.addListener("gmp-click", () => {
+                        if (currentInfoWindow) currentInfoWindow.close();
+                        infoWindow.open(map, marker);
+                        currentInfoWindow = infoWindow;
+
+                        fetch(`${jobcaptureproMapData.baseApiUrl}/checkin/${checkinId}`)
+                            .then(r => r.json())
+                            .then(d => {
+                                const addressParts = (d.address || '').split(',');
+                                const city = (addressParts[1] || '').trim();
+                                const state = (addressParts[2] || '').trim();
+                                const stateAbbr = state.length > 2 ? state.substring(0, 2) : state;
+                                const locationDisplay = `${city}, ${stateAbbr}`;
+
+                                infoWindow.setContent(`
+                                    <div class="jcp-info-window jcp:p-[5px] jcp:max-w-[350px] jcp:font-sans jcp:pt-0">
+                                        ${d.imageUrls && d.imageUrls.length > 0 ? `
+                                            <div class="jcp-checkin-image !jcp:h-[160px] !jcp:mb-2" id="gallery-${d.id}">
+                                                ${d.imageUrls.map((imageUrl, index) => `
+                                                    <div class="gallery-image ${index === 0 ? 'active' : ''}" data-index="${index}">
+                                                        <img src="${imageUrl}" alt="Checkin image ${index + 1}" style="height: auto;">
+                                                    </div>
+                                                `).join('')}
+                                                ${d.imageUrls.length > 1 ? `
+                                                    <div class="gallery-nav gallery-prev" onclick="jobcaptureproChangeImage(event, 'gallery-${d.id}', 'prev')">❮</div>
+                                                    <div class="gallery-nav gallery-next" onclick="jobcaptureproChangeImage(event, 'gallery-${d.id}', 'next')">❯</div>
+                                                    <div class="gallery-dots">
+                                                        ${d.imageUrls.map((_, index) => `
+                                                            <span class="gallery-dot ${index === 0 ? 'active' : ''}" onclick="jobcaptureproShowImage(event, 'gallery-${d.id}', ${index})"></span>
+                                                        `).join('')}
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        ` : ''}
+                                        ${d.assignedUser ? `
+                                            <div class="jcp-checkin-user">
+                                                ${d.assignedUser.profileImageUrl ? `
+                                                    <div class="jcp-user-image">
+                                                        <img src="${d.assignedUser.profileImageUrl}" alt="User profile" style="width: 50px; height: 50px; border-radius: 50%;">
+                                                    </div>
+                                                ` : ''}
+                                                <div class="jcp-user-name">
+                                                    <p class="jcp:my-[5px] jcp:text-sm"><strong>${d.assignedUser.name || 'Unknown User'}</strong></p>
+                                                </div>
+                                                <div class="jcp-job-reviews">
+                                                    ${Array.from({ length: 5 }, () => `<span>${lucideSvg(Star, 16, 'jcp:fill-[#facc15] jcp:text-[#facc15]')}</span>`).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                        ${d.description ? `
+                                            <div class="jcp-checkin-description">
+                                                <p class="jcp:my-[5px] jcp:text-sm">${d.description}</p>
+                                            </div>
+                                        ` : ''}
+                                        <div class="jcp-checkin-date">
+                                            <p class="date-icon jcp:my-[5px] jcp:text-xs jcp:text-[#666]">
+                                                ${lucideSvg(Calendar, 12)}
+                                                ${d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date not available'}
+                                            </p>
+                                        </div>
+                                        ${d.address ? `
+                                            <div class="jcp-checkin-address">
+                                                <p class="jcp:my-[5px] jcp:text-xs jcp:text-[#666]"><strong>Near</strong> ${locationDisplay}</p>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `);
+                            }).catch(error => console.error("Error fetching marker data:", error));
+                    });
+
+                    newMarkers.push(marker);
+                });
+
+                if (newMarkers.length > 0) {
+                    if (clusterer) {
+                        clusterer.addMarkers(newMarkers);
+                    } else {
+                        // First page only had 1 marker — now we have more, create clusterer
+                        clusterer = new MarkerClusterer({ map, markers: [...markers, ...newMarkers] });
+                    }
+                }
+            };
+
+            (async () => {
+                for (let page = 2; page <= jobcaptureproMapData.totalPages; page++) {
+                    await fetchPage(page);
+                }
+            })();
         }
 
         // Add map click listener to close any open info window

@@ -43,11 +43,17 @@ document.addEventListener("DOMContentLoaded", function () {
             params.set('companyId', String(jobcaptureproPaginationData.companyId));
         }
 
+        // Default params for checkins (can be overridden by shortcode atts below)
+        params.set('minImages', '1');
+        params.set('strict', 'false');
+        params.set('sortBy', 'jobCompletedAt');
+        params.set('sortOrder', 'DESC');
+
         // Append any shortcode attributes passed via localization
         const scAtts = jobcaptureproPaginationData.scAtts || {};
         Object.entries(scAtts).forEach(([key, value]) => {
             if (value === null || value === undefined) return;
-            if (value.trim() !== '') params.append(key, String(value));
+            if (value.trim() !== '') params.set(key, String(value));
         });
 
         // Get base API URL and ensure it ends with a slash
@@ -96,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const state        = (addressParts[2] || '').trim();
         const stateAbbr    = state.length > 2 ? state.substring(0, 2) : state;
 
-        const timestamp = new Date(checkin.createdAt);
+        const timestamp = new Date(checkin.jobCompletedDate || checkin.createdAt);
         const formattedDate = timestamp.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
