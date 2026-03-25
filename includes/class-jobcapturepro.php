@@ -90,10 +90,15 @@ class JobCaptureProPlugin
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jobcapturepro-api.php';
 
-		/** 
+		/**
 		 * The class responsible for rendering templates
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-template-loader.php';
+
+		/**
+		 * Global helper functions (icons, etc.)
+		 */
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/helpers.php';
 
 		// Create an instance of the loader which will be used to register the hooks with WordPress.
 		$this->loader = new JobCaptureProLoader();
