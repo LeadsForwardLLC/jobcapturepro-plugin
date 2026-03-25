@@ -56,6 +56,11 @@ async function initJobCaptureProMap() {
             customMarkerImg.src = jobcaptureproMapData.companyInfo[0].customMarker;
         }
 
+        // Base API URL (ensure trailing slash for URL construction)
+        const baseApiUrl = jobcaptureproMapData.baseApiUrl.endsWith('/')
+            ? jobcaptureproMapData.baseApiUrl
+            : jobcaptureproMapData.baseApiUrl + '/';
+
         // Create markers
         markersData.forEach((markerData, index) => {
             const marker = new AdvancedMarkerElement({
@@ -140,7 +145,7 @@ async function initJobCaptureProMap() {
                 currentInfoWindow = infoWindow;
 
                 // Fetch content and display it in the info window
-                fetch(`${jobcaptureproMapData.baseApiUrl}/checkin/${markerData.id}`)
+                fetch(new URL(`checkin/${markerData.id}`, baseApiUrl).toString())
                     .then(response => response.json())
                     .then(data => {
                         const addressParts = data.address.split(',');
@@ -234,17 +239,15 @@ async function initJobCaptureProMap() {
 
         // Progressively fetch remaining map pages if there are more
         if (jobcaptureproMapData.hasNext) {
-            const baseApiUrl = jobcaptureproMapData.baseApiUrl.endsWith('/')
-                ? jobcaptureproMapData.baseApiUrl
-                : jobcaptureproMapData.baseApiUrl + '/';
-
             const fetchPage = async (page) => {
                 const params = new URLSearchParams({ page, pageSize: jobcaptureproMapData.pageSize });
                 if (jobcaptureproMapData.companyId) {
                     params.set('companyId', jobcaptureproMapData.companyId);
                 }
 
-                const response = await fetch(baseApiUrl + 'map?' + params.toString());
+                const url = new URL('map', baseApiUrl);
+                params.forEach((value, key) => url.searchParams.set(key, value));
+                const response = await fetch(url.toString());
                 const data = await response.json();
                 const features = data?.locations?.features ?? [];
                 const newMarkers = [];
@@ -269,7 +272,7 @@ async function initJobCaptureProMap() {
                         infoWindow.open(map, marker);
                         currentInfoWindow = infoWindow;
 
-                        fetch(`${jobcaptureproMapData.baseApiUrl}/checkin/${checkinId}`)
+                        fetch(new URL(`checkin/${checkinId}`, baseApiUrl).toString())
                             .then(r => r.json())
                             .then(d => {
                                 const addressParts = (d.address || '').split(',');
