@@ -1,6 +1,6 @@
 // For check-in image galleries on the check-in grid
 document.addEventListener('DOMContentLoaded', function () {
-    const galleries = document.querySelectorAll('.jobcapturepro-checkin-image');
+    const galleries = document.querySelectorAll('.jcp-checkin-image');
 
     galleries.forEach(gallery => {
         const images = gallery.querySelectorAll('.gallery-image');

@@ -1,0 +1,181 @@
+(function () {
+  var sliderTrack = document.getElementById("jcp-plugin-slider-track");
+  var sliderViewport = sliderTrack ? sliderTrack.parentElement : null;
+  var sliderPrev = document.getElementById("jcp-plugin-slider-prev");
+  var sliderNext = document.getElementById("jcp-plugin-slider-next");
+  var gap = 24;
+  var currentIndex = 0;
+  var totalCards = 0;
+  function getCardsVisible() {
+    if (!sliderViewport) return 3;
+    var vw = sliderViewport.offsetWidth;
+    if (vw < 640) return 1;
+    if (vw < 1024) return 2;
+    return 3;
+  }
+
+  function getViewportWidth(el) {
+    return el && el.offsetWidth ? el.offsetWidth : 0;
+  }
+
+  function setSliderVars() {
+    if (!sliderViewport || !sliderTrack) return;
+    var cardsVisible = getCardsVisible();
+    var vw = getViewportWidth(sliderViewport);
+    if (vw <= 0) return;
+    var cardWidth = (vw - (cardsVisible - 1) * gap) / cardsVisible;
+    var step = cardWidth + gap;
+    sliderTrack.style.setProperty("--card-width", cardWidth + "px");
+    sliderTrack.style.setProperty("--card-step", step + "px");
+    totalCards = sliderTrack.querySelectorAll(".jcp-plugin-card").length;
+    currentIndex = Math.max(
+      0,
+      Math.min(currentIndex, Math.max(0, totalCards - cardsVisible)),
+    );
+    updateSliderPosition();
+    updateSliderButtons(cardsVisible);
+  }
+
+  function updateSliderPosition() {
+    if (!sliderTrack) return;
+    var step =
+      parseFloat(sliderTrack.style.getPropertyValue("--card-step")) || 324;
+    sliderTrack.style.transform = "translateX(-" + currentIndex * step + "px)";
+  }
+
+  function updateSliderButtons(cardsVisible) {
+    var visible = cardsVisible || getCardsVisible();
+    if (sliderPrev) sliderPrev.disabled = currentIndex <= 0;
+    if (sliderNext)
+      sliderNext.disabled =
+        totalCards <= visible || currentIndex >= totalCards - visible;
+  }
+
+  function goPrev() {
+    if (currentIndex <= 0) return;
+    currentIndex -= 1;
+    updateSliderPosition();
+    updateSliderButtons();
+  }
+
+  function goNext() {
+    var visible = getCardsVisible();
+    if (totalCards <= visible || currentIndex >= totalCards - visible) return;
+    currentIndex += 1;
+    updateSliderPosition();
+    updateSliderButtons(visible);
+    // Auto-fetch next page when user is one full viewport away from the end
+    if (window.jcpSliderAutoFetch && currentIndex >= totalCards - visible * 2) {
+      window.jcpSliderAutoFetch();
+    }
+  }
+
+  window.jcpSliderRefresh = function () {
+    setSliderVars();
+    initCardCarousels();
+    initDescriptionToggles();
+  };
+
+  function initCardCarousels() {
+    document
+      .querySelectorAll(".jcp-plugin-card__gallery[data-carousel]")
+      .forEach(function (gallery) {
+        if (gallery.dataset.carouselBound) return;
+        gallery.dataset.carouselBound = "1";
+        var slides = gallery.querySelectorAll(".jcp-plugin-card__slide");
+        var prevBtn = gallery.querySelector(".jcp-plugin-card__nav--prev");
+        var nextBtn = gallery.querySelector(".jcp-plugin-card__nav--next");
+        var dots = gallery.querySelectorAll(".jcp-plugin-card__dot");
+        var total = slides.length;
+        var active = 0;
+        function setActive(i) {
+          if (i < 0) i = total - 1;
+          if (i >= total) i = 0;
+          active = i;
+          slides.forEach(function (slide, idx) {
+            if (idx === active) {
+              slide.classList.add("jcp:opacity-100", "jcp:visible");
+              slide.classList.remove("jcp:opacity-0", "jcp:invisible");
+            } else {
+              slide.classList.add("jcp:opacity-0", "jcp:invisible");
+              slide.classList.remove("jcp:opacity-100", "jcp:visible");
+            }
+          });
+          dots.forEach(function (dot, idx) {
+            if (idx === active) {
+              dot.classList.add("jcp:bg-white", "jcp:scale-[1.2]");
+              dot.classList.remove("jcp:bg-white/60");
+            } else {
+              dot.classList.add("jcp:bg-white/60");
+              dot.classList.remove("jcp:bg-white", "jcp:scale-[1.2]");
+            }
+          });
+        }
+        if (prevBtn)
+          prevBtn.addEventListener("click", function () {
+            setActive(active - 1);
+          });
+        if (nextBtn)
+          nextBtn.addEventListener("click", function () {
+            setActive(active + 1);
+          });
+        dots.forEach(function (dot, idx) {
+          dot.addEventListener("click", function () {
+            setActive(idx);
+          });
+        });
+      });
+  }
+
+  function initDescriptionToggles() {
+    document.querySelectorAll(".jcp-plugin-card").forEach(function (card) {
+      var text = card.querySelector("[data-desc-text]");
+      var toggle = card.querySelector("[data-desc-toggle]");
+      if (!text || !toggle) return;
+      if (!toggle.dataset.bound) {
+        toggle.addEventListener("click", function () {
+          var expanded = text.classList.contains("jcp:line-clamp-none");
+          if (expanded) {
+            text.classList.remove("jcp:line-clamp-none", "jcp:overflow-visible");
+            text.classList.add("jcp:line-clamp-4", "jcp:overflow-hidden");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.textContent = "Read more";
+          } else {
+            text.classList.add("jcp:line-clamp-none", "jcp:overflow-visible");
+            text.classList.remove("jcp:line-clamp-4", "jcp:overflow-hidden");
+            toggle.setAttribute("aria-expanded", "true");
+            toggle.textContent = "Show less";
+          }
+        });
+        toggle.dataset.bound = "1";
+      }
+      if (text.classList.contains("jcp:line-clamp-none")) {
+        toggle.hidden = false;
+        return;
+      }
+      requestAnimationFrame(function () {
+        toggle.hidden = text.scrollHeight <= text.clientHeight + 2;
+      });
+    });
+  }
+
+  if (sliderPrev) sliderPrev.addEventListener("click", goPrev);
+  if (sliderNext) sliderNext.addEventListener("click", goNext);
+
+  function init() {
+    initCardCarousels();
+    initDescriptionToggles();
+  }
+
+  if (sliderViewport) {
+    new ResizeObserver(function () {
+      setSliderVars();
+    }).observe(sliderViewport);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
