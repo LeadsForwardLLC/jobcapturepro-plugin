@@ -1,7 +1,7 @@
 === JobCapturePro ===
 Contributors: jobcapturepro
 Tags: service business, field service, job tracking
-version: 1.0.7
+version: 1.1.0
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
