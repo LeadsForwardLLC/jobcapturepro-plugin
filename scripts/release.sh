@@ -79,7 +79,6 @@ PROD_FILES=(
     templates/company-info.php
     templates/company-stats.php
     templates/cta-section.php
-    templates/image-gallery.php
     templates/powered-by-footer.php
     templates/single-checkin.php
 )
