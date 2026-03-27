@@ -50,7 +50,7 @@ class JobCaptureProPlugin
 		$this->version = JOBCAPTUREPRO_VERSION;
 
 		$this->plugin_name = 'jobcapturepro';
-		$this->jcp_api_base_url = 'https://jcp-api--travel-app-eor5yc.us-central1.hosted.app/api/';
+		$this->jcp_api_base_url = 'https://production--jobcapturepro.us-east4.hosted.app/api/';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
@@ -90,10 +90,15 @@ class JobCaptureProPlugin
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jobcapturepro-api.php';
 
-		/** 
+		/**
 		 * The class responsible for rendering templates
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-template-loader.php';
+
+		/**
+		 * Global helper functions (icons, etc.)
+		 */
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/helpers.php';
 
 		// Create an instance of the loader which will be used to register the hooks with WordPress.
 		$this->loader = new JobCaptureProLoader();
