@@ -65,7 +65,6 @@ PROD_FILES=(
     uninstall.php
     admin/class-jobcapturepro-admin.php
     admin/index.php
-    includes/class-jobcapturepro-api.php
     includes/class-jobcapturepro-loader.php
     includes/class-jobcapturepro-templates.php
     includes/class-jobcapturepro.php

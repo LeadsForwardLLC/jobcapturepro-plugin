@@ -64,7 +64,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const url = new URL('checkins', base);
         url.search = params.toString();
 
-        fetch(url.toString())
+        fetch(url.toString(), {
+                headers: { 'Authorization': `Bearer ${jobcaptureproPaginationData.apiKey}` }
+            })
             .then(response => response.json())
             .then(data => {
                 const checkins = data.checkins;
