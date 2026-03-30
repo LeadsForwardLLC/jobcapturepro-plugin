@@ -155,6 +155,10 @@ setOptions({
   key: jobcaptureproMapData.googleMapsApiKey,
 });
 
+const fetchOptions = {
+  headers: { 'Authorization': `Bearer ${jobcaptureproMapData.apiKey}` }
+};
+
 async function initJobCaptureProMap() {
   try {
     // Request needed libraries.
@@ -212,7 +216,7 @@ async function initJobCaptureProMap() {
         infoWindow.open(map, marker);
         currentInfoWindow = infoWindow;
 
-        fetch(new URL(`checkin/${checkinId}`, baseApiUrl).toString())
+        fetch(new URL(`checkins/${checkinId}`, baseApiUrl).toString(), fetchOptions)
           .then(response => response.json())
           .then(data => {
             infoWindow.setContent(buildCard(data));
@@ -254,7 +258,7 @@ async function initJobCaptureProMap() {
 
         const url = new URL('map', baseApiUrl);
         params.forEach((value, key) => url.searchParams.set(key, value));
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), fetchOptions);
         const data = await response.json();
         const features = data?.locations?.features ?? [];
         const newMarkers = [];
