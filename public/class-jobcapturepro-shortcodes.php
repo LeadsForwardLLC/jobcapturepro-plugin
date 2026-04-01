@@ -392,7 +392,7 @@ class JobCaptureProShortcodes
         $jcp_combined_sc_atts = $atts;
 
         // Check if companyid attribute was provided
-        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
+        $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
 
         if ($company_id) {
             // Fetch specific company information using the direct endpoint
@@ -488,7 +488,7 @@ class JobCaptureProShortcodes
         ), $atts, 'jobcapturepro_company_info');
 
         // Check if companyid attribute was provided
-        $company_id = JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company');
+        $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
 
         if (!$company_id) {
             return $this->render_error_message(
