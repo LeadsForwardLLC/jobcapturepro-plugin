@@ -111,10 +111,10 @@ class JobCaptureProPlugin
 	{
 
 		// Create an instance of the admin class
-		$plugin_admin = new JobCaptureProAdmin(plugin_name: $this->get_plugin_name(), version: $this->get_version());
+		$plugin_admin = new JobCaptureProAdmin($this->get_plugin_name(), $this->get_version());
 
 		// Register the admin_init hook with the corresponding function in the admin class
-		$this->loader->add_action(hook: 'admin_init', component: $plugin_admin, callback: 'jobcapturepro_settings_init');
+		$this->loader->add_action('admin_init', $plugin_admin, 'jobcapturepro_settings_init');
 	}
 
 	/**
@@ -126,18 +126,18 @@ class JobCaptureProPlugin
 		$plugin_shortcodes = new JobCaptureProShortcodes($this->get_plugin_name(), $this->get_version(), $this->get_jobcapturepro_api_base_url());
 
 		// Register the new shortcodes with proper plugin prefix
-		$this->loader->add_shortcode(shortcode: 'jobcapturepro_checkin', component: $plugin_shortcodes, callback: 'get_checkin');
-		$this->loader->add_shortcode(shortcode: 'jobcapturepro_checkins', component: $plugin_shortcodes, callback: 'get_all_checkins');
-		$this->loader->add_shortcode(shortcode: 'jobcapturepro_map', component: $plugin_shortcodes, callback: 'get_map');
-		$this->loader->add_shortcode(shortcode: 'jobcapturepro_company_info', component: $plugin_shortcodes, callback: 'get_company_info');
-		$this->loader->add_shortcode(shortcode: 'jobcapturepro_combined', component: $plugin_shortcodes, callback: 'get_combined_components');
+		$this->loader->add_shortcode('jobcapturepro_checkin', $plugin_shortcodes, 'get_checkin');
+		$this->loader->add_shortcode('jobcapturepro_checkins', $plugin_shortcodes, 'get_all_checkins');
+		$this->loader->add_shortcode('jobcapturepro_map', $plugin_shortcodes, 'get_map');
+		$this->loader->add_shortcode('jobcapturepro_company_info', $plugin_shortcodes, 'get_company_info');
+		$this->loader->add_shortcode('jobcapturepro_combined', $plugin_shortcodes, 'get_combined_components');
 
 		// Keep old shortcodes for backwards compatibility
-		$this->loader->add_shortcode(shortcode: 'jcp_checkin', component: $plugin_shortcodes, callback: 'get_checkin');
-		$this->loader->add_shortcode(shortcode: 'jcp_all_checkins', component: $plugin_shortcodes, callback: 'get_all_checkins');
-		$this->loader->add_shortcode(shortcode: 'jcp_multimap', component: $plugin_shortcodes, callback: 'get_map');
-		$this->loader->add_shortcode(shortcode: 'jcp_company_info', component: $plugin_shortcodes, callback: 'get_company_info');
-		$this->loader->add_shortcode(shortcode: 'jcp_combined_components', component: $plugin_shortcodes, callback: 'get_combined_components');
+		$this->loader->add_shortcode('jcp_checkin', $plugin_shortcodes, 'get_checkin');
+		$this->loader->add_shortcode('jcp_all_checkins', $plugin_shortcodes, 'get_all_checkins');
+		$this->loader->add_shortcode('jcp_multimap', $plugin_shortcodes, 'get_map');
+		$this->loader->add_shortcode('jcp_company_info', $plugin_shortcodes, 'get_company_info');
+		$this->loader->add_shortcode('jcp_combined_components', $plugin_shortcodes, 'get_combined_components');
 	}
 
 	/**
@@ -192,7 +192,7 @@ class JobCaptureProPlugin
 
 	public function register_public_hooks(): void
 	{
-		$this->loader->add_action(hook: 'wp_enqueue_scripts', component: $this, callback: 'enqueue_assets');
+		$this->loader->add_action('wp_enqueue_scripts', $this, 'enqueue_assets');
 	}
 
 	/**
