@@ -23,6 +23,7 @@
     var cardsVisible = getCardsVisible();
     var vw = getViewportWidth(sliderViewport);
     if (vw <= 0) return;
+    vw = Math.min(vw, window.innerWidth);
     var cardWidth = (vw - (cardsVisible - 1) * gap) / cardsVisible;
     var step = cardWidth + gap;
     sliderTrack.style.setProperty("--card-width", cardWidth + "px");
