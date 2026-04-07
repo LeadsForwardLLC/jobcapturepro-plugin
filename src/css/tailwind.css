@@ -32,7 +32,7 @@
 }
 
 .jcp-plugin-card__nav {
-    @apply jcp:absolute jcp:top-1/2 jcp:-translate-y-1/2 jcp:w-9 jcp:h-9 jcp:inline-flex jcp:items-center jcp:justify-center jcp:border-none jcp:rounded-full jcp:bg-white/90 jcp:text-[#111827] jcp:cursor-pointer jcp:shadow-[0_2px_8px_rgba(0,0,0,0.15)] jcp:transition-[background,transform] jcp:duration-200 jcp:hover:bg-white jcp:hover:scale-[1.08] jcp:z-2;
+    @apply jcp:absolute jcp:top-1/2 jcp:-translate-y-1/2 jcp:w-9 jcp:h-9 jcp:p-0 jcp:inline-flex jcp:items-center jcp:justify-center jcp:border-none jcp:rounded-full jcp:bg-white/90 jcp:text-[#111827] jcp:cursor-pointer jcp:shadow-[0_2px_8px_rgba(0,0,0,0.15)] jcp:transition-[background,transform] jcp:duration-200 jcp:hover:bg-white jcp:hover:scale-[1.08] jcp:z-2;
 }
 
 .jcp-plugin-card__dots {
@@ -66,7 +66,7 @@
 /* --- Checkins Slider --- */
 
 .jcp-plugin-slider__btn {
-    @apply jcp:absolute jcp:top-1/2 jcp:-translate-y-1/2 jcp:z-4 jcp:w-9 jcp:h-9 jcp:md:w-12 jcp:md:h-12 jcp:inline-flex jcp:items-center jcp:justify-center jcp:rounded-full jcp:border-2 jcp:border-[#e5e7eb] jcp:bg-transparent jcp:text-[#111827] jcp:cursor-pointer jcp:transition-[background,border-color,color,transform] jcp:duration-200 jcp:hover:bg-[#f9fafb] jcp:hover:scale-105 jcp:disabled:opacity-40 jcp:disabled:cursor-not-allowed;
+    @apply jcp:absolute jcp:top-1/2 jcp:-translate-y-1/2 jcp:z-4 jcp:w-9 jcp:h-9 jcp:md:w-12 jcp:md:h-12 jcp:p-0 jcp:inline-flex jcp:items-center jcp:justify-center jcp:rounded-full jcp:border-2 jcp:border-[#e5e7eb] jcp:bg-transparent jcp:text-[#111827] jcp:cursor-pointer jcp:transition-[background,border-color,color,transform] jcp:duration-200 jcp:hover:bg-[#f9fafb] jcp:hover:scale-105 jcp:disabled:opacity-40 jcp:disabled:cursor-not-allowed;
 }
 
 /* --- Footer --- */

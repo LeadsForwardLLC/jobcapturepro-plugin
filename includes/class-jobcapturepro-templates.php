@@ -89,7 +89,7 @@ class JobCaptureProTemplates
     {
         if (defined('WP_DEBUG') && WP_DEBUG && current_user_can('manage_options')) {
             return sprintf(
-                '<div class="jcp-template-error" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9;">
+                '<div class="jcp-template-error jcp:border jcp:border-[#ccc] jcp:p-2.5 jcp:my-2.5 jcp:bg-[#f9f9f9]">
                     <strong>Template Error:</strong> %s
                     %s
                 </div>',
