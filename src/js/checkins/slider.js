@@ -3,32 +3,111 @@
   var sliderViewport = sliderTrack ? sliderTrack.parentElement : null;
   var sliderPrev = document.getElementById("jcp-plugin-slider-prev");
   var sliderNext = document.getElementById("jcp-plugin-slider-next");
-  var gap = 24;
+  var wrapper = document.querySelector(".jcp-combined-components");
+  var sliderContainer = document.querySelector(".jcp-plugin-slider");
   var currentIndex = 0;
   var totalCards = 0;
-  function getCardsVisible() {
-    if (!sliderViewport) return 3;
-    var vw = sliderViewport.offsetWidth;
-    if (vw < 640) return 1;
-    if (vw < 1024) return 2;
+  var isFirstRun = true;
+
+  /**
+   * Read the actual gap from the slider track's computed style.
+   */
+  function getTrackGap() {
+    if (!sliderTrack) return 24;
+    var gap = parseFloat(window.getComputedStyle(sliderTrack).gap);
+    return isNaN(gap) ? 24 : gap;
+  }
+
+  /**
+   * Read the actual horizontal padding from the slider container.
+   */
+  function getSliderPadding() {
+    if (!sliderContainer) return window.innerWidth >= 768 ? 112 : 80;
+    var styles = window.getComputedStyle(sliderContainer);
+    return parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+  }
+
+  /**
+   * How many cards should be visible at the current width.
+   */
+  function getVisibleCardCount() {
+    var w = getConstrainedWidth();
+    if (w < 640) return 1;
+    if (w < 1024) return 2;
     return 3;
   }
 
-  function getViewportWidth(el) {
-    return el && el.offsetWidth ? el.offsetWidth : 0;
+  /**
+   * Measure the parent's real width.
+   * First run: wrapper is display:none (from CSS), parent has no inflating content.
+   * Subsequent runs: wrapper has a pixel width, use position:absolute to re-measure.
+   */
+  function getConstrainedWidth() {
+    if (!wrapper || !wrapper.parentElement) return window.innerWidth;
+    var parent = wrapper.parentElement;
+
+    if (isFirstRun) {
+      // Wrapper is display:none — parent is naturally sized
+      var prevParentWidth = parent.style.width;
+      parent.style.width = "100%";
+      var parentWidth = parent.clientWidth;
+      parent.style.width = prevParentWidth || "";
+      return parentWidth || window.innerWidth;
+    }
+
+    // Subsequent runs: take wrapper out of flow to measure
+    var prevPosition = wrapper.style.position;
+    var prevWidth = wrapper.style.width;
+    var prevParentWidth = parent.style.width;
+    wrapper.style.position = "absolute";
+    wrapper.style.width = "0px";
+    parent.style.width = "100%";
+    var parentWidth = parent.clientWidth;
+    parent.style.width = prevParentWidth || "";
+    wrapper.style.position = prevPosition || "";
+    wrapper.style.width = prevWidth || "";
+    return parentWidth || window.innerWidth;
   }
 
-  function setSliderVars() {
-    if (!sliderViewport || !sliderTrack) return;
-    var cardsVisible = getCardsVisible();
-    var vw = getViewportWidth(sliderViewport);
-    if (vw <= 0) return;
-    vw = Math.min(vw, window.innerWidth);
-    var cardWidth = (vw - (cardsVisible - 1) * gap) / cardsVisible;
-    var step = cardWidth + gap;
-    sliderTrack.style.setProperty("--card-width", cardWidth + "px");
-    sliderTrack.style.setProperty("--card-step", step + "px");
+  /**
+   * Calculate card widths from the constrained parent width and set as CSS variable.
+   */
+  function updateCardSizing() {
+    if (!sliderViewport || !wrapper) return;
+    var containerWidth = getConstrainedWidth();
+    wrapper.style.width = containerWidth + "px";
+    // Reveal wrapper on first run
+    if (isFirstRun) {
+      wrapper.style.display = "block";
+      isFirstRun = false;
+    }
+    var padding = getSliderPadding();
+    var available = containerWidth - padding;
+    var gap = getTrackGap();
+    var cardsVisible = getVisibleCardCount();
+    var cardWidth = (available - (cardsVisible - 1) * gap) / cardsVisible;
+    cardWidth = Math.max(cardWidth, 100);
+    sliderViewport.style.setProperty("--jcp-card-width", cardWidth + "px");
+  }
+
+  /**
+   * Get the pixel step for sliding one card (card width + gap).
+   */
+  function getCardStepSize() {
+    if (!sliderTrack) return 324;
+    var firstCard = sliderTrack.querySelector(".jcp-plugin-card");
+    if (!firstCard) return 324;
+    return firstCard.offsetWidth + getTrackGap();
+  }
+
+  /**
+   * Recalculate card sizing, card count, clamp index, and update position.
+   */
+  function recalculateSlider() {
+    if (!sliderTrack) return;
+    updateCardSizing();
     totalCards = sliderTrack.querySelectorAll(".jcp-plugin-card").length;
+    var cardsVisible = getVisibleCardCount();
     currentIndex = Math.max(
       0,
       Math.min(currentIndex, Math.max(0, totalCards - cardsVisible)),
@@ -39,40 +118,38 @@
 
   function updateSliderPosition() {
     if (!sliderTrack) return;
-    var step =
-      parseFloat(sliderTrack.style.getPropertyValue("--card-step")) || 324;
+    var step = getCardStepSize();
     sliderTrack.style.transform = "translateX(-" + currentIndex * step + "px)";
   }
 
   function updateSliderButtons(cardsVisible) {
-    var visible = cardsVisible || getCardsVisible();
+    var visible = cardsVisible || getVisibleCardCount();
     if (sliderPrev) sliderPrev.disabled = currentIndex <= 0;
     if (sliderNext)
       sliderNext.disabled =
         totalCards <= visible || currentIndex >= totalCards - visible;
   }
 
-  function goPrev() {
+  function slidePrev() {
     if (currentIndex <= 0) return;
     currentIndex -= 1;
     updateSliderPosition();
     updateSliderButtons();
   }
 
-  function goNext() {
-    var visible = getCardsVisible();
+  function slideNext() {
+    var visible = getVisibleCardCount();
     if (totalCards <= visible || currentIndex >= totalCards - visible) return;
     currentIndex += 1;
     updateSliderPosition();
     updateSliderButtons(visible);
-    // Auto-fetch next page when user is one full viewport away from the end
     if (window.jcpSliderAutoFetch && currentIndex >= totalCards - visible * 2) {
       window.jcpSliderAutoFetch();
     }
   }
 
   window.jcpSliderRefresh = function () {
-    setSliderVars();
+    recalculateSlider();
     initCardCarousels();
     initDescriptionToggles();
   };
@@ -160,19 +237,21 @@
     });
   }
 
-  if (sliderPrev) sliderPrev.addEventListener("click", goPrev);
-  if (sliderNext) sliderNext.addEventListener("click", goNext);
+  if (sliderPrev) sliderPrev.addEventListener("click", slidePrev);
+  if (sliderNext) sliderNext.addEventListener("click", slideNext);
 
   function init() {
+    recalculateSlider();
     initCardCarousels();
     initDescriptionToggles();
   }
 
-  if (sliderViewport) {
-    new ResizeObserver(function () {
-      setSliderVars();
-    }).observe(sliderViewport);
-  }
+  // Debounced window resize — no ResizeObserver to avoid infinite loops
+  var resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(recalculateSlider, 100);
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

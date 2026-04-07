@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return `
-        <article class="jcp-plugin-card jcp:group jcp:flex-[0_0_var(--card-width,300px)] jcp:min-w-0 jcp:bg-white jcp:rounded-xl jcp:overflow-hidden jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
+        <article class="jcp-plugin-card jcp:group jcp:bg-white jcp:rounded-xl jcp:overflow-hidden jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
             ${galleryHtml}
             <div class="jcp-plugin-card__body jcp:p-6 jcp:border-2 jcp:border-[#e5e7eb] jcp:border-t-0 jcp:rounded-b-xl">
                 <p class="jcp-plugin-card__description jcp:text-[17px] jcp:leading-[1.6] jcp:text-[#111827] jcp:mb-2 jcp:line-clamp-4 jcp:overflow-hidden" data-desc-text>${nl2br(checkin.description || '')}</p>
