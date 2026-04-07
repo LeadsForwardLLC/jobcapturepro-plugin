@@ -177,7 +177,7 @@ class JobCaptureProPlugin
 
 	public function register_public_hooks(): void
 	{
-		$this->loader->add_action('wp_enqueue_scripts', $this, 'enqueue_assets');
+		$this->loader->add_action('wp_enqueue_scripts', $this, 'enqueue_assets', 9999);
 	}
 
 	/**
