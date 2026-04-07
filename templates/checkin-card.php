@@ -16,7 +16,7 @@ $has_gallery   = $has_images && count($image_urls) > 1;
 
 ?>
 
-<article class="jcp-plugin-card jcp:group jcp:flex-[0_0_var(--card-width,300px)] jcp:min-w-0 jcp:bg-white jcp:rounded-xl jcp:overflow-hidden jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
+<article class="jcp-plugin-card jcp:group jcp:bg-white jcp:rounded-xl jcp:overflow-hidden jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
 
     <?php if ($has_images) : ?>
     <div class="jcp-plugin-card__gallery"<?php if ($has_gallery) : ?> data-carousel<?php endif; ?>>

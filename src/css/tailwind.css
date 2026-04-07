@@ -7,6 +7,22 @@
     --color-accent: #ff503e;
 }
 
+/* --- Container isolation (hidden until JS measures and reveals) --- */
+
+.jcp-combined-components {
+    display: none;
+    overflow: hidden;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* --- Card Sizing --- */
+
+.jcp-plugin-card {
+    flex: 0 0 var(--jcp-card-width, 300px);
+    min-width: 0;
+}
+
 /* --- Shared / CTA --- */
 
 .jcp-quote-btn {
@@ -48,11 +64,11 @@
 }
 
 .jcp-plugin-card__meta {
-    @apply jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:text-xs jcp:md:text-sm jcp:text-[#6b7280];
+    @apply jcp:flex jcp:flex-wrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:text-xs jcp:text-[#6b7280];
 }
 
 .jcp-plugin-card__meta-item {
-    @apply jcp:inline-flex jcp:items-center jcp:gap-2 jcp:whitespace-nowrap;
+    @apply jcp:inline-flex jcp:items-center jcp:gap-2 jcp:min-w-0;
 }
 
 .jcp-plugin-card__meta-icon {
@@ -60,7 +76,7 @@
 }
 
 .jcp-plugin-card__location {
-    @apply jcp:font-semibold jcp:text-[#111827];
+    @apply jcp:font-semibold jcp:text-[#111827] jcp:ml-auto;
 }
 
 /* --- Checkins Slider --- */
