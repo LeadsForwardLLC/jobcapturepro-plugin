@@ -20,10 +20,10 @@ fi
 
 BRANCH="release/$VERSION"
 
-# Must start from dev
-echo "Switching to dev and pulling latest..."
-git checkout dev
-git pull origin dev
+# Must start from main
+echo "Switching to main and pulling latest..."
+git checkout main
+git pull origin main
 
 # Ensure working tree is clean
 if ! git diff --quiet || ! git diff --cached --quiet; then
