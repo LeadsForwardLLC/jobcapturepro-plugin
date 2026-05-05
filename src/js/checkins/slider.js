@@ -190,16 +190,19 @@
           });
         }
         if (prevBtn)
-          prevBtn.addEventListener("click", function () {
+          prevBtn.addEventListener("click", function (e) {
             setActive(active - 1);
+            e.currentTarget.focus({ preventScroll: true });
           });
         if (nextBtn)
-          nextBtn.addEventListener("click", function () {
+          nextBtn.addEventListener("click", function (e) {
             setActive(active + 1);
+            e.currentTarget.focus({ preventScroll: true });
           });
         dots.forEach(function (dot, idx) {
-          dot.addEventListener("click", function () {
+          dot.addEventListener("click", function (e) {
             setActive(idx);
+            e.currentTarget.focus({ preventScroll: true });
           });
         });
       });
@@ -237,8 +240,20 @@
     });
   }
 
-  if (sliderPrev) sliderPrev.addEventListener("click", slidePrev);
-  if (sliderNext) sliderNext.addEventListener("click", slideNext);
+  // Wrapper to prevent browser from scrolling page when focusing the button.
+  // Buttons with position:absolute + transform sometimes trigger scroll-to-top
+  // when the browser scrolls focus into view. preventScroll skips that step.
+  function withPreventScroll(handler) {
+    return function (e) {
+      handler(e);
+      if (e.currentTarget && typeof e.currentTarget.focus === "function") {
+        e.currentTarget.focus({ preventScroll: true });
+      }
+    };
+  }
+
+  if (sliderPrev) sliderPrev.addEventListener("click", withPreventScroll(slidePrev));
+  if (sliderNext) sliderNext.addEventListener("click", withPreventScroll(slideNext));
 
   function init() {
     recalculateSlider();
