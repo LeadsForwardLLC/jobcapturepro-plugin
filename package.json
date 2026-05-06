@@ -37,6 +37,7 @@
     "webpack-remove-empty-scripts": "^1.1.1"
   },
   "dependencies": {
-    "lucide": "^0.575.0"
+    "lucide": "^0.575.0",
+    "swiper": "^12.1.4"
   }
 }

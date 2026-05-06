@@ -156,9 +156,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return `
-        <article class="jcp-plugin-card jcp:group jcp:bg-white jcp:rounded-xl jcp:overflow-hidden jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
+        <article class="jcp-plugin-card swiper-slide jcp:group jcp:bg-white jcp:rounded-2xl jcp:p-2 jcp:border jcp:border-[#e5e7eb] jcp:shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_-4px_rgba(0,0,0,0.06)] jcp:transition-transform jcp:duration-200 jcp:hover:-translate-y-0.5">
             ${galleryHtml}
-            <div class="jcp-plugin-card__body jcp:p-6 jcp:border-2 jcp:border-[#e5e7eb] jcp:border-t-0 jcp:rounded-b-xl">
+            <div class="jcp-plugin-card__body jcp:p-4">
                 <p class="jcp-plugin-card__description jcp:text-[17px] jcp:leading-[1.6] jcp:text-[#111827] jcp:mb-2 jcp:line-clamp-4 jcp:overflow-hidden" data-desc-text>${nl2br(checkin.description || '')}</p>
                 <button type="button" class="jcp-plugin-card__toggle jcp:border-0 jcp:bg-transparent jcp:text-accent jcp:text-sm jcp:font-semibold jcp:p-0 jcp:mb-4 jcp:cursor-pointer jcp:hover:underline" data-desc-toggle hidden aria-expanded="false">Read more</button>
                 <div class="jcp-plugin-card__meta jcp:flex jcp:flex-nowrap jcp:items-center jcp:justify-between jcp:gap-2 jcp:pt-4 jcp:border-t jcp:border-[#e5e7eb] jcp:text-sm jcp:text-[#6b7280]">

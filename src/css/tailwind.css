@@ -2,25 +2,22 @@
 
 @import "tailwindcss/theme.css" layer(theme) prefix(jcp);
 @import "tailwindcss/utilities.css" layer(utilities) prefix(jcp);
+@import "swiper/css";
+@import "swiper/css/navigation";
 
 @theme {
     --color-accent: #ff503e;
 }
 
-/* --- Container isolation (hidden until JS measures and reveals) --- */
-
-.jcp-combined-components {
-    display: none;
-    overflow: hidden;
-    min-width: 0;
-    box-sizing: border-box;
+/* Give Swiper vertical padding so card shadows aren't clipped by overflow:hidden */
+.jcp-plugin-slider .swiper {
+    padding-top: 8px;
+    padding-bottom: 16px;
 }
 
-/* --- Card Sizing --- */
-
-.jcp-plugin-card {
-    flex: 0 0 var(--jcp-card-width, 300px);
-    min-width: 0;
+/* Cards have padding+border — make Swiper's calculated width include them */
+.jcp-plugin-card.swiper-slide {
+    box-sizing: border-box;
 }
 
 /* --- Shared / CTA --- */
@@ -32,7 +29,7 @@
 /* --- Checkin Card --- */
 
 .jcp-plugin-card__gallery {
-    @apply jcp:relative jcp:w-full jcp:aspect-400/260 jcp:overflow-hidden jcp:bg-[#f3f4f6];
+    @apply jcp:relative jcp:w-full jcp:aspect-400/260 jcp:overflow-hidden jcp:bg-[#f3f4f6] jcp:rounded-lg;
 }
 
 .jcp-plugin-card__gallery-inner {
