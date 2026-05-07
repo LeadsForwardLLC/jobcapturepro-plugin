@@ -9,6 +9,28 @@
     --color-accent: #ff503e;
 }
 
+/* Force Oxygen's .ct-shortcode wrapper (the flex child of
+   .ct-section-inner-wrap) to fill parent width when our plugin
+   is inside it. Without this, align-items:flex-start makes it
+   shrink-wrap to content and Swiper inflates infinitely. */
+.ct-shortcode:has(.jcp-combined-components) {
+    width: 100%;
+    min-width: 0;
+    align-self: stretch;
+}
+
+/* Belt-and-suspenders: also clamp our own wrappers. */
+.jcp-combined-components,
+.jcp-plugin-slider,
+.jcp-plugin-slider .swiper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    align-self: stretch;
+    justify-self: stretch;
+}
+
 /* Give Swiper vertical padding so card shadows aren't clipped by overflow:hidden */
 .jcp-plugin-slider .swiper {
     padding-top: 8px;
