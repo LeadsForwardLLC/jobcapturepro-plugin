@@ -2,25 +2,44 @@
 
 @import "tailwindcss/theme.css" layer(theme) prefix(jcp);
 @import "tailwindcss/utilities.css" layer(utilities) prefix(jcp);
+@import "swiper/css";
+@import "swiper/css/navigation";
 
 @theme {
     --color-accent: #ff503e;
 }
 
-/* --- Container isolation (hidden until JS measures and reveals) --- */
-
-.jcp-combined-components {
-    display: none;
-    overflow: hidden;
+/* Force Oxygen's .ct-shortcode wrapper (the flex child of
+   .ct-section-inner-wrap) to fill parent width when our plugin
+   is inside it. Without this, align-items:flex-start makes it
+   shrink-wrap to content and Swiper inflates infinitely. */
+.ct-shortcode:has(.jcp-combined-components) {
+    width: 100%;
     min-width: 0;
-    box-sizing: border-box;
+    align-self: stretch;
 }
 
-/* --- Card Sizing --- */
-
-.jcp-plugin-card {
-    flex: 0 0 var(--jcp-card-width, 300px);
+/* Belt-and-suspenders: also clamp our own wrappers. */
+.jcp-combined-components,
+.jcp-plugin-slider,
+.jcp-plugin-slider .swiper {
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
+    box-sizing: border-box;
+    align-self: stretch;
+    justify-self: stretch;
+}
+
+/* Give Swiper vertical padding so card shadows aren't clipped by overflow:hidden */
+.jcp-plugin-slider .swiper {
+    padding-top: 8px;
+    padding-bottom: 16px;
+}
+
+/* Cards have padding+border — make Swiper's calculated width include them */
+.jcp-plugin-card.swiper-slide {
+    box-sizing: border-box;
 }
 
 /* --- Shared / CTA --- */
@@ -32,7 +51,7 @@
 /* --- Checkin Card --- */
 
 .jcp-plugin-card__gallery {
-    @apply jcp:relative jcp:w-full jcp:aspect-400/260 jcp:overflow-hidden jcp:bg-[#f3f4f6];
+    @apply jcp:relative jcp:w-full jcp:aspect-400/260 jcp:overflow-hidden jcp:bg-[#f3f4f6] jcp:rounded-lg;
 }
 
 .jcp-plugin-card__gallery-inner {
