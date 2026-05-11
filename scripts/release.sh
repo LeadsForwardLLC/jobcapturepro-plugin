@@ -40,12 +40,12 @@ echo "Creating branch $BRANCH..."
 git checkout -b "$BRANCH"
 
 # Bump version in jobcapturepro.php (plugin header + constant)
-sed -i "s/Version:           .*/Version:           $VERSION/" jobcapturepro.php
-sed -i "s/define('JOBCAPTUREPRO_VERSION', '.*')/define('JOBCAPTUREPRO_VERSION', '$VERSION')/" jobcapturepro.php
+sed -i '' "s/Version:           .*/Version:           $VERSION/" jobcapturepro.php
+sed -i '' "s/define('JOBCAPTUREPRO_VERSION', '.*')/define('JOBCAPTUREPRO_VERSION', '$VERSION')/" jobcapturepro.php
 
 # Bump version in README.TXT
-sed -i "s/^Stable tag: .*/Stable tag: $VERSION/" README.TXT
-sed -i "s/^version: .*/version: $VERSION/" README.TXT
+sed -i '' "s/^Stable tag: .*/Stable tag: $VERSION/" README.TXT
+sed -i '' "s/^version: .*/version: $VERSION/" README.TXT
 
 echo "Version bumped to $VERSION"
 
