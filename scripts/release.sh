@@ -20,6 +20,15 @@ fi
 
 BRANCH="release/$VERSION"
 
+# Cross-platform sed -i: BSD sed (macOS) requires an empty backup ext, GNU sed (Linux) does not.
+sed_inplace() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "$@"
+    else
+        sed -i "$@"
+    fi
+}
+
 # Must start from main
 echo "Switching to main and pulling latest..."
 git checkout main
@@ -40,12 +49,12 @@ echo "Creating branch $BRANCH..."
 git checkout -b "$BRANCH"
 
 # Bump version in jobcapturepro.php (plugin header + constant)
-sed -i '' "s/Version:           .*/Version:           $VERSION/" jobcapturepro.php
-sed -i '' "s/define('JOBCAPTUREPRO_VERSION', '.*')/define('JOBCAPTUREPRO_VERSION', '$VERSION')/" jobcapturepro.php
+sed_inplace "s/Version:           .*/Version:           $VERSION/" jobcapturepro.php
+sed_inplace "s/define('JOBCAPTUREPRO_VERSION', '.*')/define('JOBCAPTUREPRO_VERSION', '$VERSION')/" jobcapturepro.php
 
 # Bump version in README.TXT
-sed -i '' "s/^Stable tag: .*/Stable tag: $VERSION/" README.TXT
-sed -i '' "s/^version: .*/version: $VERSION/" README.TXT
+sed_inplace "s/^Stable tag: .*/Stable tag: $VERSION/" README.TXT
+sed_inplace "s/^version: .*/version: $VERSION/" README.TXT
 
 echo "Version bumped to $VERSION"
 
