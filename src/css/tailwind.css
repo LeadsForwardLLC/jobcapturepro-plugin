@@ -9,11 +9,13 @@
     --color-accent: #ff503e;
 }
 
-/* Force Oxygen's .ct-shortcode wrapper (the flex child of
-   .ct-section-inner-wrap) to fill parent width when our plugin
-   is inside it. Without this, align-items:flex-start makes it
+/* Force any Oxygen wrapper (ct-shortcode, ct-div-block, ct-new-columns)
+   that contains our plugin to fill parent width. Without this,
+   align-items:flex-start on flex-column parents makes wrappers
    shrink-wrap to content and Swiper inflates infinitely. */
-.ct-shortcode:has(.jcp-combined-components) {
+.ct-shortcode:has(.jcp-combined-components),
+.ct-div-block:has(.jcp-combined-components),
+.ct-new-columns:has(.jcp-combined-components) {
     width: 100%;
     min-width: 0;
     align-self: stretch;
