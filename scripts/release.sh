@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-# Usage: bash scripts/release.sh <version>
+# Usage: bash scripts/release.sh <version> [base-branch]
 # Example: bash scripts/release.sh 1.0.8
+# Example: bash scripts/release.sh 1.1.7 fix/some-branch
 
 VERSION="$1"
+BASE_BRANCH="${2:-main}"
 
 if [ -z "$VERSION" ]; then
     echo "Error: version argument required."
@@ -29,10 +31,10 @@ sed_inplace() {
     fi
 }
 
-# Must start from main
-echo "Switching to main and pulling latest..."
-git checkout main
-git pull origin main
+# Must start from the base branch (defaults to main)
+echo "Switching to $BASE_BRANCH and pulling latest..."
+git checkout "$BASE_BRANCH"
+git pull origin "$BASE_BRANCH"
 
 # Ensure working tree is clean
 if ! git diff --quiet || ! git diff --cached --quiet; then
