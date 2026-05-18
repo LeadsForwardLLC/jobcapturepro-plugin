@@ -256,6 +256,13 @@ async function initJobCaptureProMap() {
           params.set('companyId', jobcaptureproMapData.companyId);
         }
 
+        // Forward shortcode atts (state, etc.) so paginated results match the initial filter
+        const scAtts = jobcaptureproMapData.scAtts || {};
+        Object.entries(scAtts).forEach(([key, value]) => {
+          if (value === null || value === undefined) return;
+          if (String(value).trim() !== '') params.set(key, String(value));
+        });
+
         const url = new URL('map', baseApiUrl);
         params.forEach((value, key) => url.searchParams.set(key, value));
         const response = await fetch(url.toString(), fetchOptions);

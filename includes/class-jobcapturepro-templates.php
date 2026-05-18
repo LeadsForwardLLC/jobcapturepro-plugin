@@ -354,14 +354,16 @@ class JobCaptureProTemplates
             true
         );
 
+        global $jcp_combined_sc_atts;
+
         wp_localize_script(
             'jobcapturepro-map',
             'jobcaptureproMapData',
             array(
-                // 
+                //
                 'googleMapsApiKey' => esc_js($maps_api_key),
 
-                // 
+                //
                 'baseApiUrl' => JOBCAPTUREPRO_API_BASE_URL,
                 'apiKey' => JobCaptureProAdmin::get_sanitized_api_key(),
 
@@ -380,6 +382,7 @@ class JobCaptureProTemplates
                 'totalPages'  => $map_data['totalPages'] ?? 1,
                 'pageSize'    => $map_data['pageSize'] ?? 100,
                 'companyId'   => $company_info['id'] ?? null,
+                'scAtts'      => $jcp_combined_sc_atts ?? array(),
             )
         );
 
