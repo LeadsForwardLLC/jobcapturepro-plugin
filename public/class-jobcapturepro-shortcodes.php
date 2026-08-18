@@ -304,7 +304,7 @@ class JobCaptureProShortcodes
         }
 
         $checkin_id = $result['checkin_id'];
-        $checkins = $result['data'] ?? array();
+        $checkins = $result['data']['checkins'] ?? array();
 
         // Validate that we have valid data structure
         if (!is_array($checkins)) {

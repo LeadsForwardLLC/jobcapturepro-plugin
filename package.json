@@ -39,5 +39,8 @@
   "dependencies": {
     "lucide": "^0.575.0",
     "swiper": "^12.1.4"
-  }
+  },
+  "browserslist": [
+    "defaults"
+  ]
 }

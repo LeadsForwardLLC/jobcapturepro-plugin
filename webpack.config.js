@@ -4,9 +4,10 @@ const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 
 module.exports = {
     entry: {
-        'js/map': './src/js/map.js',
-        'js/checkins/checkins-pagination': './src/js/checkins/checkins-pagination.js',
-        'js/checkins/slider': './src/js/checkins/slider.js',
+        // WordPress plugin bundles (paths consumed by wp_enqueue_* — keep stable)
+        'js/map': './src/wp/map.js',
+        'js/checkins/checkins-pagination': './src/wp/checkins-pagination.js',
+        'js/checkins/slider': './src/wp/checkins-slider.js',
         'css/tailwind': './src/css/tailwind.css',
     },
     output: {
