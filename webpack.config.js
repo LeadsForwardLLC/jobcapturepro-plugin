@@ -9,6 +9,8 @@ module.exports = {
         'js/checkins/checkins-pagination': './src/wp/checkins-pagination.js',
         'js/checkins/slider': './src/wp/checkins-slider.js',
         'css/tailwind': './src/css/tailwind.css',
+        // Self-contained embed for non-WordPress sites (Wix etc.)
+        'embed/jcp-embed': './src/embed/index.js',
     },
     output: {
         filename: '[name].min.js',
@@ -28,7 +30,16 @@ module.exports = {
                 },
             },
             {
+                // CSS imported with ?inline-css resolves to the compiled CSS
+                // as a string, which the embed injects into a <style> tag.
                 test: /\.css$/i,
+                resourceQuery: /inline-css/,
+                type: 'asset/source',
+                use: ['postcss-loader'],
+            },
+            {
+                test: /\.css$/i,
+                resourceQuery: { not: [/inline-css/] },
                 use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
             },
         ]

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobCapturePro Embed Demo</title>
+    <style>
+        body { margin: 0; font-family: system-ui, sans-serif; }
+        .demo-note { background: #fffbe6; border-bottom: 1px solid #e5d9a0; padding: 12px 20px; font-size: 14px; }
+        .demo-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="demo-note">
+        <strong>JobCapturePro embed demo.</strong> Build first (<code>npm run build</code>), then serve this
+        directory (<code>npx serve .</code> from the repo root) — the module loads from <code>../dist/</code>.
+        Replace <code>api-key</code> with a real key to see live data; without one the widget renders its
+        error state, which still exercises registration, styling, and the loading skeleton.
+    </div>
+
+    <div class="demo-container">
+        <jcp-widget
+            component="combined"
+            api-key="REPLACE_WITH_API_KEY"
+        ></jcp-widget>
+    </div>
+
+    <script src="../dist/embed/jcp-embed.min.js" async></script>
+</body>
+</html>

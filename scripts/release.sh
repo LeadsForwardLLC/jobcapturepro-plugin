@@ -60,8 +60,9 @@ sed_inplace "s/^version: .*/version: $VERSION/" README.TXT
 
 echo "Version bumped to $VERSION"
 
-# Force-add dist/ (ignored in .gitignore)
-git add -f dist/
+# Force-add the WP plugin dist assets (dist/ is gitignored; dist/embed
+# is the non-WordPress embed bundle and does not ship in the plugin)
+git add -f dist/js dist/css
 
 # Remove everything from git index, then re-add only prod files
 echo "Stripping dev files — keeping only prod files..."
@@ -101,8 +102,8 @@ for f in "${PROD_FILES[@]}"; do
     fi
 done
 
-# Add all dist files
-git add -f dist/
+# Add the WP plugin dist files (embed bundle excluded)
+git add -f dist/js dist/css
 
 # Commit
 git commit -m "Release $VERSION - only the prod files kept"
