@@ -12,18 +12,37 @@
 </head>
 <body>
     <div class="demo-note">
-        <strong>JobCapturePro embed demo.</strong> Build first (<code>npm run build</code>), then serve this
-        directory (<code>npx serve .</code> from the repo root) — the module loads from <code>../dist/</code>.
-        Replace <code>api-key</code> with a real key to see live data; without one the widget renders its
-        error state, which still exercises registration, styling, and the loading skeleton.
+        <strong>JobCapturePro embed demo.</strong> Build first (<code>npm run build</code>), serve the repo root
+        (<code>python3 -m http.server 8734</code>), then open
+        <code>/examples/embed-demo.html?apikey=KEY&amp;companyid=ID</code>. Optional params:
+        <code>component</code> (combined | checkins | map | company-info | checkin) and any shortcode att
+        (<code>checkinid</code>, <code>pagesize</code>, <code>state</code>, …) — all are forwarded as widget attributes.
     </div>
 
-    <div class="demo-container">
-        <jcp-widget
-            component="combined"
-            api-key="REPLACE_WITH_API_KEY"
-        ></jcp-widget>
-    </div>
+    <div class="demo-container" id="demo-root"></div>
+
+    <script>
+        (function () {
+            const params = new URLSearchParams(location.search);
+            const root = document.getElementById('demo-root');
+            const apiKey = params.get('apikey');
+
+            if (!apiKey) {
+                root.innerHTML = '<p>No <code>apikey</code> query param — add <code>?apikey=YOUR_KEY&amp;companyid=YOUR_COMPANY_ID</code> to the URL. ' +
+                    'Without a valid key the widget renders its error state.</p>';
+                return;
+            }
+
+            const widget = document.createElement('jcp-widget');
+            widget.setAttribute('api-key', apiKey);
+            widget.setAttribute('component', params.get('component') || 'combined');
+            for (const [name, value] of params) {
+                if (name === 'apikey' || name === 'component') continue;
+                widget.setAttribute(name, value);
+            }
+            root.appendChild(widget);
+        })();
+    </script>
 
     <script src="../dist/embed/jcp-embed.min.js" async></script>
 </body>
