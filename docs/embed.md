@@ -75,9 +75,42 @@ page using the embed and add it via **Embed a Site** (iframe).
 - [ ] **Google Maps key referrers** — the Maps key returned by `/map`
       must allow the customer's domain in Google Cloud Console, or the
       map renders grey.
-- [ ] **Hosting** — publish `dist/embed/jcp-embed.min.js` to a stable
-      URL (`/v1/` floating + immutable versioned copies). Not yet set
-      up; the snippet above carries a placeholder host.
+- [ ] **Hosting** — Firebase Hosting config + CI workflows are in the
+      repo (see *Hosting & deployment* below); the Firebase projects,
+      CI secrets, and prod custom domain still need to be created, and
+      `WIDGET_HOST_TBD` above replaced with the real host.
+
+## Hosting & deployment
+
+The bundle is hosted on Firebase Hosting, one project per environment
+(aliases `staging` / `production` in `.firebaserc`). The same
+environment-agnostic artifact is deployed to both — API selection
+happens via the widget's `api-base` attribute, not the build.
+
+- `firebase.json` serves `dist/hosting/` — assembled from the built
+  bundle by `scripts/prepare-hosting.sh` — at `/v1/jcp-embed.min.js`
+  with `Cache-Control: public, max-age=300` (short, so floating-URL
+  updates propagate quickly) and `Access-Control-Allow-Origin: *`
+  (lets embedders use `crossorigin` / SRI).
+- **Staging** auto-deploys via
+  `.github/workflows/deploy-embed-staging.yml` on every push to `main`
+  touching embed-relevant paths (also runnable manually).
+- **Production** deploys via
+  `.github/workflows/deploy-embed-prod.yml`, manual trigger only, gated
+  by the GitHub `production` environment's required reviewers.
+- CI auth: repo secrets `FIREBASE_SERVICE_ACCOUNT_STAGING` /
+  `FIREBASE_SERVICE_ACCOUNT_PROD` (service-account JSON with the
+  Firebase Hosting Admin role).
+- Local deploy (first-time validation or emergencies):
+  `npm run build && bash scripts/prepare-hosting.sh && npx firebase-tools deploy --only hosting --project staging`
+- Rollback: Firebase console -> Hosting -> Release history -> Rollback
+  (previous deploys are kept).
+- TODO: immutable per-version URLs (`/releases/x.y.z/`) need released
+  artifacts to persist somewhere CI can restore them from — every
+  Firebase deploy replaces the whole site, so deploying only the
+  current build would drop older versioned copies. Simplest option
+  when needed: a tracked `firebase/releases/` dir (~160 KB per
+  release) that `prepare-hosting.sh` copies in.
 
 ## Development
 

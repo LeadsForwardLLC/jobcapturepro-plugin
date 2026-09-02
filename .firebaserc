@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "staging": "travel-app-eor5yc",
+    "production": "jobcapturepro"
+  }
+}

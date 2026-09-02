@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "public": "dist/hosting",
+    "ignore": ["**/.*"],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
+      },
+      {
+        "source": "/v1/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=300" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" }
+        ]
+      }
+    ]
+  }
+}

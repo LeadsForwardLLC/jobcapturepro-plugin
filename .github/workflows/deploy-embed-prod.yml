@@ -1,0 +1,38 @@
+# Deploys the JS embed bundle to the PRODUCTION Firebase Hosting project.
+# Trigger is manual only (Actions tab -> "Deploy embed to production" -> Run
+# workflow). The job additionally targets the GitHub "production" environment:
+# if that environment has Required Reviewers configured, the run pauses for
+# approval before deploying.
+name: Deploy embed to production
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-embed-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://jobcapturepro.web.app/v1/jcp-embed.min.js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: bash scripts/prepare-hosting.sh
+      - name: Deploy to Firebase Hosting (live)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
+          projectId: jobcapturepro
+          channelId: live

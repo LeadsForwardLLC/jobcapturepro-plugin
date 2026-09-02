@@ -2,3 +2,5 @@
 dist/
 CLAUDE.md
 node_modules/
+.firebase/
+firebase-debug.log

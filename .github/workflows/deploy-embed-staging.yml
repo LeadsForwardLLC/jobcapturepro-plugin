@@ -1,0 +1,50 @@
+# Auto-deploys the JS embed bundle to the STAGING Firebase Hosting project on
+# every push to main that can affect the bundle. Can also be run by hand from
+# the Actions tab (workflow_dispatch) against any branch.
+name: Deploy embed to staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/embed/**'
+      - 'src/core/**'
+      - 'src/css/**'
+      - 'webpack.config.js'
+      - 'postcss.config.js'
+      - 'postcss-unwrap-layer.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'firebase.json'
+      - 'scripts/prepare-hosting.sh'
+      - '.github/workflows/deploy-embed-staging.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-embed-staging
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://travel-app-eor5yc.web.app/v1/jcp-embed.min.js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: bash scripts/prepare-hosting.sh
+      - name: Deploy to Firebase Hosting (live)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
+          projectId: travel-app-eor5yc
+          channelId: live
