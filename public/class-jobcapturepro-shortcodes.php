@@ -30,30 +30,39 @@ class JobCaptureProShortcodes
     );
 
     /**
-     * Render a user-friendly error message
-     * 
-     * @param string $message The error message to display
-     * @param string $error_code Optional error code for debugging
-     * @param bool $show_debug Whether to show debug information
-     * @return string HTML error message
+     * Render a visitor-friendly "content unavailable" notice.
+     *
+     * Visitors always see the same neutral copy so a backend problem does not make
+     * the page look broken (JCPWPP-50). The technical reason stays available: the
+     * error code is emitted as a data attribute, and users who can manage options
+     * also see the message and code as a small note.
+     *
+     * @param string $message    Technical description of what went wrong (shown to admins only)
+     * @param string $error_code Short machine-readable code, emitted as data-jcp-error
+     * @param bool   $show_debug Unused; kept so existing call sites keep working
+     * @return string HTML notice
      */
     private function render_error_message($message, $error_code = '', $show_debug = false)
     {
-        $debug_info = '';
-        if ($show_debug && defined('WP_DEBUG') && WP_DEBUG && current_user_can('manage_options')) {
-            $debug_info = sprintf(
-                '<small class="jobcapturepro-debug">Debug: %s</small>',
-                esc_html($error_code)
+        // Users who can manage the site see what actually went wrong; visitors never do.
+        $admin_detail = '';
+        if (current_user_can('manage_options')) {
+            $admin_detail = sprintf(
+                '<small class="jobcapturepro-debug">%s %s%s</small>',
+                esc_html__('Admin note:', 'jobcapturepro'),
+                esc_html($message),
+                $error_code !== '' ? ' (' . esc_html($error_code) . ')' : ''
             );
         }
 
         return sprintf(
-            '<div class="jobcapturepro-error" role="alert">
+            '<div class="jobcapturepro-error" role="status" data-jcp-error="%s">
                 <p>%s</p>
                 %s
             </div>',
-            esc_html($message),
-            $debug_info
+            esc_attr($error_code),
+            esc_html__('Check back later to see recent jobs in this area!', 'jobcapturepro'),
+            $admin_detail
         );
     }
 
@@ -269,7 +278,10 @@ class JobCaptureProShortcodes
         $checkin_id = isset($atts['checkinid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['checkinid'], 'checkin') : null;
 
         if (!$checkin_id) {
-            return '<div class="jobcapturepro-error">' . esc_html(__('No valid checkin ID provided.', 'jobcapturepro')) . '</div>';
+            return $this->render_error_message(
+                __('No valid checkin ID provided.', 'jobcapturepro'),
+                'missing_checkin_id'
+            );
         }
 
         // Fetch specific checkin using the direct endpoint
