@@ -100,6 +100,9 @@ class JobCaptureProShortcodes
      */
     private function fetch_api_data($endpoint, $atts)
     {
+        // WordPress before 6.5 passes '' (not an array) when a shortcode has no attributes
+        if (!is_array($atts)) $atts = array();
+
         // Sanitize all attributes
         $atts = array_map('sanitize_text_field', $atts);
 
@@ -293,6 +296,8 @@ class JobCaptureProShortcodes
      */
     public function get_all_checkins($atts)
     {
+        // WordPress before 6.5 passes '' (not an array) when a shortcode has no attributes
+        if (!is_array($atts)) $atts = array();
         if (!isset($atts['pagesize'])) $atts['pagesize'] = '25';
 
         $result = $this->fetch_api_data('checkins', $atts);
@@ -332,6 +337,9 @@ class JobCaptureProShortcodes
      */
     public function get_map($atts)
     {
+        // WordPress before 6.5 passes '' (not an array) when a shortcode has no attributes
+        if (!is_array($atts)) $atts = array();
+
         // Check if companyid attribute was provided
         $company_id = isset($atts['companyid']) ? JobCaptureProAdmin::sanitize_id_parameter($atts['companyid'], 'company') : null;
 
