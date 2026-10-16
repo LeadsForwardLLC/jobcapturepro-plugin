@@ -7,7 +7,7 @@
  * Text Domain:       jobcapturepro
  * Version:           1.1.6
  * Requires at least: 5.0
- * Tested up to:      6.6
+ * Tested up to:      7.1
  * Requires PHP:      7.4
  * Author:            JobCapturePro Team
  * Author URI:        https://www.jobcapturepro.com/
