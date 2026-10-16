@@ -391,6 +391,17 @@ class JobCaptureProShortcodes
     }
 
     /**
+     * Shortcode to display the full layout: company info header + multimap + checkins slider.
+     *
+     * This matches the behaviour of jobcapturepro_combined prior to 1.1.8, for sites that
+     * still want the company header (for example when passing a companyid).
+     */
+    public function get_full_components($atts)
+    {
+        return $this->render_combined_shortcode($atts, true);
+    }
+
+    /**
      * Shared implementation for the combined-style shortcodes.
      *
      * @param array|string $atts              Shortcode attributes (WordPress before 6.5 passes '' when none are given)
