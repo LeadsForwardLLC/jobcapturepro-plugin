@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         params.set('strict', 'false');
         params.set('sortBy', 'jobCompletedAt');
         params.set('sortOrder', 'DESC');
+        params.set('status', 'published');
 
         // Append any shortcode attributes passed via localization
         const scAtts = jobcaptureproPaginationData.scAtts || {};
