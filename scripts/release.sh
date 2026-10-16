@@ -54,9 +54,8 @@ git checkout -b "$BRANCH"
 sed_inplace "s/Version:           .*/Version:           $VERSION/" jobcapturepro.php
 sed_inplace "s/define('JOBCAPTUREPRO_VERSION', '.*')/define('JOBCAPTUREPRO_VERSION', '$VERSION')/" jobcapturepro.php
 
-# Bump version in README.TXT
-sed_inplace "s/^Stable tag: .*/Stable tag: $VERSION/" README.TXT
-sed_inplace "s/^version: .*/version: $VERSION/" README.TXT
+# Bump version in README.md (Stable tag row of the metadata table)
+sed_inplace "s/^| Stable tag | .* |$/| Stable tag | $VERSION |/" README.md
 
 echo "Version bumped to $VERSION"
 
@@ -70,7 +69,7 @@ git rm -r --cached . -q
 # Re-add only the files that belong in the release
 PROD_FILES=(
     LICENSE.TXT
-    README.TXT
+    README.md
     index.php
     jobcapturepro.php
     uninstall.php
