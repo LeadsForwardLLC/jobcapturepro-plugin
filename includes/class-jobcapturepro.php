@@ -125,6 +125,7 @@ class JobCaptureProPlugin
 		$this->loader->add_shortcode('jobcapturepro_map', $plugin_shortcodes, 'get_map');
 		$this->loader->add_shortcode('jobcapturepro_company_info', $plugin_shortcodes, 'get_company_info');
 		$this->loader->add_shortcode('jobcapturepro_combined', $plugin_shortcodes, 'get_combined_components');
+		$this->loader->add_shortcode('jobcapturepro_full', $plugin_shortcodes, 'get_full_components');
 
 		// Keep old shortcodes for backwards compatibility
 		$this->loader->add_shortcode('jcp_checkin', $plugin_shortcodes, 'get_checkin');
