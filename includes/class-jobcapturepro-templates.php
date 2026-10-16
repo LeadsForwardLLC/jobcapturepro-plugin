@@ -174,14 +174,17 @@ class JobCaptureProTemplates
      * @param array $map_data Map-related data for location visualization
      * @param array $checkins Collection of check-in records
      * @param int $checkin_id Specific check-in identifier for single check-in display (see conditional rendering logic)
+     * @param bool $show_company_info Whether to render the company info header (default true; the combined shortcode passes false)
      * @return string HTML output for the combined components
      */
-    public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id)
+    public static function render_combined_components($company_info, $map_data, $checkins, $checkin_id, $show_company_info = true)
     {
         $output = '<div class="jcp-combined-components">';
 
-        // Render the company info section
-        $output .= JobCaptureProTemplates::render_company_info($company_info);
+        // Render the company info section (optional)
+        if ($show_company_info) {
+            $output .= JobCaptureProTemplates::render_company_info($company_info);
+        }
 
         // Render map with conditional logic
         $output .= JobCaptureProTemplates::render_map_conditionally($map_data, $company_info);
