@@ -22,6 +22,7 @@ services:
       WORDPRESS_DB_PASSWORD: "jcp_pass"
       WORDPRESS_DB_NAME: "jcp_db"
     volumes:
+      - wp_data:/var/www/html # WordPress install shared with the cli service
       - ./:/var/www/html/wp-content/plugins/jobcapturepro
 
   cli:
@@ -31,6 +32,7 @@ services:
       - db
     user: "33:33" # www-data user inside wp container
     volumes:
+      - wp_data:/var/www/html # same install as the wp service, so `wp core`/`wp plugin` commands work
       - ./:/var/www/html/wp-content/plugins/jobcapturepro
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -41,3 +43,4 @@ services:
 
 volumes:
   db_data:
+  wp_data: # WordPress core + wp-config.php; run `docker compose down -v` to start fresh (e.g. after pulling a newer wordpress image)
