@@ -4,7 +4,7 @@ Connect your WordPress website to JobCapturePro's comprehensive job management s
 
 | | |
 | --- | --- |
-| Stable tag | 1.1.6 |
+| Stable tag | 1.1.8 |
 | Requires at least | WordPress 5.0 |
 | Tested up to | WordPress 7.1 |
 | Requires PHP | 7.4 |
