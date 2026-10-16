@@ -149,7 +149,12 @@ class JcpWidget extends HTMLElement {
         }));
     }
 
-    // Mirrors get_combined_components()
+    // Mirrors get_combined_components(), except that combined deliberately
+    // renders NO company-info header (product decision, Sep 2026). WP's
+    // combined still calls render_company_info(), but on live sites the
+    // header collapses to '' because the default `companies` endpoint
+    // returns a paginated list without top-level name/address — the
+    // header-less rendering is the intended behavior.
     async _renderCombined() {
         const atts = this._collectAtts();
         if (!atts.pagesize) atts.pagesize = '25';
@@ -174,7 +179,7 @@ class JcpWidget extends HTMLElement {
         }
 
         if (checkins.length === 0 && (mapData.total ?? 0) === 0) {
-            this.innerHTML = renderCompanyInfo(companyInfo) + renderNoCheckinsMessage();
+            this.innerHTML = renderNoCheckinsMessage();
             return;
         }
 
@@ -188,7 +193,6 @@ class JcpWidget extends HTMLElement {
             : renderCheckinsSlider(checkins.map(renderCheckinCard).join(''));
 
         this.innerHTML = `<div class="jcp-combined-components">`
-            + renderCompanyInfo(companyInfo)
             + (hasMap ? renderMapContainer() : '')
             + checkinsHtml
             + renderPoweredByFooter()

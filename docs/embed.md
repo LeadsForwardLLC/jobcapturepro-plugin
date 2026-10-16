@@ -39,8 +39,8 @@ API response, exactly as on WordPress.
 
 ### Components
 
-- `combined` — company info header + check-ins map + slider + footer
-  (equivalent of `[jobcapturepro_combined]`)
+- `combined` — check-ins map + slider + footer (equivalent of
+  `[jobcapturepro_combined]`; deliberately no company-info header)
 - `checkins` — check-ins slider with infinite pagination
   (`[jobcapturepro_checkins]`); with `checkinid` and a single result it
   renders the single check-in detail view
