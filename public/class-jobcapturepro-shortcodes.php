@@ -381,10 +381,25 @@ class JobCaptureProShortcodes
     }
 
     /**
-     * Shortcode to display combined components (checkins slider + multimap)
+     * Shortcode to display combined components (multimap + checkins slider).
+     *
+     * The company info header is intentionally not rendered by this shortcode.
      */
     public function get_combined_components($atts)
     {
+        return $this->render_combined_shortcode($atts, false);
+    }
+
+    /**
+     * Shared implementation for the combined-style shortcodes.
+     *
+     * @param array|string $atts              Shortcode attributes (WordPress before 6.5 passes '' when none are given)
+     * @param bool         $show_company_info Whether to render the company info header above the map
+     * @return string HTML output
+     */
+    private function render_combined_shortcode($atts, $show_company_info)
+    {
+        if (!is_array($atts)) $atts = array();
         if (!isset($atts['pagesize'])) $atts['pagesize'] = '25';
 
         // Global var to pass this shortcode's attributes to the checkins pagination script
@@ -464,7 +479,7 @@ class JobCaptureProShortcodes
 
         // Check if there are any check-ins to display
         if (empty($checkins) && ($map_data['total'] ?? 0) === 0) {
-            $output = JobCaptureProTemplates::render_company_info($company_info);
+            $output = $show_company_info ? JobCaptureProTemplates::render_company_info($company_info) : '';
             $output .= $this->render_no_checkins_message();
             return $output;
         }
@@ -473,7 +488,8 @@ class JobCaptureProShortcodes
             $company_info,
             $map_data,
             $checkins,
-            $checkin_id
+            $checkin_id,
+            $show_company_info
         );
     }
 

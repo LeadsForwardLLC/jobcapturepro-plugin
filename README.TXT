@@ -43,7 +43,7 @@ For more information about JobCapturePro's terms of service, visit: https://jobc
 **New Shortcodes (Recommended):**
 * `[jobcapturepro_checkin]` - Display a single job check-in with full details
 * `[jobcapturepro_checkins]` - Show multiple check-ins in a responsive grid layout
-* `[jobcapturepro_combined]` - Display comprehensive job and company information
+* `[jobcapturepro_combined]` - Display the interactive map and check-ins slider together (no company header)
 * `[jobcapturepro_company_info]` - Show business information and statistics
 * `[jobcapturepro_map]` - Interactive map with job location markers
 
